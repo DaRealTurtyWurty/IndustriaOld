@@ -1,0 +1,139 @@
+package dev.turtywurty.industria.recipes;
+
+import com.google.gson.JsonObject;
+import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.init.RecipeInit;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.wrapper.RecipeWrapper;
+import org.jetbrains.annotations.Nullable;
+
+public class CrusherRecipe implements Recipe<Container> {
+    public static final String ID = "crusher";
+
+    private final ResourceLocation id;
+    private final Ingredient input;
+    private final ItemStack output;
+    private final int processTime;
+    private final int energyCost;
+
+
+    public CrusherRecipe(ResourceLocation id, Ingredient input, ItemStack output, int processTime, int energyCost) {
+        this.id = id;
+        this.input = input;
+        this.output = output;
+        this.processTime = processTime;
+        this.energyCost = energyCost;
+    }
+
+    public boolean matches(IItemHandlerModifiable container, Level level) {
+        return matches(new RecipeWrapper(container), level);
+    }
+
+    @Override
+    public boolean matches(Container pContainer, Level pLevel) {
+        if (pLevel.isClientSide()) {
+            return false;
+        }
+
+        return this.input.test(pContainer.getItem(0)) && (pContainer.getItem(1).isEmpty() || pContainer.canPlaceItem(1,
+                this.output) && pContainer.getItem(1).getCount() < pContainer.getItem(1).getMaxStackSize());
+    }
+
+    @Override
+    public ItemStack assemble(Container pContainer) {
+        pContainer.removeItem(0, 1);
+        return getResultItem();
+    }
+
+    @Override
+    public boolean canCraftInDimensions(int pWidth, int pHeight) {
+        return true;
+    }
+
+    @Override
+    public ItemStack getResultItem() {
+        return this.output.copy();
+    }
+
+    @Override
+    public ResourceLocation getId() {
+        return this.id;
+    }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return RecipeInit.CRUSHER_SERIALIZER.get();
+    }
+
+    @Override
+    public RecipeType<?> getType() {
+        return RecipeInit.CRUSHER_TYPE.get();
+    }
+
+    public Ingredient getInput() {
+        return this.input;
+    }
+
+    public int getProcessTime() {
+        return this.processTime;
+    }
+
+    public int getEnergyCost() {
+        return this.energyCost;
+    }
+
+    public static final class Type implements RecipeType<CrusherRecipe> {
+        public static final Type INSTANCE = new Type();
+
+        private Type() {
+        }
+
+        @Override
+        public String toString() {
+            return CrusherRecipe.ID;
+        }
+    }
+
+    public static final class Serializer implements RecipeSerializer<CrusherRecipe> {
+        public static final Serializer INSTANCE = new Serializer();
+        public static final ResourceLocation ID = new ResourceLocation(Industria.MODID, CrusherRecipe.ID);
+
+        private Serializer() {
+        }
+
+        @Override
+        public CrusherRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
+            ItemStack output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "output"));
+            Ingredient input = Ingredient.fromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "input"));
+            int processTime = GsonHelper.getAsInt(pSerializedRecipe, "processTime");
+            int energyCost = GsonHelper.getAsInt(pSerializedRecipe, "energyCost");
+
+            return new CrusherRecipe(pRecipeId, input, output, processTime, energyCost);
+        }
+
+        @Override
+        public @Nullable CrusherRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
+            ItemStack output = pBuffer.readItem();
+            Ingredient input = Ingredient.fromNetwork(pBuffer);
+            int processTime = pBuffer.readInt();
+            int energyCost = pBuffer.readInt();
+
+            return new CrusherRecipe(pRecipeId, input, output, processTime, energyCost);
+        }
+
+        @Override
+        public void toNetwork(FriendlyByteBuf pBuffer, CrusherRecipe pRecipe) {
+            pBuffer.writeItem(pRecipe.getResultItem());
+            pRecipe.getInput().toNetwork(pBuffer);
+            pBuffer.writeInt(pRecipe.getProcessTime());
+            pBuffer.writeInt(pRecipe.getEnergyCost());
+        }
+    }
+}

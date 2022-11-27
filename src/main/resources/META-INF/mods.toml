@@ -1,0 +1,21 @@
+modLoader="javafml"
+loaderVersion="[43,)"
+license="LGPLv3"
+
+[[mods]]
+    modId="industria"
+    version="1.0"
+    displayName="Industria"
+    logoFile="logo.png"
+    credits="https://turtywurty.dev"
+    authors="TurtyWurty"
+    description='''
+    Industria is a tech mod that adds technology and machines to Minecraft.
+    '''
+
+[[dependencies]]
+    modId="turtylib"
+    mandatory=true
+    versionRange="1.0"
+    ordering="NONE"
+    side="BOTH"
