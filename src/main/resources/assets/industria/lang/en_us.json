@@ -4,5 +4,7 @@
     "container.industria.crusher": "Crusher",
     "block.industria.biomass_generator": "Biomass Generator",
     "container.industria.biomass_generator": "Biomass Generator",
-    "item.industria.biomass": "Biomass"
+    "item.industria.biomass": "Biomass",
+    "block.industria.researcher": "Researcher",
+    "container.industria.researcher": "Researcher"
 }
