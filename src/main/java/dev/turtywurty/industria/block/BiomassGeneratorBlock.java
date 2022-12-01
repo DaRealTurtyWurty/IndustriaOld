@@ -31,7 +31,7 @@ public class BiomassGeneratorBlock extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return BlockEntityInit.COAL_GENERATOR.get().create(pPos, pState);
+        return BlockEntityInit.BIOMASS_GENERATOR.get().create(pPos, pState);
     }
 
     @Nullable

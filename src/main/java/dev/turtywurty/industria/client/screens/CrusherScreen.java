@@ -30,7 +30,7 @@ public class CrusherScreen extends AbstractContainerScreen<CrusherMenu> {
                         this.topPos + 49, 16, 2, 0xFFFFFFFF, this.menu::getProgress, this.menu::getMaxProgress));
         addRenderableWidget(
                 new EnergyWidget.Builder(this.leftPos + 8, this.topPos + 8, 16, 50).energyStorage(this.menu::getEnergy,
-                        this.menu::getMaxEnergy).color(energy -> 0xFFFF0000).build());
+                        this.menu::getMaxEnergy).color(energy -> 0xFFFF0000).tooltip().build(this));
     }
 
     @Override

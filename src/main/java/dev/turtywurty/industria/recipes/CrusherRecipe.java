@@ -103,7 +103,6 @@ public class CrusherRecipe implements Recipe<Container> {
 
     public static final class Serializer implements RecipeSerializer<CrusherRecipe> {
         public static final Serializer INSTANCE = new Serializer();
-        public static final ResourceLocation ID = new ResourceLocation(Industria.MODID, CrusherRecipe.ID);
 
         private Serializer() {
         }

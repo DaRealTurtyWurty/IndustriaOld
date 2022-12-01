@@ -24,7 +24,7 @@ public class BiomassGeneratorMenu extends AbstractContainerMenu {
         final int slotSizePlus2 = 18;
 
         // Input Slot
-        this.addSlot(new SlotItemHandler(slots, 0, 80, 13));
+        this.addSlot(new SlotItemHandler(slots, 0, 81, 27));
 
         // Player Inventory
         for (int row = 0; row < 3; ++row) {
@@ -88,7 +88,11 @@ public class BiomassGeneratorMenu extends AbstractContainerMenu {
         return this.data.get(1);
     }
 
-    public int getBurnTime() {
+    public int getAmountGenerated() {
         return this.data.get(2);
+    }
+
+    public int getMaxEnergyGenerated() {
+        return this.data.get(3);
     }
 }

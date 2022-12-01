@@ -7,12 +7,14 @@ import io.github.darealturtywurty.turtylib.common.blockentity.ModularBlockEntity
 import io.github.darealturtywurty.turtylib.common.blockentity.module.EnergyModule;
 import io.github.darealturtywurty.turtylib.common.blockentity.module.InventoryModule;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -131,5 +133,22 @@ public class CrusherBlockEntity extends ModularBlockEntity {
                 this.currentRecipeEnergy = 0;
             }
         }
+    }
+
+    @Override
+    public void load(@NotNull CompoundTag nbt) {
+        super.load(nbt);
+        this.currentRecipeTime = nbt.getInt("CurrentRecipeTime");
+        this.currentRecipeEnergy = nbt.getInt("CurrentRecipeEnergy");
+        this.currentRecipe = this.level.getRecipeManager()
+                .getRecipeFor(CrusherRecipe.Type.INSTANCE, new RecipeWrapper(this.inventory.getCapability()),
+                        this.level).orElse(null);
+    }
+
+    @Override
+    protected void saveAdditional(CompoundTag nbt) {
+        super.saveAdditional(nbt);
+        nbt.putInt("CurrentRecipeTime", this.currentRecipeTime);
+        nbt.putInt("CurrentRecipeEnergy", this.currentRecipeEnergy);
     }
 }

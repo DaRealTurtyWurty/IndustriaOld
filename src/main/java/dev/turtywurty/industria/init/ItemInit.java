@@ -16,6 +16,8 @@ public class ItemInit {
     public static final RegistryObject<BlockItem> CRUSHER = registerBlockItem("crusher", BlockInit.CRUSHER);
     public static final RegistryObject<BlockItem> BIOMASS_GENERATOR = registerBlockItem("biomass_generator", BlockInit.BIOMASS_GENERATOR);
 
+    public static final RegistryObject<Item> BIOMASS = registerItem("biomass");
+
     private static <T extends Item> RegistryObject<T> registerItem(String name, Supplier<T> item) {
         return ITEMS.register(name, item);
     }

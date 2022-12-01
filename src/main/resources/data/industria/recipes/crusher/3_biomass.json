@@ -1,0 +1,12 @@
+{
+    "type": "industria:crusher",
+    "input": {
+        "tag": "industria:3_biomass"
+    },
+    "output": {
+        "item": "industria:biomass",
+        "count": 3
+    },
+    "energyCost": 75,
+    "processTime": 150
+}

@@ -1,0 +1,7 @@
+{
+    "type": "industria:biomass_generator",
+    "input": {
+        "item": "industria:biomass"
+    },
+    "energy": 100
+}

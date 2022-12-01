@@ -14,7 +14,7 @@ public class BlockEntityInit {
 
     public static final RegistryObject<BlockEntityType<CrusherBlockEntity>> CRUSHER = BLOCK_ENTITIES.register("crusher",
             () -> BlockEntityType.Builder.of(CrusherBlockEntity::new, BlockInit.CRUSHER.get()).build(null));
-    public static final RegistryObject<BlockEntityType<BiomassGeneratorBlockEntity>> COAL_GENERATOR = BLOCK_ENTITIES.register(
+    public static final RegistryObject<BlockEntityType<BiomassGeneratorBlockEntity>> BIOMASS_GENERATOR = BLOCK_ENTITIES.register(
             "coal_generator",
             () -> BlockEntityType.Builder.of(BiomassGeneratorBlockEntity::new, BlockInit.BIOMASS_GENERATOR.get())
                     .build(null));
