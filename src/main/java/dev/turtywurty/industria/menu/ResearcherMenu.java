@@ -27,7 +27,7 @@ public class ResearcherMenu extends AbstractContainerMenu {
         final int slotSizePlus2 = 18;
 
         // Inventory Slot
-        this.addSlot(new SlotItemHandler(slots, 0, 81, 27));
+        this.addSlot(new SlotItemHandler(slots, 0, 134, 27));
 
         // Player Inventory
         for (int row = 0; row < 3; ++row) {

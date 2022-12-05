@@ -1,0 +1,5 @@
+{
+    "inputRegistryName": "industria:steel_crusher",
+    "requiredEnergy": 10,
+    "resultRegistryName": "minecraft:stone"
+}

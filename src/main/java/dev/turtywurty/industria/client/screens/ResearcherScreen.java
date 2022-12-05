@@ -14,7 +14,6 @@ import dev.turtywurty.industria.network.PacketManager;
 import dev.turtywurty.industria.network.serverbound.SRequestResearchDataPacket;
 import io.github.darealturtywurty.turtylib.client.ui.components.EnergyWidget;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -23,13 +22,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.client.gui.widget.ExtendedButton;
 import net.minecraftforge.client.gui.widget.ScrollPanel;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.util.TriConsumer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID,
@@ -55,13 +55,12 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
                 new EnergyWidget.Builder(this.leftPos + 8, this.topPos + 14, 16, 60).energyStorage(this.menu::getEnergy,
                         this.menu::getMaxEnergy).build(this));
         this.scrollPanel = addRenderableWidget(
-                new ResearcherScrollPanel(this.minecraft, this.leftPos + 30, this.topPos + 14, 136, 60));
+                new ResearcherScrollPanel(this.minecraft, this.leftPos + 8, this.topPos + 14, 100, 50));
 
         List<ResearchOption> options = new ArrayList<>();
         for (ResearchData data : this.researchData) {
             var widget = new ResearchOption(0, 0, data);
             options.add(addWidget(widget));
-            ;
         }
 
         this.researchOptions.setAll(options);
@@ -88,13 +87,14 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
         renderTooltip(pPoseStack, pMouseX, pMouseY);
     }
 
-    public class ResearchOption extends AbstractWidget {
+    public class ResearchOption extends ExtendedButton {
         private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID,
                 "textures/gui/research_option.png");
         private final ResearchData data;
 
         public ResearchOption(int pX, int pY, ResearchData data) {
-            super(pX, pY, 18, 18, Component.empty());
+            super(pX, pY, 18, 18, Component.empty(), btn -> {
+            });
             this.data = data;
         }
 
@@ -103,18 +103,11 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
             defaultButtonNarrationText(pNarrationElementOutput);
         }
 
-        private void renderButton(PoseStack poseStack) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
-            int hoverDifference = getYImage(isHoveredOrFocused());
-            blit(poseStack, this.x, this.y, 0, 46 + hoverDifference * 20, this.width / 2, this.height);
-            blit(poseStack, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + hoverDifference * 20,
-                    this.width / 2, this.height);
-        }
-
         @Override
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            renderButton(pPoseStack);
+            this.isHovered = isMouseOver(pMouseX, pMouseY);
+
+            renderButton(pPoseStack, pMouseX, pMouseY, pPartialTick);
 
             var registryName = ResourceLocation.tryParse(data.getInputRegistryName());
             if (registryName == null) return;
@@ -132,10 +125,19 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
             });
 
             if (!hasResearched(this.data)) {
-                fill(pPoseStack, this.x, this.y, this.x + this.width, this.y + this.height, 0x80FFFF00);
+                fill(pPoseStack, this.x, this.y, this.x + this.width, this.y + this.height, 0x80FF0000);
             }
+        }
 
-            this.isHovered = isMouseOver(pMouseX, pMouseY);
+        @Override
+        public void renderToolTip(PoseStack pPoseStack, int pMouseX, int pMouseY) {
+            if (hasResearched(this.data)) {
+                renderTooltip(pPoseStack, Component.literal(this.data.getInputRegistryName()), pMouseX, pMouseY);
+            }
+        }
+
+        public boolean isHovered() {
+            return this.isHovered;
         }
 
         private static boolean hasResearched(ResearchData data) {
@@ -159,6 +161,11 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
     }
 
     public class ResearcherScrollPanel extends ScrollPanel {
+        private int amountPerRow;
+        private TriConsumer<PoseStack, Integer, Integer> hoveredRenderTooltip;
+        private static final TriConsumer<PoseStack, Integer, Integer> NOOP = (poseStack, integer, integer2) -> {
+        };
+
         public ResearcherScrollPanel(Minecraft client, int x, int y, int width, int height) {
             super(client, width, height, y, x);
             update();
@@ -166,8 +173,8 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
 
         @Override
         protected int getContentHeight() {
-            int height = 0;
-            height += (ResearcherScreen.this.researchData.size() * 18) / 6;
+            if (this.amountPerRow == 0) return 0;
+            int height = (ResearcherScreen.this.researchData.size() * 18) / this.amountPerRow;
             if (height < this.height) height = this.height;
 
             return height;
@@ -180,12 +187,24 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
 
         @Override
         protected void drawPanel(PoseStack poseStack, int entryRight, int relativeY, Tesselator tess, int mouseX, int mouseY) {
+            this.hoveredRenderTooltip = NOOP;
+
             for (ResearchOption researchOption : ResearcherScreen.this.researchOptions) {
                 researchOption.y += relativeY;
                 researchOption.render(poseStack, mouseX, mouseY, 0);
+                if (researchOption.isHovered()) {
+                    this.hoveredRenderTooltip = researchOption::renderToolTip;
+                }
 
                 researchOption.y -= relativeY;
             }
+        }
+
+        @Override
+        public void render(PoseStack matrix, int mouseX, int mouseY, float partialTick) {
+            super.render(matrix, mouseX, mouseY, partialTick);
+
+            this.hoveredRenderTooltip.accept(matrix, mouseX, mouseY);
         }
 
         @Override
@@ -209,13 +228,15 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
                 int x = this.left + (column++ * (widgetSize + widgetSpacing)) + widgetSpacing;
                 if (x + widgetSize + widgetSpacing > this.left + this.width - 8) {
                     column = 0;
-                    x = this.left + widgetSize + widgetSpacing;
+                    x = this.left + widgetSpacing;
                     row++;
                 }
 
                 int y = (row * (widgetSize + widgetSpacing)) + widgetSpacing;
                 widget.x = x;
                 widget.y = y;
+
+                if (column > this.amountPerRow) this.amountPerRow = column;
             }
         }
     }

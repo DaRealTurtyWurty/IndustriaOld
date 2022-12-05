@@ -46,6 +46,10 @@ public class ItemInit {
             "You created research!", "Research is a process that can be used to unlock new technologies.",
             Rarity.COMMON, () -> ItemInit.RESEARCH.get().getDefaultInstance());
 
+    public static final RegistryObject<BasicResearchItem> STEEL_CRUSHER = registerBasicResearchItem("steel_crusher",
+            "You created a steel crusher!", "A steel crusher is a machine that can be used to crush items.",
+            Rarity.COMMON, () -> ItemInit.STEEL_CRUSHER.get().getDefaultInstance());
+
     private static <T extends Item> RegistryObject<T> registerItem(String name, Supplier<T> item) {
         return ITEMS.register(name, item);
     }
