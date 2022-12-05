@@ -18,11 +18,13 @@ import net.minecraftforge.items.SlotItemHandler;
 public class ResearcherMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess access;
     private final ContainerData data;
+    private final BlockPos pos;
 
     protected ResearcherMenu(int containerId, Inventory playerInv, IItemHandler slots, BlockPos pos, ContainerData data) {
         super(MenuInit.RESEARCHER.get(), containerId);
         this.access = ContainerLevelAccess.create(playerInv.player.level, pos);
         this.data = data;
+        this.pos = pos;
 
         final int slotSizePlus2 = 18;
 
@@ -51,6 +53,10 @@ public class ResearcherMenu extends AbstractContainerMenu {
 
     public static ResearcherMenu getClientMenu(int id, Inventory playerInv) {
         return new ResearcherMenu(id, playerInv, new ItemStackHandler(1), BlockPos.ZERO, new SimpleContainerData(4));
+    }
+
+    public BlockPos getPos() {
+        return this.pos;
     }
 
     @Override

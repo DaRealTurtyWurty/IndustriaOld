@@ -1,10 +1,12 @@
 package dev.turtywurty.industria.network;
 
 import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.network.clientbound.CResearchFailedPacket;
 import dev.turtywurty.industria.network.clientbound.CSyncNewResearchPacket;
 import dev.turtywurty.industria.network.clientbound.CSyncResearchDataPacket;
 import dev.turtywurty.industria.network.clientbound.CSyncResearchPacket;
 import dev.turtywurty.industria.network.serverbound.SRequestResearchDataPacket;
+import dev.turtywurty.industria.network.serverbound.SStartResearchPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,6 +34,8 @@ public final class PacketManager {
         register(CSyncNewResearchPacket.class, CSyncNewResearchPacket::new);
         register(CSyncResearchDataPacket.class, CSyncResearchDataPacket::new);
         register(SRequestResearchDataPacket.class, SRequestResearchDataPacket::new);
+        register(SStartResearchPacket.class, SStartResearchPacket::new);
+        register(CResearchFailedPacket.class, CResearchFailedPacket::new);
         Industria.LOGGER.info("Registered {} packets", NUM_PACKETS);
     }
 

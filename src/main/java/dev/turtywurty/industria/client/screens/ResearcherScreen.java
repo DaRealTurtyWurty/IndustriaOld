@@ -12,8 +12,11 @@ import dev.turtywurty.industria.items.ResearchAdvancer;
 import dev.turtywurty.industria.menu.ResearcherMenu;
 import dev.turtywurty.industria.network.PacketManager;
 import dev.turtywurty.industria.network.serverbound.SRequestResearchDataPacket;
+import dev.turtywurty.industria.network.serverbound.SStartResearchPacket;
 import io.github.darealturtywurty.turtylib.client.ui.components.EnergyWidget;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -35,6 +38,8 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID,
             "textures/gui/researcher.png");
     private ResearcherScrollPanel scrollPanel;
+    private StartButton startButton;
+    private ResearchOption selectedOption;
 
     public final List<ResearchData> researchData = new ArrayList<>();
     private final ObservableList<ResearchOption> researchOptions = ObservableList.create(
@@ -56,6 +61,8 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
                         this.menu::getMaxEnergy).build(this));
         this.scrollPanel = addRenderableWidget(
                 new ResearcherScrollPanel(this.minecraft, this.leftPos + 8, this.topPos + 14, 100, 50));
+
+        this.startButton = addRenderableWidget(new StartButton(this.leftPos + 50, this.topPos + 50));
 
         List<ResearchOption> options = new ArrayList<>();
         for (ResearchData data : this.researchData) {
@@ -87,6 +94,21 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
         renderTooltip(pPoseStack, pMouseX, pMouseY);
     }
 
+    private void startResearch() {
+        if (this.selectedOption == null) return;
+
+        ResearchData data = this.selectedOption.data;
+        if (data == null) return;
+
+        PacketManager.sendToServer(new SStartResearchPacket(data));
+        this.startButton.active = false;
+    }
+
+    public void setResearchFailed() {
+        this.startButton.active = true;
+        // TODO: Receive error message from server and display it
+    }
+
     public class ResearchOption extends ExtendedButton {
         private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID,
                 "textures/gui/research_option.png");
@@ -116,7 +138,7 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
 
             advancer.getResearchIcon().ifLeft(stackSupplier -> {
                 Minecraft.getInstance().getItemRenderer()
-                        .renderAndDecorateItem(stackSupplier.get(), this.x + 1, this.y + 1);
+                         .renderAndDecorateItem(stackSupplier.get(), this.x + 1, this.y + 1);
             }).ifRight(texture -> {
                 RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
                 RenderSystem.setShaderTexture(0, texture);
@@ -147,11 +169,11 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
         private static Optional<Item> getItemFromData(ResearchData data) {
             Player player = Minecraft.getInstance().player;
             Research research = player.getCapability(ResearchCapability.INSTANCE)
-                    .orElseThrow(IllegalStateException::new);
+                                      .orElseThrow(IllegalStateException::new);
 
             return research.getAdvancers().stream().map(ResearchAdvancer::getResearchItem)
-                    .filter(item -> ForgeRegistries.ITEMS.getKey(item).toString().equals(data.getInputRegistryName()))
-                    .findFirst();
+                           .filter(item -> ForgeRegistries.ITEMS.getKey(item).toString()
+                                                                .equals(data.getInputRegistryName())).findFirst();
         }
 
         private static Optional<ResearchAdvancer> getAdvancerFromData(ResearchData data) {
@@ -186,7 +208,8 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
         }
 
         @Override
-        protected void drawPanel(PoseStack poseStack, int entryRight, int relativeY, Tesselator tess, int mouseX, int mouseY) {
+        protected void drawPanel(PoseStack poseStack, int entryRight, int relativeY, Tesselator tess, int mouseX,
+                                 int mouseY) {
             this.hoveredRenderTooltip = NOOP;
 
             for (ResearchOption researchOption : ResearcherScreen.this.researchOptions) {
@@ -223,8 +246,7 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
             int column = 0;
             int row = 0;
 
-            for (int index = 0; index < ResearcherScreen.this.researchOptions.size(); index++) {
-                var widget = ResearcherScreen.this.researchOptions.get(index);
+            for (ResearchOption widget : ResearcherScreen.this.researchOptions) {
                 int x = this.left + (column++ * (widgetSize + widgetSpacing)) + widgetSpacing;
                 if (x + widgetSize + widgetSpacing > this.left + this.width - 8) {
                     column = 0;
@@ -238,6 +260,16 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
 
                 if (column > this.amountPerRow) this.amountPerRow = column;
             }
+        }
+    }
+
+    public class StartButton extends ExtendedButton {
+        private static final Component COMPONENT = Component.translatable("gui.button." + Industria.MODID + ".start");
+
+        public StartButton(int xPos, int yPos) {
+            super(xPos, yPos, 30, 16, COMPONENT, btn -> ResearcherScreen.this.startResearch());
+
+            this.active = false;
         }
     }
 }

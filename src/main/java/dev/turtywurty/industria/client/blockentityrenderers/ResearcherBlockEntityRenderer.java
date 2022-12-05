@@ -24,5 +24,17 @@ public class ResearcherBlockEntityRenderer implements BlockEntityRenderer<Resear
                 pBufferSource.getBuffer(this.model.renderType(ResearcherModel.LAYER_LOCATION.getModel())), pPackedLight,
                 pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
         pPoseStack.popPose();
+
+        int progress = pBlockEntity.getProgress();
+        int maxProgress = pBlockEntity.getMaxProgress();
+        float progressPercent = (float) progress / (float) maxProgress;
+        float progressAngle = progressPercent * 360.0F;
+        pPoseStack.pushPose();
+        pPoseStack.translate(0.5, 1.5, 0.5);
+        pPoseStack.scale(1.0F, -1.0F, -1.0F);
+        this.model.renderToBuffer(pPoseStack,
+                pBufferSource.getBuffer(this.model.renderType(ResearcherModel.LAYER_LOCATION.getModel())), pPackedLight,
+                pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+        pPoseStack.popPose();
     }
 }

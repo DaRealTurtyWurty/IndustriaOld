@@ -1,6 +1,7 @@
 package dev.turtywurty.industria.init;
 
 import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.ProjectorBlock;
 import dev.turtywurty.industria.block.BiomassGeneratorBlock;
 import dev.turtywurty.industria.block.CrusherBlock;
 import dev.turtywurty.industria.block.ResearcherBlock;
@@ -18,4 +19,7 @@ public class BlockInit {
             BiomassGeneratorBlock::new);
     public static final RegistryObject<ResearcherBlock> RESEARCHER = BLOCKS.register("researcher",
             ResearcherBlock::new);
+
+    public static final RegistryObject<ProjectorBlock> PROJECTOR = BLOCKS.register("projector",
+            ProjectorBlock::new);
 }

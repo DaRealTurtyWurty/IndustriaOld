@@ -1,6 +1,7 @@
 package dev.turtywurty.industria.blockentity;
 
 import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.data.ResearchData;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.items.ResearchAdvancer;
 import io.github.darealturtywurty.turtylib.common.blockentity.ModularBlockEntity;
@@ -9,12 +10,12 @@ import io.github.darealturtywurty.turtylib.common.blockentity.module.InventoryMo
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
-
-import java.security.DrbgParameters;
-import java.util.List;
 
 public class ResearcherBlockEntity extends ModularBlockEntity {
     public static final Component TITLE = Component.translatable("container." + Industria.MODID + ".researcher");
@@ -58,6 +59,25 @@ public class ResearcherBlockEntity extends ModularBlockEntity {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        if (this.level == null || this.level.isClientSide)
+            return;
+
+        if(this.progress != 0) {
+            if(this.progress >= this.maxProgress) {
+                this.progress = 0;
+                this.maxProgress = 0;
+                // TODO: Modify projector item
+            } else {
+                this.progress++;
+            }
+        } else if(this.maxProgress > 0) {
+            this.progress++;
+        }
+    }
+
+    @Override
     protected void saveAdditional(CompoundTag nbt) {
         super.saveAdditional(nbt);
         nbt.putInt("Progress", this.progress);
@@ -77,5 +97,27 @@ public class ResearcherBlockEntity extends ModularBlockEntity {
 
     public InventoryModule getInventory() {
         return this.inventory;
+    }
+
+    public boolean startResearch(ResearchData researchData) {
+        if (this.progress != 0) return false;
+        if (!(this.inventory.getCapability().getStackInSlot(0).getItem() instanceof ResearchAdvancer advancer))
+            return false;
+
+        ResourceLocation input = ResourceLocation.tryParse(researchData.getInputRegistryName());
+        Item inputItem = ForgeRegistries.ITEMS.getValue(input);
+        if (inputItem != advancer.getResearchItem()) return false;
+
+        this.maxProgress = researchData.getRequiredEnergy();
+        this.progress = 0;
+        return true;
+    }
+
+    public int getProgress() {
+       return this.progress;
+    }
+
+    public int getMaxProgress() {
+        return this.maxProgress;
     }
 }
