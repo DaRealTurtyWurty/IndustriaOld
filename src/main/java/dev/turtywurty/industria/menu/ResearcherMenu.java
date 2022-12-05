@@ -3,6 +3,9 @@ package dev.turtywurty.industria.menu;
 import dev.turtywurty.industria.blockentity.ResearcherBlockEntity;
 import dev.turtywurty.industria.init.BlockInit;
 import dev.turtywurty.industria.init.MenuInit;
+import dev.turtywurty.industria.init.ReloadListenerInit;
+import dev.turtywurty.industria.network.PacketManager;
+import dev.turtywurty.industria.network.clientbound.CSyncResearchDataPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -16,8 +19,7 @@ public class ResearcherMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess access;
     private final ContainerData data;
 
-    protected ResearcherMenu(int containerId, Inventory playerInv, IItemHandler slots, BlockPos pos,
-                             ContainerData data) {
+    protected ResearcherMenu(int containerId, Inventory playerInv, IItemHandler slots, BlockPos pos, ContainerData data) {
         super(MenuInit.RESEARCHER.get(), containerId);
         this.access = ContainerLevelAccess.create(playerInv.player.level, pos);
         this.data = data;

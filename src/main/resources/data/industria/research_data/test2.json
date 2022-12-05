@@ -1,0 +1,5 @@
+{
+    "inputRegistryName": "industria:electricity",
+    "requiredEnergy": 10,
+    "resultRegistryName": "minecraft:diamond"
+}

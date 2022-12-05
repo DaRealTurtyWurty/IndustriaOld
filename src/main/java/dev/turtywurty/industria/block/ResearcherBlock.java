@@ -1,10 +1,11 @@
 package dev.turtywurty.industria.block;
 
-import dev.turtywurty.industria.blockentity.CrusherBlockEntity;
 import dev.turtywurty.industria.blockentity.ResearcherBlockEntity;
 import dev.turtywurty.industria.init.BlockEntityInit;
-import dev.turtywurty.industria.menu.CrusherMenu;
+import dev.turtywurty.industria.init.ReloadListenerInit;
 import dev.turtywurty.industria.menu.ResearcherMenu;
+import dev.turtywurty.industria.network.PacketManager;
+import dev.turtywurty.industria.network.clientbound.CSyncResearchDataPacket;
 import io.github.darealturtywurty.turtylib.common.blockentity.TickableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -38,14 +39,12 @@ public class ResearcherBlock extends Block implements EntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState,
-                                                                  BlockEntityType<T> pBlockEntityType) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
         return pLevel.isClientSide() ? null : ($0, $1, $2, blockEntity) -> ((TickableBlockEntity) blockEntity).tick();
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand,
-                                 BlockHitResult pHit) {
+    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide() && pLevel.getBlockEntity(pPos) instanceof ResearcherBlockEntity blockEntity) {
             SimpleMenuProvider provider = new SimpleMenuProvider(ResearcherMenu.getServerMenu(blockEntity, pPos),
                     ResearcherBlockEntity.TITLE);

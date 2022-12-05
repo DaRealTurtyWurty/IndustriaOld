@@ -21,7 +21,7 @@ public class ClientEvents {
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
-                Industria.LOGGER.info("Client setup");
+                Industria.LOGGER.info("Registering screens");
                 MenuScreens.register(MenuInit.CRUSHER.get(), CrusherScreen::new);
                 MenuScreens.register(MenuInit.BIOMASS_GENERATOR.get(), BiomassGeneratorScreen::new);
                 MenuScreens.register(MenuInit.RESEARCHER.get(), ResearcherScreen::new);

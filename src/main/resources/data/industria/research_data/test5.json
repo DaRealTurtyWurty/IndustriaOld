@@ -1,0 +1,5 @@
+{
+    "inputRegistryName": "industria:research",
+    "requiredEnergy": 10,
+    "resultRegistryName": "minecraft:slime_ball"
+}

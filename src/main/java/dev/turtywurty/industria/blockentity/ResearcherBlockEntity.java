@@ -2,6 +2,7 @@ package dev.turtywurty.industria.blockentity;
 
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.init.BlockEntityInit;
+import dev.turtywurty.industria.items.ResearchAdvancer;
 import io.github.darealturtywurty.turtylib.common.blockentity.ModularBlockEntity;
 import io.github.darealturtywurty.turtylib.common.blockentity.module.EnergyModule;
 import io.github.darealturtywurty.turtylib.common.blockentity.module.InventoryModule;
@@ -13,6 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.DrbgParameters;
+import java.util.List;
 
 public class ResearcherBlockEntity extends ModularBlockEntity {
     public static final Component TITLE = Component.translatable("container." + Industria.MODID + ".researcher");

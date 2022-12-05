@@ -1,0 +1,13 @@
+{
+    "required": true,
+    "package": "dev.turtywurty.industria.mixins",
+    "compatibilityLevel": "JAVA_17",
+    "refmap": "industria.refmap.json",
+    "mixins": [
+        "ServerPlayerMixin"
+    ],
+    "server": [],
+    "client": [],
+    "minVersion": "0.8",
+    "setSourceFile": true
+}
