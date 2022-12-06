@@ -1,6 +1,8 @@
 package dev.turtywurty.industria;
 
+import dev.turtywurty.industria.client.ProjectorModels;
 import dev.turtywurty.industria.init.*;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -18,6 +20,7 @@ public class Industria {
     public static final Logger LOGGER = LoggerFactory.getLogger(Industria.class);
 
     public Industria() {
+        ProjectorModels.unlock();
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ItemInit.ITEMS.register(bus);
