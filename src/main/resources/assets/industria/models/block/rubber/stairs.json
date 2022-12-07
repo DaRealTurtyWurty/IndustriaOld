@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "industria:blocks/rubber/planks",
+    "top": "industria:blocks/rubber/planks",
+    "side": "industria:blocks/rubber/planks"
+  }
+}

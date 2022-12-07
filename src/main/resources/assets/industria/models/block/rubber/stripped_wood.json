@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "industria:blocks/rubber/stripped_log",
+    "side": "industria:blocks/rubber/stripped_log"
+  }
+}

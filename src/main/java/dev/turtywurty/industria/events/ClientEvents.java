@@ -8,7 +8,11 @@ import dev.turtywurty.industria.client.screens.CrusherScreen;
 import dev.turtywurty.industria.client.screens.ResearcherScreen;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.init.MenuInit;
+import dev.turtywurty.industria.init.util.WoodRegistrySet;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,6 +29,15 @@ public class ClientEvents {
                 MenuScreens.register(MenuInit.CRUSHER.get(), CrusherScreen::new);
                 MenuScreens.register(MenuInit.BIOMASS_GENERATOR.get(), BiomassGeneratorScreen::new);
                 MenuScreens.register(MenuInit.RESEARCHER.get(), ResearcherScreen::new);
+
+                Industria.LOGGER.info("Adding wood types to atlas");
+                for (WoodRegistrySet woodSet : WoodRegistrySet.getWoodSets()) {
+                    Sheets.addWoodType(woodSet.getWoodType());
+                    ItemBlockRenderTypes.setRenderLayer(woodSet.getSapling().get(), RenderType.cutout());
+                    ItemBlockRenderTypes.setRenderLayer(woodSet.getLeaves().get(), RenderType.cutout());
+                    ItemBlockRenderTypes.setRenderLayer(woodSet.getDoor().get(), RenderType.cutout());
+                    ItemBlockRenderTypes.setRenderLayer(woodSet.getTrapDoor().get(), RenderType.cutout());
+                }
             });
         }
 
