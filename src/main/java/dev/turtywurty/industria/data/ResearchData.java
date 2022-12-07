@@ -5,6 +5,7 @@ import io.github.darealturtywurty.turtylib.core.multiblock.Multiblock;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -13,7 +14,7 @@ import java.util.function.Supplier;
 public class ResearchData {
     private final Supplier<Item> input;
     private final int requiredEnergy;
-    private final Either<ItemStack, Multiblock> result;
+    private final Either<Supplier<ItemStack>, RegistryObject<Multiblock>> result;
     private final String title;
     private final String description;
     private final Either<Supplier<ItemStack>, ResourceLocation> icon;
@@ -32,7 +33,7 @@ public class ResearchData {
     public static class Builder {
         private Supplier<Item> input;
         private int requiredEnergy;
-        private Supplier<Multiblock> result;
+        private Either<Supplier<ItemStack>, RegistryObject<Multiblock>> result;
         private String title;
         private String description;
         private Either<Supplier<ItemStack>, ResourceLocation> icon;
@@ -48,8 +49,13 @@ public class ResearchData {
             return this;
         }
 
-        public Builder result(Supplier<Multiblock> result) {
-            this.result = result;
+        public Builder result(Supplier<ItemStack> result) {
+            this.result = Either.left(result);
+            return this;
+        }
+
+        public Builder result(RegistryObject<Multiblock> result) {
+            this.result = Either.right(result);
             return this;
         }
 
