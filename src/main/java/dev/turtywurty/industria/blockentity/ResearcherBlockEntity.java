@@ -1,7 +1,7 @@
 package dev.turtywurty.industria.blockentity;
 
 import dev.turtywurty.industria.Industria;
-import dev.turtywurty.industria.data.ResearchData;
+import dev.turtywurty.industria.data.ResearchDataOld;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.items.ResearchAdvancer;
 import io.github.darealturtywurty.turtylib.common.blockentity.ModularBlockEntity;
@@ -99,7 +99,7 @@ public class ResearcherBlockEntity extends ModularBlockEntity {
         return this.inventory;
     }
 
-    public boolean startResearch(ResearchData researchData) {
+    public boolean startResearch(ResearchDataOld researchData) {
         if (this.progress != 0) return false;
         if (!(this.inventory.getCapability().getStackInSlot(0).getItem() instanceof ResearchAdvancer advancer))
             return false;

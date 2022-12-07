@@ -1,7 +1,7 @@
 package dev.turtywurty.industria.init;
 
 import dev.turtywurty.industria.Industria;
-import dev.turtywurty.industria.ProjectorBlock;
+import dev.turtywurty.industria.block.ProjectorBlock;
 import dev.turtywurty.industria.block.BiomassGeneratorBlock;
 import dev.turtywurty.industria.block.CrusherBlock;
 import dev.turtywurty.industria.block.ResearcherBlock;

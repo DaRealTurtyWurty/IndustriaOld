@@ -7,7 +7,7 @@ import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.capability.Research;
 import dev.turtywurty.industria.capability.ResearchCapability;
 import dev.turtywurty.industria.client.util.ObservableList;
-import dev.turtywurty.industria.data.ResearchData;
+import dev.turtywurty.industria.data.ResearchDataOld;
 import dev.turtywurty.industria.items.ResearchAdvancer;
 import dev.turtywurty.industria.menu.ResearcherMenu;
 import dev.turtywurty.industria.network.PacketManager;
@@ -15,8 +15,6 @@ import dev.turtywurty.industria.network.serverbound.SRequestResearchDataPacket;
 import dev.turtywurty.industria.network.serverbound.SStartResearchPacket;
 import io.github.darealturtywurty.turtylib.client.ui.components.EnergyWidget;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -41,7 +39,7 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
     private StartButton startButton;
     private ResearchOption selectedOption;
 
-    public final List<ResearchData> researchData = new ArrayList<>();
+    public final List<ResearchDataOld> researchData = new ArrayList<>();
     private final ObservableList<ResearchOption> researchOptions = ObservableList.create(
             () -> this.scrollPanel.update());
 
@@ -65,7 +63,7 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
         this.startButton = addRenderableWidget(new StartButton(this.leftPos + 50, this.topPos + 50));
 
         List<ResearchOption> options = new ArrayList<>();
-        for (ResearchData data : this.researchData) {
+        for (ResearchDataOld data : this.researchData) {
             var widget = new ResearchOption(0, 0, data);
             options.add(addWidget(widget));
         }
@@ -97,7 +95,7 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
     private void startResearch() {
         if (this.selectedOption == null) return;
 
-        ResearchData data = this.selectedOption.data;
+        ResearchDataOld data = this.selectedOption.data;
         if (data == null) return;
 
         PacketManager.sendToServer(new SStartResearchPacket(data));
@@ -112,9 +110,9 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
     public class ResearchOption extends ExtendedButton {
         private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID,
                 "textures/gui/research_option.png");
-        private final ResearchData data;
+        private final ResearchDataOld data;
 
-        public ResearchOption(int pX, int pY, ResearchData data) {
+        public ResearchOption(int pX, int pY, ResearchDataOld data) {
             super(pX, pY, 18, 18, Component.empty(), btn -> {
             });
             this.data = data;
@@ -162,11 +160,11 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
             return this.isHovered;
         }
 
-        private static boolean hasResearched(ResearchData data) {
+        private static boolean hasResearched(ResearchDataOld data) {
             return getItemFromData(data).isPresent();
         }
 
-        private static Optional<Item> getItemFromData(ResearchData data) {
+        private static Optional<Item> getItemFromData(ResearchDataOld data) {
             Player player = Minecraft.getInstance().player;
             Research research = player.getCapability(ResearchCapability.INSTANCE)
                                       .orElseThrow(IllegalStateException::new);
@@ -176,7 +174,7 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
                                                                 .equals(data.getInputRegistryName())).findFirst();
         }
 
-        private static Optional<ResearchAdvancer> getAdvancerFromData(ResearchData data) {
+        private static Optional<ResearchAdvancer> getAdvancerFromData(ResearchDataOld data) {
             Optional<Item> item = getItemFromData(data);
             return item.filter(ResearchAdvancer.class::isInstance).map(ResearchAdvancer.class::cast);
         }

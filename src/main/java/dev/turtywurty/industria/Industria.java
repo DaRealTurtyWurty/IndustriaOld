@@ -30,6 +30,7 @@ public class Industria {
         MultiblockInit.MULTIBLOCKS.register(bus);
         RecipeInit.RECIPE_SERIALIZERS.register(bus);
         RecipeInit.RECIPE_TYPES.register(bus);
+        ResearchDataInit.RESEARCH_DATA.register(bus);
     }
 
     public static final CreativeModeTab TAB = new CreativeModeTab(Industria.MODID) {

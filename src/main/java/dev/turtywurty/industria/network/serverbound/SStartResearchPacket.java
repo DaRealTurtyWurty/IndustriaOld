@@ -1,8 +1,7 @@
 package dev.turtywurty.industria.network.serverbound;
 
 import dev.turtywurty.industria.blockentity.ResearcherBlockEntity;
-import dev.turtywurty.industria.capability.Research;
-import dev.turtywurty.industria.data.ResearchData;
+import dev.turtywurty.industria.data.ResearchDataOld;
 import dev.turtywurty.industria.menu.ResearcherMenu;
 import dev.turtywurty.industria.network.Packet;
 import dev.turtywurty.industria.network.PacketManager;
@@ -14,17 +13,16 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SStartResearchPacket extends Packet {
-    private final ResearchData researchData;
+    private final ResearchDataOld researchData;
 
-    public SStartResearchPacket(ResearchData researchData) {
+    public SStartResearchPacket(ResearchDataOld researchData) {
         this.researchData = researchData;
     }
 
     public SStartResearchPacket(FriendlyByteBuf buffer) {
-        this.researchData = ResearchData.fromBuffer(buffer);
+        this.researchData = ResearchDataOld.fromBuffer(buffer);
     }
 
     @Override

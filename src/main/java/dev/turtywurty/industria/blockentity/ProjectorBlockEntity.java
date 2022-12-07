@@ -1,7 +1,7 @@
 package dev.turtywurty.industria.blockentity;
 
 import dev.turtywurty.industria.Industria;
-import dev.turtywurty.industria.data.ResearchData;
+import dev.turtywurty.industria.data.ResearchDataOld;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import io.github.darealturtywurty.turtylib.common.blockentity.ModularBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public class ProjectorBlockEntity extends ModularBlockEntity {
     public static final Component TITLE = Component.translatable("gui." + Industria.MODID + ".projector");
 
-    private ResearchData data;
+    private ResearchDataOld data;
     private boolean isProjecting;
     private int partsPlaced, partsNeeded;
 
@@ -22,7 +22,7 @@ public class ProjectorBlockEntity extends ModularBlockEntity {
         super(BlockEntityInit.PROJECTOR.get(), pPos, pState);
     }
 
-    public @Nullable ResearchData getData() {
+    public @Nullable ResearchDataOld getData() {
         return this.data;
     }
 
@@ -34,7 +34,7 @@ public class ProjectorBlockEntity extends ModularBlockEntity {
             var inputRegistryName = data.getString("InputRegistryName");
             var requiredEnergy = data.getInt("RequiredEnergy");
             var resultRegistryName = data.getString("ResultRegistryName");
-            this.data = new ResearchData(inputRegistryName, requiredEnergy, resultRegistryName);
+            this.data = new ResearchDataOld(inputRegistryName, requiredEnergy, resultRegistryName);
         }
 
         this.isProjecting = nbt.getBoolean("IsProjecting");
@@ -77,7 +77,7 @@ public class ProjectorBlockEntity extends ModularBlockEntity {
         return this.partsPlaced;
     }
 
-    public boolean startProjecting(@NotNull ResearchData data) {
+    public boolean startProjecting(@NotNull ResearchDataOld data) {
         if (this.data != null) return false;
 
         this.data = data;

@@ -1,7 +1,7 @@
 package dev.turtywurty.industria.network.clientbound;
 
 import dev.turtywurty.industria.client.screens.ResearcherScreen;
-import dev.turtywurty.industria.data.ResearchData;
+import dev.turtywurty.industria.data.ResearchDataOld;
 import dev.turtywurty.industria.network.Packet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -11,14 +11,14 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.List;
 
 public class CSyncResearchDataPacket extends Packet {
-    private final List<ResearchData> researchData;
+    private final List<ResearchDataOld> researchData;
 
-    public CSyncResearchDataPacket(List<ResearchData> researchData) {
+    public CSyncResearchDataPacket(List<ResearchDataOld> researchData) {
         this.researchData = researchData;
     }
 
     public CSyncResearchDataPacket(FriendlyByteBuf buf) {
-        this.researchData = buf.readList(ResearchData::fromBuffer);
+        this.researchData = buf.readList(ResearchDataOld::fromBuffer);
     }
 
     @Override
