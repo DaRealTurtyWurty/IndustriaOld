@@ -1,5 +1,6 @@
-package dev.turtywurty.industria.world;
+package dev.turtywurty.industria.world.tree.grower;
 
+import dev.turtywurty.industria.init.ConfiguredFeatureInit;
 import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.grower.AbstractTreeGrower;
@@ -10,6 +11,6 @@ public class RubberTree extends AbstractTreeGrower {
     @Nullable
     @Override
     protected Holder<? extends ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource pRandom, boolean pLargeHive) {
-        return null;
+        return ConfiguredFeatureInit.RUBBER_TREE;
     }
 }

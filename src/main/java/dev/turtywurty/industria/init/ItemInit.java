@@ -24,6 +24,10 @@ public class ItemInit {
             "Biomass is an organic matter that comes from plants and animals. With combustion, it can be used to generate energy.",
             Rarity.COMMON, () -> ItemInit.BIOMASS.get().getDefaultInstance());
 
+    public static final RegistryObject<BlockItem> PROJECTOR = registerBlockItem("projector", BlockInit.PROJECTOR);
+
+    public static final RegistryObject<BlockItem> TREE_TAP = registerBlockItem("tree_tap", BlockInit.TREE_TAP);
+
     public static <T extends Item> RegistryObject<T> registerItem(String name, Supplier<T> item) {
         return ITEMS.register(name, item);
     }

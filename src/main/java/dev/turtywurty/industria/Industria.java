@@ -23,6 +23,9 @@ public class Industria {
         ProjectorModels.unlock();
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
+        TagInit.Blocks.init();
+        TagInit.Items.init();
+
         ItemInit.ITEMS.register(bus);
         BlockInit.BLOCKS.register(bus);
         BlockEntityInit.BLOCK_ENTITIES.register(bus);
@@ -31,6 +34,10 @@ public class Industria {
         RecipeInit.RECIPE_SERIALIZERS.register(bus);
         RecipeInit.RECIPE_TYPES.register(bus);
         ResearchDataInit.RESEARCH_DATA.register(bus);
+        EntityInit.ENTITY_TYPES.register(bus);
+        FluidInit.FLUIDS.register(bus);
+        FluidInit.FLUID_TYPES.register(bus);
+        WoodSetInit.init();
     }
 
     public static final CreativeModeTab TAB = new CreativeModeTab(Industria.MODID) {

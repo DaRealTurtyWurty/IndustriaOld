@@ -1,12 +1,9 @@
 package dev.turtywurty.industria.init;
 
 import dev.turtywurty.industria.Industria;
-import dev.turtywurty.industria.block.BiomassGeneratorBlock;
-import dev.turtywurty.industria.block.CrusherBlock;
-import dev.turtywurty.industria.block.ProjectorBlock;
-import dev.turtywurty.industria.block.ResearcherBlock;
+import dev.turtywurty.industria.block.*;
 import dev.turtywurty.industria.init.util.WoodRegistrySet;
-import dev.turtywurty.industria.world.RubberTree;
+import dev.turtywurty.industria.world.tree.grower.RubberTree;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -23,6 +20,5 @@ public class BlockInit {
             ResearcherBlock::new);
     public static final RegistryObject<ProjectorBlock> PROJECTOR = BLOCKS.register("projector", ProjectorBlock::new);
 
-    public static final WoodRegistrySet RUBBER_WOOD_SET = new WoodRegistrySet(BlockInit.BLOCKS, ItemInit.ITEMS,
-            "rubber", new RubberTree());
+    public static final RegistryObject<TreeTapBlock> TREE_TAP = BLOCKS.register("tree_tap", TreeTapBlock::new);
 }

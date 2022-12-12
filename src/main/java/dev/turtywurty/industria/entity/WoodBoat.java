@@ -2,6 +2,8 @@ package dev.turtywurty.industria.entity;
 
 import com.google.common.collect.Lists;
 import dev.turtywurty.industria.init.BlockInit;
+import dev.turtywurty.industria.init.EntityInit;
+import dev.turtywurty.industria.init.WoodSetInit;
 import dev.turtywurty.industria.init.util.WoodRegistrySet;
 import net.minecraft.BlockUtil;
 import net.minecraft.core.BlockPos;
@@ -15,6 +17,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -34,12 +37,13 @@ import net.minecraft.world.level.block.WaterlilyBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.extensions.IForgeBoat;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -47,7 +51,7 @@ import java.util.List;
 
 import static net.minecraft.world.entity.vehicle.Boat.canVehicleCollide;
 
-public class WoodBoat extends Entity implements IForgeBoat {
+public class WoodBoat extends Entity {
     private static final EntityDataAccessor<Integer> DATA_ID_HURT = SynchedEntityData.defineId(WoodBoat.class,
             EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_ID_HURTDIR = SynchedEntityData.defineId(WoodBoat.class,
@@ -62,12 +66,9 @@ public class WoodBoat extends Entity implements IForgeBoat {
             EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> DATA_ID_BUBBLE_TIME = SynchedEntityData.defineId(WoodBoat.class,
             EntityDataSerializers.INT);
-
-    public static final int PADDLE_LEFT = 0;
-    public static final int PADDLE_RIGHT = 1;
     private static final int TIME_TO_EJECT = 60;
     private static final float PADDLE_SPEED = ((float) Math.PI / 8F);
-    public static final double PADDLE_SOUND_TIME = (double) ((float) Math.PI / 4F);
+    public static final double PADDLE_SOUND_TIME = ((float) Math.PI / 4F);
     public static final int BUBBLE_TIME = 60;
 
     private final float[] paddlePositions = new float[2];
@@ -100,8 +101,8 @@ public class WoodBoat extends Entity implements IForgeBoat {
         this.blocksBuilding = true;
     }
 
-    public WoodBoat(EntityType<? extends WoodBoat> type, Level level, double x, double y, double z) {
-        this(type, level);
+    public WoodBoat(Level level, double x, double y, double z) {
+        this(EntityInit.BOAT.get(), level);
         this.setPos(x, y, z);
         this.xo = x;
         this.yo = y;
@@ -188,7 +189,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
             this.isAboveBubbleColumn = true;
             this.bubbleColumnDirectionIsDown = pDownwards;
             if (this.getBubbleTime() == 0) {
-                this.setBubbleTime(60);
+                this.setBubbleTime(BUBBLE_TIME);
             }
         }
 
@@ -214,7 +215,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
     }
 
     public Item getDropItem() {
-        return getBoatType().getWoodSet().getBoatItem().get();
+        return getBoatType().getWoodSet().boatItem.get();
     }
 
     public void animateHurt() {
@@ -249,7 +250,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
             ++this.outOfControlTicks;
         }
 
-        if (!this.level.isClientSide && this.outOfControlTicks >= 60.0F) {
+        if (!this.level.isClientSide && this.outOfControlTicks >= TIME_TO_EJECT) {
             this.ejectPassengers();
         }
 
@@ -284,7 +285,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
 
         for (int i = 0; i <= 1; ++i) {
             if (this.getPaddleState(i)) {
-                if (!this.isSilent() && (double) (this.paddlePositions[i] % ((float) Math.PI * 2F)) <= (double) ((float) Math.PI / 4F) && (double) ((this.paddlePositions[i] + ((float) Math.PI / 8F)) % ((float) Math.PI * 2F)) >= (double) ((float) Math.PI / 4F)) {
+                if (!this.isSilent() && (double) (this.paddlePositions[i] % ((float) Math.PI * 2F)) <= PADDLE_SOUND_TIME && (double) ((this.paddlePositions[i] + ((float) Math.PI / 8F)) % ((float) Math.PI * 2F)) >= PADDLE_SOUND_TIME) {
                     SoundEvent soundevent = this.getPaddleSound();
                     if (soundevent != null) {
                         Vec3 vec3 = this.getViewVector(1.0F);
@@ -295,7 +296,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
                     }
                 }
 
-                this.paddlePositions[i] += ((float) Math.PI / 8F);
+                this.paddlePositions[i] += PADDLE_SPEED;
             } else {
                 this.paddlePositions[i] = 0.0F;
             }
@@ -344,7 +345,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
             if (k > 0) {
                 --k;
                 this.setBubbleTime(k);
-                int j = 60 - k - 1;
+                int j = BUBBLE_TIME - k - 1;
                 if (j > 0 && k == 0) {
                     this.setBubbleTime(0);
                     Vec3 vec3 = this.getDeltaMovement();
@@ -403,7 +404,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
     }
 
     public float getRowingTime(int pSide, float pLimbSwing) {
-        return this.getPaddleState(pSide) ? Mth.clampedLerp(this.paddlePositions[pSide] - ((float) Math.PI / 8F),
+        return this.getPaddleState(pSide) ? Mth.clampedLerp(this.paddlePositions[pSide] - PADDLE_SPEED,
                 this.paddlePositions[pSide], pLimbSwing) : 0.0F;
     }
 
@@ -443,7 +444,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
                 for (int i2 = i1; i2 < j1; ++i2) {
                     blockpos$mutableblockpos.set(l1, k1, i2);
                     FluidState fluidstate = this.level.getFluidState(blockpos$mutableblockpos);
-                    if (this.canBoatInFluid(fluidstate)) {
+                    if (fluidstate.is(FluidTags.WATER)) {
                         f = Math.max(f, fluidstate.getHeight(this.level, blockpos$mutableblockpos));
                     }
 
@@ -484,8 +485,8 @@ public class WoodBoat extends Entity implements IForgeBoat {
                             blockpos$mutableblockpos.set(l1, k2, i2);
                             BlockState blockstate = this.level.getBlockState(blockpos$mutableblockpos);
                             if (!(blockstate.getBlock() instanceof WaterlilyBlock) && Shapes.joinIsNotEmpty(
-                                    blockstate.getCollisionShape(this.level, blockpos$mutableblockpos)
-                                            .move((double) l1, (double) k2, (double) i2), voxelshape, BooleanOp.AND)) {
+                                    blockstate.getCollisionShape(this.level, blockpos$mutableblockpos).move(l1, k2, i2),
+                                    voxelshape, BooleanOp.AND)) {
                                 f += blockstate.getFriction(this.level, blockpos$mutableblockpos, this);
                                 ++k1;
                             }
@@ -515,7 +516,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
                 for (int i2 = i1; i2 < j1; ++i2) {
                     blockpos$mutableblockpos.set(k1, l1, i2);
                     FluidState fluidstate = this.level.getFluidState(blockpos$mutableblockpos);
-                    if (this.canBoatInFluid(fluidstate)) {
+                    if (fluidstate.is(FluidTags.WATER)) {
                         float f = (float) l1 + fluidstate.getHeight(this.level, blockpos$mutableblockpos);
                         this.waterLevel = Math.max((double) f, this.waterLevel);
                         flag |= aabb.minY < (double) f;
@@ -545,9 +546,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
                 for (int i2 = i1; i2 < j1; ++i2) {
                     blockpos$mutableblockpos.set(k1, l1, i2);
                     FluidState fluidstate = this.level.getFluidState(blockpos$mutableblockpos);
-                    if (this.canBoatInFluid(
-                            fluidstate) && d0 < (double) ((float) blockpos$mutableblockpos.getY() + fluidstate.getHeight(
-                            this.level, blockpos$mutableblockpos))) {
+                    if (fluidstate.is(FluidTags.WATER)) {
                         if (!fluidstate.isSource()) {
                             return Status.UNDER_FLOWING_WATER;
                         }
@@ -562,7 +561,6 @@ public class WoodBoat extends Entity implements IForgeBoat {
     }
 
     private void floatBoat() {
-        double d0 = (double) -0.04F;
         double d1 = this.isNoGravity() ? 0.0D : (double) -0.04F;
         double d2 = 0.0D;
         this.invFriction = 0.05F;
@@ -580,7 +578,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
                 d1 = -7.0E-4D;
                 this.invFriction = 0.9F;
             } else if (this.status == Status.UNDER_WATER) {
-                d2 = (double) 0.01F;
+                d2 = 0.01F;
                 this.invFriction = 0.45F;
             } else if (this.status == Status.IN_AIR) {
                 this.invFriction = 0.9F;
@@ -627,8 +625,8 @@ public class WoodBoat extends Entity implements IForgeBoat {
             }
 
             this.setDeltaMovement(this.getDeltaMovement()
-                    .add((double) (Mth.sin(-this.getYRot() * ((float) Math.PI / 180F)) * f), 0.0D,
-                            (double) (Mth.cos(this.getYRot() * ((float) Math.PI / 180F)) * f)));
+                    .add((Mth.sin(-this.getYRot() * ((float) Math.PI / 180F)) * f), 0.0D,
+                            (Mth.cos(this.getYRot() * ((float) Math.PI / 180F)) * f)));
             this.setPaddleState(this.inputRight && !this.inputLeft || this.inputUp,
                     this.inputLeft && !this.inputRight || this.inputUp);
         }
@@ -655,7 +653,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
                 }
             }
 
-            Vec3 vec3 = (new Vec3((double) f, 0.0D, 0.0D)).yRot(
+            Vec3 vec3 = (new Vec3(f, 0.0D, 0.0D)).yRot(
                     -this.getYRot() * ((float) Math.PI / 180F) - ((float) Math.PI / 2F));
             pPassenger.setPos(this.getX() + vec3.x, this.getY() + (double) f1, this.getZ() + vec3.z);
             pPassenger.setYRot(pPassenger.getYRot() + this.deltaRotation);
@@ -671,8 +669,8 @@ public class WoodBoat extends Entity implements IForgeBoat {
     }
 
     public Vec3 getDismountLocationForPassenger(LivingEntity pLivingEntity) {
-        Vec3 vec3 = getCollisionHorizontalEscapeVector((double) (this.getBbWidth() * Mth.SQRT_OF_TWO),
-                (double) pLivingEntity.getBbWidth(), pLivingEntity.getYRot());
+        Vec3 vec3 = getCollisionHorizontalEscapeVector((this.getBbWidth() * Mth.SQRT_OF_TWO),
+                pLivingEntity.getBbWidth(), pLivingEntity.getYRot());
         double d0 = this.getX() + vec3.x;
         double d1 = this.getZ() + vec3.z;
         BlockPos blockpos = new BlockPos(d0, this.getBoundingBox().maxY, d1);
@@ -721,7 +719,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
     public InteractionResult interact(Player pPlayer, InteractionHand pHand) {
         if (pPlayer.isSecondaryUseActive()) {
             return InteractionResult.PASS;
-        } else if (this.outOfControlTicks < 60.0F) {
+        } else if (this.outOfControlTicks < TIME_TO_EJECT) {
             if (!this.level.isClientSide) {
                 return pPlayer.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
             } else {
@@ -747,7 +745,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
                         this.kill();
                         if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
                             for (int i = 0; i < 3; ++i) {
-                                this.spawnAtLocation(this.getBoatType().getWoodSet().getPlanks().get());
+                                this.spawnAtLocation(this.getBoatType().getWoodSet().planks.get());
                             }
 
                             for (int j = 0; j < 2; ++j) {
@@ -758,7 +756,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
                 }
 
                 this.resetFallDistance();
-            } else if (!this.canBoatInFluid(this.level.getFluidState(this.blockPosition().below())) && pY < 0.0D) {
+            } else if (!this.level.getFluidState(this.blockPosition().below()).is(FluidTags.WATER) && pY < 0.0D) {
                 this.fallDistance -= (float) pY;
             }
 
@@ -815,7 +813,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
     }
 
     protected boolean canAddPassenger(Entity pPassenger) {
-        return this.getPassengers().size() < this.getMaxPassengers() && !this.canBoatInFluid(this.getEyeInFluidType());
+        return this.getPassengers().size() < this.getMaxPassengers() && this.getEyeInFluidType() == Fluids.EMPTY.getFluidType();
     }
 
     protected int getMaxPassengers() {
@@ -869,7 +867,7 @@ public class WoodBoat extends Entity implements IForgeBoat {
     }
 
     public enum Type {
-        RUBBER("rubber", BlockInit.RUBBER_WOOD_SET);
+        RUBBER("rubber", WoodSetInit.RUBBER_WOOD_SET);
 
         private final String name;
         private final WoodRegistrySet woodSet;

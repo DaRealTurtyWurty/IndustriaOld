@@ -1,10 +1,7 @@
 package dev.turtywurty.industria.init;
 
 import dev.turtywurty.industria.Industria;
-import dev.turtywurty.industria.blockentity.BiomassGeneratorBlockEntity;
-import dev.turtywurty.industria.blockentity.CrusherBlockEntity;
-import dev.turtywurty.industria.blockentity.ProjectorBlockEntity;
-import dev.turtywurty.industria.blockentity.ResearcherBlockEntity;
+import dev.turtywurty.industria.blockentity.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

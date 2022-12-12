@@ -24,5 +24,8 @@
     "block.industria.rubber_pressure_plate": "Rubber Pressure Plate",
     "block.industria.rubber_sign": "Rubber Sign",
     "block.industria.rubber_wall_sign": "Rubber Wall Sign",
-    "block.industria.rubber_boat": "Rubber Boat"
+    "item.industria.rubber_boat": "Rubber Boat",
+    "item.industria.rubber_chest_boat": "Rubber Boat with Chest",
+    "entity.industria.boat": "Boat",
+    "entity.industria.chest_boat": "Boat with Chest"
 }
