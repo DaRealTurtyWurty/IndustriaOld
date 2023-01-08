@@ -2,16 +2,13 @@ package dev.turtywurty.industria.block;
 
 import dev.turtywurty.industria.init.WoodSetInit;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -19,7 +16,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.common.ToolAction;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,14 +28,15 @@ public class RubberLogBlock extends RotatedPillarBlock {
 
     public RubberLogBlock() {
         super(Properties.copy(Blocks.OAK_LOG).randomTicks());
-        registerDefaultState(
-                this.stateDefinition.any().setValue(STRIPPED, false).setValue(LATEX_LEVEL, 0).setValue(TAPPED, false));
+        registerDefaultState(this.stateDefinition.any().setValue(AXIS, Direction.Axis.Y).setValue(STRIPPED, false)
+                .setValue(LATEX_LEVEL, 0).setValue(TAPPED, false));
     }
 
     @Override
     public @Nullable BlockState getToolModifiedState(BlockState state, UseOnContext context, ToolAction toolAction, boolean simulate) {
         ItemStack handItem = context.getItemInHand();
-        if (!(handItem.getItem() instanceof AxeItem)) return null;
+        if (!(handItem.getItem() instanceof AxeItem))
+            return super.getToolModifiedState(state, context, toolAction, simulate);
 
         if (context.getPlayer().isShiftKeyDown() && canStrip(state)) {
             return state.setValue(STRIPPED, true);

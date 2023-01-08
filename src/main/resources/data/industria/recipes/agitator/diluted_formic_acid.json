@@ -1,0 +1,23 @@
+{
+    "type": "industria:agitator",
+    "ingredients": [
+        {
+            "fluid": "industria:methanol",
+            "amount": 750
+        },
+        {
+            "gas": "industria:carbon_monoxide",
+            "amount": 250
+        }
+    ],
+    "results": [
+        {
+            "fluid": "industria:diluted_formic_acid",
+            "amount": 250
+        },
+        {
+            "gas": "industria:hydrogen",
+            "amount": 750
+        }
+    ]
+}

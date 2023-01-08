@@ -1,0 +1,13 @@
+{
+    "type": "industria:centrifuge",
+    "fluid": "industria:crystallized_sodium_carbonate",
+    "amount": 500,
+    "output": {
+        "item": "industria:dirty_sodium_carbonate",
+        "count": 2
+    },
+    "secondary": {
+        "fluid": "minecraft:water",
+        "amount": 250
+    }
+}

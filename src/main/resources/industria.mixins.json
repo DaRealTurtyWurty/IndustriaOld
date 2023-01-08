@@ -4,6 +4,7 @@
     "compatibilityLevel": "JAVA_17",
     "refmap": "industria.refmap.json",
     "mixins": [
+        "BeeMixin",
         "ServerPlayerMixin"
     ],
     "server": [],
@@ -11,5 +12,7 @@
         "LocalPlayerMixin"
     ],
     "minVersion": "0.8",
-    "setSourceFile": true
+    "injectors": {
+        "defaultRequire": 1
+    }
 }

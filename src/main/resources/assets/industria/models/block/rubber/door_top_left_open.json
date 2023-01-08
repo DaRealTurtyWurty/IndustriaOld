@@ -1,5 +1,6 @@
 {
   "parent": "minecraft:block/door_top_left_open",
+  "render_type": "cutout",
   "textures": {
     "bottom": "industria:blocks/rubber/door_bottom",
     "top": "industria:blocks/rubber/door_top"

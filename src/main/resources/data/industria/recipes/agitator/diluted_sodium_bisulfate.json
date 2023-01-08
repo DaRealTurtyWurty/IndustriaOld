@@ -1,0 +1,22 @@
+{
+    "type": "industria:agitator",
+    "ingredients": [
+        {
+            "item": "industria:sodium_carbonate"
+        },
+        {
+            "fluid": "industria:sulfuric_acid",
+            "amount": 750
+        }
+    ],
+    "results": [
+        {
+            "fluid": "industria:diluted_sodium_bisulfate",
+            "amount": 250
+        },
+        {
+            "fluid": "minecraft:water",
+            "amount": 750
+        }
+    ]
+}

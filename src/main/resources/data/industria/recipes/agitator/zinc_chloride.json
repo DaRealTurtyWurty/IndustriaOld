@@ -1,0 +1,23 @@
+{
+    "type": "industria:agitator",
+    "ingredients": [
+        {
+            "fluid": "industria:hydrochloric_acid",
+            "amount": 500
+        },
+        {
+            "item": "industria:crushed_zinc",
+            "count": 1
+        }
+    ],
+    "results": [
+        {
+            "item": "industria:zinc_chloride",
+            "count": 1
+        },
+        {
+            "gas": "industria:hydrogen",
+            "amount": 250
+        }
+    ]
+}

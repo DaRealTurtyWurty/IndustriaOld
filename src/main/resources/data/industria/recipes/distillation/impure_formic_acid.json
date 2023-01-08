@@ -1,0 +1,15 @@
+{
+    "type": "industria:distillation",
+    "input": {
+        "fluid": "industria:diluted_formic_acid",
+        "amount": 1000
+    },
+    "output": {
+        "item": "industria:impure_formic_acid",
+        "count": 1
+    },
+    "secondary": {
+        "fluid": "industria:water",
+        "amount": 500
+    }
+}

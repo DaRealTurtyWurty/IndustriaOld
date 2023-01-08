@@ -1,0 +1,30 @@
+{
+    "type": "industria:agitator",
+    "ingredients": [
+        {
+            "item": "industria:sodium_chloride"
+        },
+        {
+            "fluid": "industria:ammonia",
+            "amount": 500
+        },
+        {
+            "gas": "industria:carbon_dioxide",
+            "amount": 1000
+        }
+    ],
+    "results": [
+        {
+            "item": "industria:calcium_chloride",
+            "count": 3
+        },
+        {
+            "fluid": "industria:diluted_sodium_carbonate",
+            "amount": 750
+        },
+        {
+            "fluid": "minecraft:water",
+            "amount": 500
+        }
+    ]
+}

@@ -2,12 +2,14 @@ package dev.turtywurty.industria.events;
 
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.client.blockentityrenderers.ResearcherBlockEntityRenderer;
+import dev.turtywurty.industria.client.entityrenderers.RopeRenderer;
 import dev.turtywurty.industria.client.entityrenderers.WoodBoatRenderer;
 import dev.turtywurty.industria.client.model.ResearcherModel;
 import dev.turtywurty.industria.client.model.WoodBoatModel;
 import dev.turtywurty.industria.client.screens.BiomassGeneratorScreen;
 import dev.turtywurty.industria.client.screens.CrusherScreen;
 import dev.turtywurty.industria.client.screens.ResearcherScreen;
+import dev.turtywurty.industria.client.screens.AgitatorScreen;
 import dev.turtywurty.industria.entity.WoodBoat;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.init.EntityInit;
@@ -17,8 +19,6 @@ import dev.turtywurty.industria.init.util.WoodRegistrySet;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.BiomeColors;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -37,6 +37,7 @@ public class ClientEvents {
                 MenuScreens.register(MenuInit.CRUSHER.get(), CrusherScreen::new);
                 MenuScreens.register(MenuInit.BIOMASS_GENERATOR.get(), BiomassGeneratorScreen::new);
                 MenuScreens.register(MenuInit.RESEARCHER.get(), ResearcherScreen::new);
+                MenuScreens.register(MenuInit.AGITATOR.get(), AgitatorScreen::new);
 
                 Industria.LOGGER.info("Adding wood types to atlas");
                 for (WoodRegistrySet woodSet : WoodRegistrySet.getWoodSets()) {
@@ -51,6 +52,7 @@ public class ClientEvents {
             event.registerBlockEntityRenderer(BlockEntityInit.RESEARCHER.get(), ResearcherBlockEntityRenderer::new);
             event.registerEntityRenderer(EntityInit.BOAT.get(), context -> new WoodBoatRenderer(context, false));
             event.registerEntityRenderer(EntityInit.CHEST_BOAT.get(), context -> new WoodBoatRenderer(context, true));
+            event.registerEntityRenderer(EntityInit.ROPE.get(), RopeRenderer::new);
         }
 
         @SubscribeEvent

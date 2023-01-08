@@ -3,6 +3,7 @@ package dev.turtywurty.industria.client.screens;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.menu.AgitatorMenu;
 import dev.turtywurty.industria.menu.BiomassGeneratorMenu;
 import io.github.darealturtywurty.turtylib.client.ui.components.EnergyWidget;
 import io.github.darealturtywurty.turtylib.client.util.Gradient;

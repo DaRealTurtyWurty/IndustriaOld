@@ -1,0 +1,58 @@
+rubber: rubber tree -> tree tap -> bucket of latex -> a or b -> cleaned -> dried -> vulcanization
+
+a: bucket of latex + rope -> bucket of coagulated rubber
+b: bucket of latex -> c or d -> bucket of coagulated rubber
+
+c: bucket of latex + purified formic acid
+d: bucket of latex + sodium bisulfate
+
+dried: bucket of clean coagulated rubber + rope -> untreated rubber
+vulcanization: untreated rubber + sulfur -> rubber
+
+purified formic acid: e or f -> purification chamber
+
+e: methanol + carbon monoxide (in heated environment) -> watered formic acid + hydrogen gas -> distilled (formic acid)
+f: stung by bee whilst holding glass bottle in hand
+
+sodium bisulfate: sodium carbonate + sulfuric acid (in heated environment) -> watered sodium bisulfate -> filtration or centifugation (dirty sodium bisulfate) -> washed (clean sodium bisulfate) -> dried
+
+methanol: steam reformation or gasification
+carbon monoxide: steam reformation -> carbon monoxide + hydrogen
+
+sodium carbonate: g or h -> filtration or centrifugation (dirty sodium carbonate) -> washed (clean sodium carbonate) -> dried
+g: sodium chloride (salt) + ammonia + carbon dioxide (in heated environment) -> sodium carbonate + calcium chloride + water
+h: trona ore or nahcolite -> crushing (crushed) -> smelted (ingot) -> crystallization (crystallized)
+
+ammonia: steam reformation -> distillation -> reactor (with nitrogen gas) -> purified
+carbon dioxide: i or j
+
+i: burning of fossil fuels or fermentation of sugar
+j: k or l or m
+
+k: adsorbed onto the surfaced of activated charcoal or zeolite 
+l: dissolved in water or monoethanolamine
+m: air is cooled -> compressed (liquid air) -> heated (liquid carbon dioxide)
+
+activated charcoal: n or o or p
+
+n: steam activation (charcoal + steam at high temperature)
+o: chemical activation (charcoal + phosphoric acid or zinc chloride)
+p: high temperature activation (charcoal + oxygen at high temperature)
+
+phosphoric acid: sulfuric acid + phosphate ore (liquid phosphoric acid) -> filtration or centrifugation (inpure phosphoric acid) -> purification chamber
+zinc chloride: q or u
+
+q: zinc + hydrochloric acid -> zinc chloride + hydrogen gas
+u: zinc metal + hydrochloric acid -> unpure zinc chloride -> crystalized
+
+hydrochloric acid: hydrogen gas + chlorine gas using chloralkali electrolysis cell
+
+zeolite: clinoptilolite, chabazite, or mordenite (naturally occuring minerals)
+
+monoethanolamine: ethylene oxide + ammonia + water -> inpure monoethanolamine + hydrogen gas -> distillation
+ethylene oxide: ethylene + oxygen (in presence of silver or platinum catalyst)
+ethylene: steam cracking of ethane (produced from natural gas) (heating ethane in the presence of steam)
+
+sulfuric acid: sulfur dioxide + oxygen (in presence of platinum or vanadium pentoxide catalyst) -> sulfur trioxde -> sulfur trioxide + water
+sulfur dioxide: smelting of sulfide ores or byproduct or burning fossil fuels
+vanadium pentoxide: roasting of vanadinite, carnotite, or patronite (inpure vanadium pentoxide) -> leached (purified)

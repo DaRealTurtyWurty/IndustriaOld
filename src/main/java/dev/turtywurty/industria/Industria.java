@@ -35,6 +35,7 @@ public class Industria {
         RecipeInit.RECIPE_TYPES.register(bus);
         ResearchDataInit.RESEARCH_DATA.register(bus);
         EntityInit.ENTITY_TYPES.register(bus);
+        EntityDataSerializerInit.ENTITY_DATA_SERIALIZERS.register(bus);
         FluidInit.FLUIDS.register(bus);
         FluidInit.FLUID_TYPES.register(bus);
         WoodSetInit.init();

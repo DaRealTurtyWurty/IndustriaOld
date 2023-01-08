@@ -1,11 +1,12 @@
 package dev.turtywurty.industria.events;
 
-import com.google.common.collect.ImmutableMap;
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.capability.Research;
 import dev.turtywurty.industria.capability.ResearchCapability;
 import dev.turtywurty.industria.capability.ResearchProvider;
+import dev.turtywurty.industria.events.industria.BeeStingEvent;
 import dev.turtywurty.industria.events.industria.InventoryChangedEvent;
+import dev.turtywurty.industria.init.ItemInit;
 import dev.turtywurty.industria.init.ReloadListenerInit;
 import dev.turtywurty.industria.init.WoodSetInit;
 import dev.turtywurty.industria.init.util.WoodRegistrySet;
@@ -14,13 +15,17 @@ import dev.turtywurty.industria.network.PacketManager;
 import dev.turtywurty.industria.network.clientbound.CSyncNewResearchPacket;
 import dev.turtywurty.industria.network.clientbound.CSyncResearchPacket;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -86,6 +91,33 @@ public class CommonEvents {
             Item item = event.getItemStack().getItem();
             if (item == WoodSetInit.RUBBER_WOOD_SET.fenceItem.get() || item == WoodSetInit.RUBBER_WOOD_SET.fenceGateItem.get()) {
                 event.setBurnTime(300);
+            }
+        }
+
+        @SubscribeEvent
+        public static void beeSting(BeeStingEvent event) {
+            if (event.getEntity() instanceof LivingEntity living) {
+                if (living.getMainHandItem().getItem() != Items.GLASS_BOTTLE)
+                    return;
+
+                living.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(inventory -> {
+                    int slot = 0;
+                    for (int index = 0; index < inventory.getSlots(); index++) {
+                        ItemStack stack = inventory.getStackInSlot(index);
+                        if (stack != living.getMainHandItem()) continue;
+
+                        slot = index;
+                        break;
+                    }
+
+                    living.getMainHandItem().shrink(1);
+
+                    ItemStack toInsert = inventory.insertItem(slot,
+                            ItemInit.IMPURE_FORMIC_ACID.get().getDefaultInstance(), false);
+                    if (!toInsert.isEmpty()) {
+                        living.spawnAtLocation(toInsert);
+                    }
+                });
             }
         }
     }

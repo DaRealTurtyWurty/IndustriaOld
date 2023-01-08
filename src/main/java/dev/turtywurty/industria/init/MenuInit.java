@@ -1,6 +1,7 @@
 package dev.turtywurty.industria.init;
 
 import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.menu.AgitatorMenu;
 import dev.turtywurty.industria.menu.BiomassGeneratorMenu;
 import dev.turtywurty.industria.menu.CrusherMenu;
 import dev.turtywurty.industria.menu.ResearcherMenu;
@@ -20,4 +21,7 @@ public class MenuInit {
 
     public static final RegistryObject<MenuType<ResearcherMenu>> RESEARCHER = MENUS.register("researcher",
             () -> new MenuType<>(ResearcherMenu::getClientMenu));
+
+    public static final RegistryObject<MenuType<AgitatorMenu>> AGITATOR = MENUS.register("agitator",
+            () -> new MenuType<>(AgitatorMenu::getClientMenu));
 }

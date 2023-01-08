@@ -1,10 +1,7 @@
 package dev.turtywurty.industria.network;
 
 import dev.turtywurty.industria.Industria;
-import dev.turtywurty.industria.network.clientbound.CResearchFailedPacket;
-import dev.turtywurty.industria.network.clientbound.CSyncNewResearchPacket;
-import dev.turtywurty.industria.network.clientbound.CSyncResearchDataPacket;
-import dev.turtywurty.industria.network.clientbound.CSyncResearchPacket;
+import dev.turtywurty.industria.network.clientbound.*;
 import dev.turtywurty.industria.network.serverbound.SRequestResearchDataPacket;
 import dev.turtywurty.industria.network.serverbound.SStartResearchPacket;
 import net.minecraft.network.FriendlyByteBuf;

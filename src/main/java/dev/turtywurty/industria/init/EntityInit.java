@@ -2,6 +2,7 @@ package dev.turtywurty.industria.init;
 
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.entity.ChestWoodBoat;
+import dev.turtywurty.industria.entity.RopeEntity;
 import dev.turtywurty.industria.entity.WoodBoat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
@@ -21,4 +22,9 @@ public class EntityInit {
     public static final RegistryObject<EntityType<ChestWoodBoat>> CHEST_BOAT = ENTITY_TYPES.register("chest_boat",
             () -> EntityType.Builder.<ChestWoodBoat>of(ChestWoodBoat::new, MobCategory.MISC).sized(1.375F, 0.5625F)
                     .clientTrackingRange(10).build(new ResourceLocation(Industria.MODID, "chest_boat").toString()));
+
+    public static final RegistryObject<EntityType<RopeEntity>> ROPE = ENTITY_TYPES.register("rope",
+            () -> EntityType.Builder.<RopeEntity>of(RopeEntity::new, MobCategory.MISC).sized(0.25F, 0.25F)
+                    .clientTrackingRange(10).setCustomClientFactory(RopeEntity::handleClientSpawn)
+                    .build(new ResourceLocation(Industria.MODID, "rope").toString()));
 }

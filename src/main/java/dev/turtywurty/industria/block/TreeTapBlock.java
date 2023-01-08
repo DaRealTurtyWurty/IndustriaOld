@@ -64,9 +64,11 @@ public class TreeTapBlock extends Block {
     @Override
     public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
         super.onPlace(pState, pLevel, pPos, pOldState, pIsMoving);
-        BlockPos logPos = pPos.relative(pState.getValue(FACING).getOpposite());
-        BlockState logState = pLevel.getBlockState(logPos);
-        pLevel.setBlockAndUpdate(logPos, logState.setValue(RubberLogBlock.TAPPED, true));
+        if(pOldState.getBlock() != pState.getBlock()) {
+            BlockPos logPos = pPos.relative(pState.getValue(FACING).getOpposite());
+            BlockState logState = pLevel.getBlockState(logPos);
+            pLevel.setBlockAndUpdate(logPos, logState.setValue(RubberLogBlock.TAPPED, true));
+        }
     }
 
     @Override
@@ -111,7 +113,10 @@ public class TreeTapBlock extends Block {
         if (!stack.is(Items.BUCKET)) return InteractionResult.PASS;
         if (pState.getValue(LATEX_LEVEL) <= 0) return InteractionResult.PASS;
 
-        stack.shrink(1);
+        if(!pPlayer.isCreative()) {
+            stack.shrink(1);
+        }
+
         pLevel.setBlockAndUpdate(pPos, pState.setValue(LATEX_LEVEL, pState.getValue(LATEX_LEVEL) - 1));
 
         ItemStack toGive = FluidInit.LATEX.bucket.get().getDefaultInstance();
@@ -119,7 +124,7 @@ public class TreeTapBlock extends Block {
             pPlayer.drop(toGive, false);
         }
 
-        return InteractionResult.SUCCESS;
+        return InteractionResult.CONSUME;
     }
 
     @Override

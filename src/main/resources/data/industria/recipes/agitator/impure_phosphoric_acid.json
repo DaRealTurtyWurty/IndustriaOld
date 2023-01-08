@@ -1,0 +1,23 @@
+{
+    "type": "industria:agitator",
+    "ingredients": [
+        {
+            "fluid": "industria:sulfuric_acid",
+            "amount": 750
+        },
+        {
+            "item": "industria:phosphate_ore",
+            "count": 2
+        }
+    ],
+    "results": [
+        {
+            "fluid": "industria:impure_phosphoric_acid",
+            "amount": 500
+        },
+        {
+            "item": "industria:impure_calcium_sulfate",
+            "count": 2
+        }
+    ]
+}

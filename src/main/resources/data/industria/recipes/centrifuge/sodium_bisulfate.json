@@ -1,0 +1,13 @@
+{
+    "type": "industria:centrifuge",
+    "fluid": "industria:diluted_sodium_bisulfate",
+    "amount": 500,
+    "output": {
+        "item": "industria:sodium_bisulfate",
+        "count": 2
+    },
+    "secondary": {
+        "fluid": "minecraft:water",
+        "amount": 250
+    }
+}

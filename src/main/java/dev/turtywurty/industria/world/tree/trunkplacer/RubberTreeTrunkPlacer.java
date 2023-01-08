@@ -2,6 +2,7 @@ package dev.turtywurty.industria.world.tree.trunkplacer;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dev.turtywurty.industria.block.RubberLogBlock;
 import dev.turtywurty.industria.init.TrunkPlacerInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiConsumer;
 
 public class RubberTreeTrunkPlacer extends TrunkPlacer {
@@ -50,7 +52,7 @@ public class RubberTreeTrunkPlacer extends TrunkPlacer {
         float branchingPossibility = 0.8F;
         Direction branchingDirection = null;
         for (int yPos = 0; yPos < pFreeTreeHeight; ++yPos) {
-            this.placeLog(pLevel, pBlockSetter, pRandom, pPos.above(yPos), pConfig);
+            placeLog(pLevel, pBlockSetter, pRandom, pPos.above(yPos), pConfig);
 
             if (yPos >= height - 1) {
                 if (pRandom.nextFloat() < branchingPossibility) {
@@ -71,7 +73,7 @@ public class RubberTreeTrunkPlacer extends TrunkPlacer {
                     int length = this.branchLength.sample(pRandom);
                     for (int hPos = 0; hPos < length; ++hPos) {
                         BlockPos offset = pos.offset(xOffset, hPos, zOffset);
-                        this.placeLog(pLevel, pBlockSetter, pRandom, offset, pConfig);
+                        placeLog(pLevel, pBlockSetter, pRandom, offset, pConfig);
 
                         if (hPos == 0 || pRandom.nextFloat() < 0.8F) {
                             xOffset += branchingDirection.getStepX();
@@ -87,5 +89,12 @@ public class RubberTreeTrunkPlacer extends TrunkPlacer {
         }
 
         return list;
+    }
+
+    @Override
+    protected boolean placeLog(LevelSimulatedReader pLevel, BiConsumer<BlockPos, BlockState> pBlockSetter, RandomSource pRandom, BlockPos pPos, TreeConfiguration pConfig) {
+        return placeLog(pLevel, pBlockSetter, pRandom, pPos, pConfig,
+                blockState -> blockState.setValue(RubberLogBlock.LATEX_LEVEL,
+                        ThreadLocalRandom.current().nextInt(1, 6)));
     }
 }
