@@ -26,8 +26,8 @@ import java.util.Objects;
 public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID, "textures/gui/agitator.png");
 
-    private SwitchingWidget switchingWidget0, switchingWidget1, switchingWidget2;
-    private FluidWidget fluidWidget0, fluidWidget1, fluidWidget2;
+    private SwitchingWidget switchingWidget0, switchingWidget1, switchingWidget2, switchingWidget3, switchingWidget4, switchingWidget5;
+    private FluidWidget fluidWidget0, fluidWidget1, fluidWidget2, fluidWidget3, fluidWidget4, fluidWidget5;
 
     public AgitatorScreen(AgitatorMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -61,11 +61,20 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
                 new SwitchingWidget(this.menu, this.leftPos + 35, this.topPos + 90, 20, 20));
         this.switchingWidget2 = addRenderableWidget(
                 new SwitchingWidget(this.menu, this.leftPos + 60, this.topPos + 90, 20, 20));
+        this.switchingWidget3 = addRenderableWidget(
+                new SwitchingWidget(this.menu, this.leftPos + 85, this.topPos + 90, 20, 20));
+        this.switchingWidget4 = addRenderableWidget(
+                new SwitchingWidget(this.menu, this.leftPos + 110, this.topPos + 90, 20, 20));
+        this.switchingWidget5 = addRenderableWidget(
+                new SwitchingWidget(this.menu, this.leftPos + 135, this.topPos + 90, 20, 20));
 
         this.fluidWidget0 = addRenderableWidget(
                 new FluidWidget(new FluidStack(Fluids.WATER, 500), 0, 0, 16, 47, 10, 10));
         this.fluidWidget1 = addRenderableWidget(new FluidWidget(FluidStack.EMPTY, 0, 0, 16, 47, 10, 10));
-        this.fluidWidget2 = addRenderableWidget(new FluidWidget(FluidStack.EMPTY, this.leftPos + 0, 0, 16, 47, 10, 10));
+        this.fluidWidget2 = addRenderableWidget(new FluidWidget(FluidStack.EMPTY, 0, 0, 16, 47, 10, 10));
+        this.fluidWidget3 = addRenderableWidget(new FluidWidget(FluidStack.EMPTY, 0, 0, 16, 47, 10, 10));
+        this.fluidWidget4 = addRenderableWidget(new FluidWidget(FluidStack.EMPTY, 0, 0, 16, 47, 10, 10));
+        this.fluidWidget5 = addRenderableWidget(new FluidWidget(FluidStack.EMPTY, 0, 0, 16, 47, 10, 10));
 
         this.switchingWidget0.addSlot(SwitchingWidget.IOType.ITEM, 0);
         this.switchingWidget0.addFluid(SwitchingWidget.IOType.FLUID, this.fluidWidget0);
@@ -75,6 +84,15 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
 
         this.switchingWidget2.addSlot(SwitchingWidget.IOType.ITEM, 2);
         this.switchingWidget2.addFluid(SwitchingWidget.IOType.FLUID, this.fluidWidget2);
+
+        this.switchingWidget3.addSlot(SwitchingWidget.IOType.ITEM, 3);
+        this.switchingWidget3.addFluid(SwitchingWidget.IOType.FLUID, this.fluidWidget3);
+
+        this.switchingWidget4.addSlot(SwitchingWidget.IOType.ITEM, 4);
+        this.switchingWidget4.addFluid(SwitchingWidget.IOType.FLUID, this.fluidWidget4);
+
+        this.switchingWidget5.addSlot(SwitchingWidget.IOType.ITEM, 5);
+        this.switchingWidget5.addFluid(SwitchingWidget.IOType.FLUID, this.fluidWidget5);
     }
 
     public class SwitchingWidget extends AbstractWidget {
