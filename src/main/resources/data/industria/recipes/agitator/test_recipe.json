@@ -1,0 +1,23 @@
+{
+    "type": "industria:agitator",
+    "ingredients": [
+        {
+            "FluidName": "minecraft:water",
+            "Amount": 500
+        },
+        {
+            "item": "industria:biomass",
+            "Count": 1
+        }
+    ],
+    "results": [
+        {
+            "FluidName": "minecraft:water",
+            "Amount": 750
+        },
+        {
+            "item": "minecraft:bone_meal",
+            "Count": 2
+        }
+    ]
+}

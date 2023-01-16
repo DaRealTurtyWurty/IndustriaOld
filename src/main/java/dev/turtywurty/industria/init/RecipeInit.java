@@ -1,6 +1,7 @@
 package dev.turtywurty.industria.init;
 
 import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.recipes.AgitatorRecipe;
 import dev.turtywurty.industria.recipes.BiomassGeneratorRecipe;
 import dev.turtywurty.industria.recipes.CrusherRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -24,4 +25,10 @@ public class RecipeInit {
             .register("biomass_generator", () -> BiomassGeneratorRecipe.Serializer.INSTANCE);
     public static final RegistryObject<RecipeType<BiomassGeneratorRecipe>> BIOMASS_GENERATOR_TYPE = RECIPE_TYPES
             .register("biomass_generator", () -> BiomassGeneratorRecipe.Type.INSTANCE);
+
+    public static final RegistryObject<RecipeType<AgitatorRecipe>> AGITATOR_TYPE = RECIPE_TYPES
+            .register("agitator", () -> AgitatorRecipe.Type.INSTANCE);
+
+    public static final RegistryObject<RecipeSerializer<AgitatorRecipe>> AGITATOR_SERIALIZER = RECIPE_SERIALIZERS
+            .register("agitator", () -> AgitatorRecipe.Serializer.INSTANCE);
 }

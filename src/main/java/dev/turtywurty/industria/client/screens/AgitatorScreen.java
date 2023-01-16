@@ -3,10 +3,12 @@ package dev.turtywurty.industria.client.screens;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.blockentity.AgitatorBlockEntity;
 import dev.turtywurty.industria.menu.AgitatorMenu;
 import dev.turtywurty.industria.menu.slots.ToggleSlot;
 import dev.turtywurty.industria.menu.slots.ToggleSlotItemHandler;
 import io.github.darealturtywurty.turtylib.client.ui.components.FluidWidget;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -56,17 +58,17 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
         super.init();
 
         this.switchingWidget0 = addRenderableWidget(
-                new SwitchingWidget(this.menu, this.leftPos + 10, this.topPos + 90, 20, 20));
+                new SwitchingWidget(this.menu, 0, this.leftPos + 10, this.topPos + 90, 20, 20));
         this.switchingWidget1 = addRenderableWidget(
-                new SwitchingWidget(this.menu, this.leftPos + 35, this.topPos + 90, 20, 20));
+                new SwitchingWidget(this.menu, 1, this.leftPos + 35, this.topPos + 90, 20, 20));
         this.switchingWidget2 = addRenderableWidget(
-                new SwitchingWidget(this.menu, this.leftPos + 60, this.topPos + 90, 20, 20));
+                new SwitchingWidget(this.menu, 2, this.leftPos + 60, this.topPos + 90, 20, 20));
         this.switchingWidget3 = addRenderableWidget(
-                new SwitchingWidget(this.menu, this.leftPos + 85, this.topPos + 90, 20, 20));
+                new SwitchingWidget(this.menu, 3, this.leftPos + 85, this.topPos + 90, 20, 20));
         this.switchingWidget4 = addRenderableWidget(
-                new SwitchingWidget(this.menu, this.leftPos + 110, this.topPos + 90, 20, 20));
+                new SwitchingWidget(this.menu, 4, this.leftPos + 110, this.topPos + 90, 20, 20));
         this.switchingWidget5 = addRenderableWidget(
-                new SwitchingWidget(this.menu, this.leftPos + 135, this.topPos + 90, 20, 20));
+                new SwitchingWidget(this.menu, 5, this.leftPos + 135, this.topPos + 90, 20, 20));
 
         this.fluidWidget0 = addRenderableWidget(
                 new FluidWidget(new FluidStack(Fluids.WATER, 500), 0, 0, 16, 47, 10, 10));
@@ -98,12 +100,15 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
     public class SwitchingWidget extends AbstractWidget {
         private final Map<IOType, Object> values = new HashMap<>();
         private final AgitatorMenu menu;
+        private final int index;
 
         private Pair<IOType, Object> current;
 
-        public SwitchingWidget(AgitatorMenu menu, int pX, int pY, int pWidth, int pHeight) {
+
+        public SwitchingWidget(AgitatorMenu menu, int index, int pX, int pY, int pWidth, int pHeight) {
             super(pX, pY, pWidth, pHeight, Component.empty());
 
+            this.index = index;
             this.menu = menu;
         }
 
@@ -197,15 +202,9 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
             return !(this.current.getRight() instanceof Integer);
         }
 
-        // TODO: Gas Widget
         private boolean isCurrentEmpty() {
-            return (this.current == null || this.current.getRight() == null) || (isCurrentFluidEmpty() && isCurrentItemEmpty()); /* || isCurrentGasEmpty();*/
+            return (this.current == null || this.current.getRight() == null) || (isCurrentFluidEmpty() && isCurrentItemEmpty());
         }
-
-        // TODO: Gas Widget
-        //public void addGas(IOType type, GasWidget widget) {
-        //    this.values.put(type, widget);
-        //}
 
         @Override
         public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
@@ -220,6 +219,9 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
             if (this.active) {
                 if(firstRender) {
                     this.firstRender = false;
+
+                    IOType currentType = this.current.getLeft();
+
                     this.values.forEach((type, object) -> {
                         // check to see if the object is empty
                         if(object instanceof FluidWidget fluidWidget) {
@@ -251,6 +253,42 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
                             }
                         }
                     });
+
+                    if(isCurrentEmpty()) {
+                        if(Minecraft.getInstance().level == null)
+                            return;
+
+                        if(Minecraft.getInstance().level.getBlockEntity(this.menu.getPos()) instanceof AgitatorBlockEntity agitator) {
+                            IOType type = agitator.getIOType(this.index);
+                            if(this.values.containsKey(type)) {
+                                this.current = Pair.of(type, this.values.get(type));
+                                if(this.current.getRight() instanceof FluidWidget fluidWidget) {
+                                    fluidWidget.active = true;
+                                    fluidWidget.setShouldDrawBorder(true);
+                                    fluidWidget.x = this.x + 2;
+                                    fluidWidget.y = this.y - 60;
+                                } else if(this.current.getRight() instanceof Integer slotIndex) {
+                                    final Slot slot = this.menu.slots.get(slotIndex);
+                                    if (slot instanceof ToggleSlot toggleSlot) {
+                                        toggleSlot.setActive(true);
+                                    } else if (slot instanceof ToggleSlotItemHandler toggleSlotItemHandler) {
+                                        toggleSlotItemHandler.setActive(true);
+                                    } else {
+                                        Industria.LOGGER.error("Slot is not a ToggleSlot or ToggleSlotItemHandler!");
+                                    }
+
+                                    slot.x = this.x - AgitatorScreen.this.leftPos + 2;
+                                    slot.y = this.y - AgitatorScreen.this.topPos - 39;
+                                }
+
+                                disableNonCurrent();
+                            }
+                        }
+                    }
+
+                    if(this.current.getLeft() != currentType) {
+                        updateType();
+                    }
                 }
 
                 if (!isCurrentEmpty()) {
@@ -308,7 +346,22 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
 
         @Override
         public void onClick(double pMouseX, double pMouseY) {
+            IOType currentType = this.current.getLeft();
+
             next();
+
+            if (this.current.getLeft() != currentType) {
+                updateType();
+            }
+        }
+
+        private void updateType() {
+            if(Minecraft.getInstance().level == null)
+                return;
+
+            if(Minecraft.getInstance().level.getBlockEntity(this.menu.getPos()) instanceof AgitatorBlockEntity agitator) {
+                agitator.setIOType(this.index, this.current.getLeft());
+            }
         }
 
         public void next(boolean reverse) {

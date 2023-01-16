@@ -5,7 +5,7 @@
     },
     "output": {
         "item": "industria:biomass",
-        "count": 1
+        "Count": 1
     },
     "energyCost": 25,
     "processTime": 50

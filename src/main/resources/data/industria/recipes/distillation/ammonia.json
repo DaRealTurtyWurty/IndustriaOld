@@ -1,15 +1,15 @@
 {
     "type": "industria:distillation",
     "input": {
-        "fluid": "industria:diluted_ammonia",
-        "amount": 1000
+        "FluidName": "industria:diluted_ammonia",
+        "Amount": 1000
     },
     "output": {
-        "fluid": "industria:ammonia",
-        "amount": 750
+        "FluidName": "industria:ammonia",
+        "Amount": 750
     },
     "secondary": {
-        "fluid": "industria:water",
-        "amount": 250
+        "FluidName": "industria:water",
+        "Amount": 250
     }
 }

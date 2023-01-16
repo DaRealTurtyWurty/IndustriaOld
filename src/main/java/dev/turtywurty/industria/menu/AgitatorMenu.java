@@ -16,11 +16,13 @@ import net.minecraftforge.items.SlotItemHandler;
 public class AgitatorMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess access;
     private final ContainerData data;
+    private final BlockPos pos;
 
     protected AgitatorMenu(int containerId, Inventory playerInv, IItemHandler slots, BlockPos pos, ContainerData data) {
         super(MenuInit.AGITATOR.get(), containerId);
         this.access = ContainerLevelAccess.create(playerInv.player.level, pos);
         this.data = data;
+        this.pos = pos;
 
         final int slotSizePlus2 = 18;
 
@@ -53,8 +55,8 @@ public class AgitatorMenu extends AbstractContainerMenu {
                 pos, blockEntity.getContainerData());
     }
 
-    public static AgitatorMenu getClientMenu(int id, Inventory playerInv) {
-        return new AgitatorMenu(id, playerInv, new ItemStackHandler(6), BlockPos.ZERO, new SimpleContainerData(4));
+    public static AgitatorMenu getClientMenu(int id, Inventory playerInv, BlockPos pos) {
+        return new AgitatorMenu(id, playerInv, new ItemStackHandler(6), pos, new SimpleContainerData(4));
     }
 
     // TODO: Make this work for the enable/disable-able slots
@@ -102,5 +104,9 @@ public class AgitatorMenu extends AbstractContainerMenu {
 
     public int getMaxEnergy() {
         return this.data.get(3);
+    }
+
+    public BlockPos getPos() {
+        return this.pos;
     }
 }

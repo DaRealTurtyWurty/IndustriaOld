@@ -2,11 +2,11 @@
     "type": "industria:crusher",
     "input": {
         "item": "minecraft:stone",
-        "count": 1
+        "Count": 1
     },
     "output": {
         "item": "minecraft:cobblestone",
-        "count": 1
+        "Count": 1
     },
     "energyCost": 1000,
     "processTime": 100

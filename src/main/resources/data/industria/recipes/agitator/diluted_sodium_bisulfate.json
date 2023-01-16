@@ -5,18 +5,18 @@
             "item": "industria:sodium_carbonate"
         },
         {
-            "fluid": "industria:sulfuric_acid",
-            "amount": 750
+            "FluidName": "industria:sulfuric_acid",
+            "Amount": 750
         }
     ],
     "results": [
         {
-            "fluid": "industria:diluted_sodium_bisulfate",
-            "amount": 250
+            "FluidName": "industria:diluted_sodium_bisulfate",
+            "Amount": 250
         },
         {
-            "fluid": "minecraft:water",
-            "amount": 750
+            "FluidName": "minecraft:water",
+            "Amount": 750
         }
     ]
 }

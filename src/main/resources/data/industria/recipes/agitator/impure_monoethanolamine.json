@@ -2,26 +2,26 @@
     "type": "industria:agitator",
     "ingredients": [
         {
-            "fluid": "minecraft:water",
-            "amount": 500
+            "FluidName": "minecraft:water",
+            "Amount": 500
         },
         {
-            "gas": "industria:ammonia",
-            "amount": 250
+            "FluidName": "industria:ammonia",
+            "Amount": 250
         },
         {
-            "gas": "industria:ethylene_oxide",
-            "amount": 250
+            "FluidName": "industria:ethylene_oxide",
+            "Amount": 250
         }
     ],
     "results": [
         {
-            "fluid": "industria:impure_monoethanolamine",
-            "amount": 750
+            "FluidName": "industria:impure_monoethanolamine",
+            "Amount": 750
         },
         {
-            "fluid": "minecraft:water",
-            "amount": 250
+            "FluidName": "minecraft:water",
+            "Amount": 250
         }
     ]
 }

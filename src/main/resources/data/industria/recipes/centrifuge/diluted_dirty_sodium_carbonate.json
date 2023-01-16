@@ -1,13 +1,13 @@
 {
     "type": "industria:centrifuge",
-    "fluid": "industria:diluted_sodium_carbonate",
-    "amount": 500,
+    "FluidName": "industria:diluted_sodium_carbonate",
+    "Amount": 500,
     "output": {
         "item": "industria:dirty_sodium_carbonate",
-        "count": 2
+        "Count": 2
     },
     "secondary": {
-        "fluid": "minecraft:water",
-        "amount": 250
+        "FluidName": "minecraft:water",
+        "Amount": 250
     }
 }

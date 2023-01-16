@@ -4,6 +4,7 @@ import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.network.clientbound.*;
 import dev.turtywurty.industria.network.serverbound.SRequestResearchDataPacket;
 import dev.turtywurty.industria.network.serverbound.SStartResearchPacket;
+import dev.turtywurty.industria.network.serverbound.SSwitchAgitatorIOTypePacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,6 +34,7 @@ public final class PacketManager {
         register(SRequestResearchDataPacket.class, SRequestResearchDataPacket::new);
         register(SStartResearchPacket.class, SStartResearchPacket::new);
         register(CResearchFailedPacket.class, CResearchFailedPacket::new);
+        register(SSwitchAgitatorIOTypePacket.class, SSwitchAgitatorIOTypePacket::new);
         Industria.LOGGER.info("Registered {} packets", NUM_PACKETS);
     }
 

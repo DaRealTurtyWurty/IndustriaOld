@@ -5,26 +5,26 @@
             "item": "industria:sodium_chloride"
         },
         {
-            "fluid": "industria:ammonia",
-            "amount": 500
+            "FluidName": "industria:ammonia",
+            "Amount": 500
         },
         {
-            "gas": "industria:carbon_dioxide",
-            "amount": 1000
+            "FluidName": "industria:carbon_dioxide",
+            "Amount": 1000
         }
     ],
     "results": [
         {
             "item": "industria:calcium_chloride",
-            "count": 3
+            "Count": 3
         },
         {
-            "fluid": "industria:diluted_sodium_carbonate",
-            "amount": 750
+            "FluidName": "industria:diluted_sodium_carbonate",
+            "Amount": 750
         },
         {
-            "fluid": "minecraft:water",
-            "amount": 500
+            "FluidName": "minecraft:water",
+            "Amount": 500
         }
     ]
 }

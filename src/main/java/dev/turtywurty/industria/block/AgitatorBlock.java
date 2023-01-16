@@ -42,7 +42,7 @@ public class AgitatorBlock extends Block implements EntityBlock {
     @Override
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide() && pLevel.getBlockEntity(pPos) instanceof AgitatorBlockEntity blockEntity) {
-            SimpleMenuProvider provider = new SimpleMenuProvider(AgitatorMenu.getServerMenu(blockEntity, pPos),
+            var provider = new SimpleMenuProvider(AgitatorMenu.getServerMenu(blockEntity, pPos),
                     AgitatorBlockEntity.TITLE);
             NetworkHooks.openScreen((ServerPlayer) pPlayer, provider, pPos);
         }
