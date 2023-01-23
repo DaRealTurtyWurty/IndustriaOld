@@ -1,5 +1,0 @@
-{
-    "type": "industria:purifier",
-    "input": "industria:impure_ammonia_bottle",
-    "output": "industria:ammonia_bottle"
-}

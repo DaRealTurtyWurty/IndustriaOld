@@ -1,5 +1,0 @@
-{
-    "type": "industria:purifier",
-    "input": "industria:impure_formic_acid",
-    "output": "industria:formic_acid"
-}

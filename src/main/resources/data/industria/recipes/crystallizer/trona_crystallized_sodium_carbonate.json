@@ -1,5 +1,0 @@
-{
-    "type": "industria:crystallizer",
-    "input": "industria:trona_ingot",
-    "output": "industria:crystallized_sodium_carbonate"
-}

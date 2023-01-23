@@ -22,35 +22,4 @@ public class BlockInit {
     public static final RegistryObject<TreeTapBlock> TREE_TAP = BLOCKS.register("tree_tap", TreeTapBlock::new);
 
     public static final RegistryObject<AgitatorBlock> AGITATOR = BLOCKS.register("agitator", AgitatorBlock::new);
-
-    public static final RegistryObject<Block> TRONA_ORE = BLOCKS.register("trona_ore",
-            () -> new Block(Block.Properties.copy(Blocks.STONE)));
-    public static final RegistryObject<Block> NAHCOLITE_ORE = BLOCKS.register("nahcolite_ore",
-            () -> new Block(Block.Properties.copy(Blocks.STONE)));
-    public static final RegistryObject<Block> TRONA_BLOCK = BLOCKS.register("trona_block",
-            () -> new Block(Block.Properties.copy(Blocks.IRON_BLOCK)));
-    public static final RegistryObject<Block> NAHCOLITE_BLOCK = BLOCKS.register("nahcolite_block",
-            () -> new Block(Block.Properties.copy(Blocks.IRON_BLOCK)));
-    public static final RegistryObject<Block> PHOSPHATE_ORE = BLOCKS.register("phosphate_ore",
-            () -> new Block(Block.Properties.copy(Blocks.STONE)));
-    public static final RegistryObject<Block> ZINC_ORE = BLOCKS.register("zinc_ore",
-            () -> new Block(Block.Properties.copy(Blocks.STONE)));
-    public static final RegistryObject<Block> ZINC_BLOCK = BLOCKS.register("zinc_block",
-            () -> new Block(Block.Properties.copy(Blocks.IRON_BLOCK)));
-    public static final RegistryObject<Block> SILVER_ORE = BLOCKS.register("silver_ore",
-            () -> new Block(Block.Properties.copy(Blocks.STONE)));
-    public static final RegistryObject<Block> SILVER_BLOCK = BLOCKS.register("silver_block",
-            () -> new Block(Block.Properties.copy(Blocks.IRON_BLOCK)));
-    public static final RegistryObject<Block> PLATINUM_ORE = BLOCKS.register("platinum_ore",
-            () -> new Block(Block.Properties.copy(Blocks.STONE)));
-    public static final RegistryObject<Block> PLATINUM_BLOCK = BLOCKS.register("platinum_block",
-            () -> new Block(Block.Properties.copy(Blocks.IRON_BLOCK)));
-    public static final RegistryObject<Block> PYRITE_ORE = BLOCKS.register("pyrite_ore",
-            () -> new Block(Block.Properties.copy(Blocks.STONE)));
-    public static final RegistryObject<Block> VANADINITE_ORE = BLOCKS.register("vanadinite_ore",
-            () -> new Block(Block.Properties.copy(Blocks.STONE)));
-    public static final RegistryObject<Block> CARNOTITE_ORE = BLOCKS.register("carnotite_ore",
-            () -> new Block(Block.Properties.copy(Blocks.STONE)));
-    public static final RegistryObject<Block> PATRONITE_ORE = BLOCKS.register("patronite_ore",
-            () -> new Block(Block.Properties.copy(Blocks.STONE)));
 }
