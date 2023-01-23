@@ -29,8 +29,8 @@ public class ResearcherBlockEntity extends ModularBlockEntity {
             return switch (pIndex) {
                 case 0 -> ResearcherBlockEntity.this.progress;
                 case 1 -> ResearcherBlockEntity.this.maxProgress;
-                case 2 -> ResearcherBlockEntity.this.energy.getCapability().getEnergyStored();
-                case 3 -> ResearcherBlockEntity.this.energy.getCapability().getMaxEnergyStored();
+                case 2 -> ResearcherBlockEntity.this.energy.getCapabilityInstance().getEnergyStored();
+                case 3 -> ResearcherBlockEntity.this.energy.getCapabilityInstance().getMaxEnergyStored();
                 default -> 0;
             };
         }
@@ -101,7 +101,7 @@ public class ResearcherBlockEntity extends ModularBlockEntity {
 
     public boolean startResearch(ResearchDataOld researchData) {
         if (this.progress != 0) return false;
-        if (!(this.inventory.getCapability().getStackInSlot(0).getItem() instanceof ResearchAdvancer advancer))
+        if (!(this.inventory.getCapabilityInstance().getStackInSlot(0).getItem() instanceof ResearchAdvancer advancer))
             return false;
 
         ResourceLocation input = ResourceLocation.tryParse(researchData.getInputRegistryName());

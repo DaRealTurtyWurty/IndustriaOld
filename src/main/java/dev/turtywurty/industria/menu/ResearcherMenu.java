@@ -47,7 +47,7 @@ public class ResearcherMenu extends AbstractContainerMenu {
     }
 
     public static MenuConstructor getServerMenu(ResearcherBlockEntity blockEntity, BlockPos pos) {
-        return (id, playerInv, player) -> new ResearcherMenu(id, playerInv, blockEntity.getInventory().getCapability(),
+        return (id, playerInv, player) -> new ResearcherMenu(id, playerInv, blockEntity.getInventory().getCapabilityInstance(),
                 pos, blockEntity.getContainerData());
     }
 

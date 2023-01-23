@@ -38,8 +38,8 @@ public class CrusherBlockEntity extends ModularBlockEntity {
                         CrusherBlockEntity.this.currentRecipe == null ? 0 : CrusherBlockEntity.this.currentRecipe.getProcessTime();
                 case 3 ->
                         CrusherBlockEntity.this.currentRecipe == null ? 0 : CrusherBlockEntity.this.currentRecipe.getEnergyCost();
-                case 4 -> CrusherBlockEntity.this.energy.getCapability().getEnergyStored();
-                case 5 -> CrusherBlockEntity.this.energy.getCapability().getMaxEnergyStored();
+                case 4 -> CrusherBlockEntity.this.energy.getCapabilityInstance().getEnergyStored();
+                case 5 -> CrusherBlockEntity.this.energy.getCapabilityInstance().getMaxEnergyStored();
                 default -> 0;
             };
         }
@@ -95,19 +95,19 @@ public class CrusherBlockEntity extends ModularBlockEntity {
         super.tick();
         if (this.level.isClientSide) return;
 
-        this.energy.getCapability().receiveEnergy(1000, false);
+        this.energy.getCapabilityInstance().receiveEnergy(1000, false);
 
         if (this.currentRecipe == null) {
             Optional<CrusherRecipe> recipe = this.level.getRecipeManager()
-                    .getRecipeFor(CrusherRecipe.Type.INSTANCE, new RecipeWrapper(this.inventory.getCapability()),
+                    .getRecipeFor(CrusherRecipe.Type.INSTANCE, new RecipeWrapper(this.inventory.getCapabilityInstance()),
                             this.level);
             this.currentRecipe = recipe.orElse(null);
             this.currentRecipeTime = 0;
             this.currentRecipeEnergy = 0;
         } else {
-            if (this.currentRecipe.matches(this.inventory.getCapability(), this.level)) {
+            if (this.currentRecipe.matches(this.inventory.getCapabilityInstance(), this.level)) {
                 if (this.currentRecipeEnergy < this.currentRecipe.getEnergyCost()) {
-                    this.currentRecipeEnergy += this.energy.getCapability()
+                    this.currentRecipeEnergy += this.energy.getCapabilityInstance()
                             .extractEnergy(this.currentRecipe.getEnergyCost() - this.currentRecipeEnergy, false);
                 } else {
                     this.currentRecipeTime++;
@@ -116,9 +116,9 @@ public class CrusherBlockEntity extends ModularBlockEntity {
                         this.currentRecipeEnergy = 0;
 
                         ItemStack output = this.currentRecipe.assemble(
-                                new RecipeWrapper(this.inventory.getCapability()));
-                        if (this.inventory.getCapability().insertItem(1, output, true).isEmpty()) {
-                            this.inventory.getCapability().insertItem(1, output, false);
+                                new RecipeWrapper(this.inventory.getCapabilityInstance()));
+                        if (this.inventory.getCapabilityInstance().insertItem(1, output, true).isEmpty()) {
+                            this.inventory.getCapabilityInstance().insertItem(1, output, false);
                         } else {
                             Containers.dropItemStack(this.level, this.worldPosition.getX() + 0.5D,
                                     this.worldPosition.getY() + 1.0D, this.worldPosition.getZ() + 0.5D, output);
@@ -141,7 +141,7 @@ public class CrusherBlockEntity extends ModularBlockEntity {
         this.currentRecipeTime = nbt.getInt("CurrentRecipeTime");
         this.currentRecipeEnergy = nbt.getInt("CurrentRecipeEnergy");
         this.currentRecipe = this.level.getRecipeManager()
-                .getRecipeFor(CrusherRecipe.Type.INSTANCE, new RecipeWrapper(this.inventory.getCapability()),
+                .getRecipeFor(CrusherRecipe.Type.INSTANCE, new RecipeWrapper(this.inventory.getCapabilityInstance()),
                         this.level).orElse(null);
     }
 

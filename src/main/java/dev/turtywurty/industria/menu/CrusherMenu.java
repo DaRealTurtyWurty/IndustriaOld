@@ -46,7 +46,7 @@ public class CrusherMenu extends AbstractContainerMenu {
     }
 
     public static MenuConstructor getServerMenu(CrusherBlockEntity blockEntity, BlockPos pos) {
-        return (id, playerInv, player) -> new CrusherMenu(id, playerInv, blockEntity.getInventory().getCapability(),
+        return (id, playerInv, player) -> new CrusherMenu(id, playerInv, blockEntity.getInventory().getCapabilityInstance(),
                 pos, blockEntity.getContainerData());
     }
 

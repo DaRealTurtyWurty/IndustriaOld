@@ -42,7 +42,7 @@ public class BiomassGeneratorMenu extends AbstractContainerMenu {
     }
 
     public static MenuConstructor getServerMenu(BiomassGeneratorBlockEntity blockEntity, BlockPos pos) {
-        return (id, playerInv, player) -> new BiomassGeneratorMenu(id, playerInv, blockEntity.getInventory().getCapability(),
+        return (id, playerInv, player) -> new BiomassGeneratorMenu(id, playerInv, blockEntity.getInventory().getCapabilityInstance(),
                 pos, blockEntity.getContainerData());
     }
 

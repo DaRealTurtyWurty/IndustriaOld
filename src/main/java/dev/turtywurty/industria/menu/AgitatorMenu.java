@@ -51,7 +51,7 @@ public class AgitatorMenu extends AbstractContainerMenu {
     }
 
     public static MenuConstructor getServerMenu(AgitatorBlockEntity blockEntity, BlockPos pos) {
-        return (id, playerInv, player) -> new AgitatorMenu(id, playerInv, blockEntity.getInventory().getCapability(),
+        return (id, playerInv, player) -> new AgitatorMenu(id, playerInv, blockEntity.getInventory().getCapabilityInstance(),
                 pos, blockEntity.getContainerData());
     }
 

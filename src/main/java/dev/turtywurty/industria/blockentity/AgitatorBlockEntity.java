@@ -46,8 +46,8 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
             return switch (pIndex) {
                 case 0 -> AgitatorBlockEntity.this.progress;
                 case 1 -> AgitatorBlockEntity.this.maxProgress;
-                case 2 -> AgitatorBlockEntity.this.energy.getCapability().getEnergyStored();
-                case 3 -> AgitatorBlockEntity.this.energy.getCapability().getMaxEnergyStored();
+                case 2 -> AgitatorBlockEntity.this.energy.getCapabilityInstance().getEnergyStored();
+                case 3 -> AgitatorBlockEntity.this.energy.getCapabilityInstance().getMaxEnergyStored();
                 default -> 0;
             };
         }
@@ -57,7 +57,7 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
             switch (pIndex) {
                 case 0 -> AgitatorBlockEntity.this.progress = pValue;
                 case 1 -> AgitatorBlockEntity.this.maxProgress = pValue;
-                case 2 -> AgitatorBlockEntity.this.energy.getCapability().setEnergy(pValue);
+                case 2 -> AgitatorBlockEntity.this.energy.getCapabilityInstance().setEnergy(pValue);
             }
         }
 
@@ -153,7 +153,7 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
         }
 
         return this.level.getRecipeManager()
-                .getRecipeFor(RecipeInit.AGITATOR_TYPE.get(), new RecipeWrapper(this.getInventory().getCapability()),
+                .getRecipeFor(RecipeInit.AGITATOR_TYPE.get(), new RecipeWrapper(this.getInventory().getCapabilityInstance()),
                         this.level).orElse(null);
     }
 
@@ -175,11 +175,11 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
                     return false;
                 }
 
-                if (!ingredient.ingredient().test(getInventory().getCapability().getStackInSlot(index))) {
+                if (!ingredient.ingredient().test(getInventory().getCapabilityInstance().getStackInSlot(index))) {
                     return false;
                 }
 
-                ItemStack stack = getInventory().getCapability().getStackInSlot(index);
+                ItemStack stack = getInventory().getCapabilityInstance().getStackInSlot(index);
                 if (stack.getCount() + ingredient.count() >= stack.getMaxStackSize()) {
                     return false;
                 }
@@ -193,7 +193,7 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
                     return false;
                 }
 
-                if (!fluidStack.isFluidEqual(getFluidInventories()[index].getCapability().getFluid())) {
+                if (!getFluidInventories()[index].getCapabilityInstance().isFluidValid(index, fluidStack)) {
                     return false;
                 }
             }
@@ -203,7 +203,7 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
     }
 
     public boolean hasEnergy() {
-        return this.energy.getCapability().getEnergyStored() > 0;
+        return this.energy.getCapabilityInstance().getEnergyStored() > 0;
     }
 
     @Override
@@ -213,8 +213,8 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
         if (this.level == null || this.level.isClientSide())
             return;
 
-        getEnergy().getCapability().receiveEnergy(1000, false);
-        getFluidInventories()[0].getCapability().fill(new FluidStack(Fluids.WATER, 1000),
+        getEnergy().getCapabilityInstance().receiveEnergy(1000, false);
+        getFluidInventories()[0].getCapabilityInstance().fill(new FluidStack(Fluids.WATER, 1000),
                 IFluidHandler.FluidAction.EXECUTE);
         if (!hasEnergy())
             return;
@@ -245,9 +245,9 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
                         continue;
                     }
 
-                    ItemStack stack = getInventory().getCapability().getStackInSlot(index);
+                    ItemStack stack = getInventory().getCapabilityInstance().getStackInSlot(index);
                     stack.shrink(ingredient.count());
-                    getInventory().getCapability().setStackInSlot(index, stack);
+                    getInventory().getCapabilityInstance().setStackInSlot(index, stack);
                     continue;
                 }
 
@@ -257,7 +257,7 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
                         continue;
                     }
 
-                    getFluidInventories()[index].getCapability().drain(fluidStack, IFluidHandler.FluidAction.EXECUTE);
+                    getFluidInventories()[index].getCapabilityInstance().drain(fluidStack, IFluidHandler.FluidAction.EXECUTE);
                 }
             }
 
@@ -274,7 +274,7 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
                         continue;
                     }
 
-                    getInventory().getCapability().insertItem(index, outStack, false);
+                    getInventory().getCapabilityInstance().insertItem(index, outStack, false);
                     continue;
                 }
 
@@ -284,7 +284,7 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
                         continue;
                     }
 
-                    getFluidInventories()[index].getCapability().fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
+                    getFluidInventories()[index].getCapabilityInstance().fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
                 }
             }
         }
