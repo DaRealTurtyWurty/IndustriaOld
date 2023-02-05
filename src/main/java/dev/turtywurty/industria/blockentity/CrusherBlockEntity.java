@@ -1,27 +1,36 @@
 package dev.turtywurty.industria.blockentity;
 
 import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.block.CrusherBlock;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.recipes.CrusherRecipe;
 import io.github.darealturtywurty.turtylib.common.blockentity.ModularBlockEntity;
 import io.github.darealturtywurty.turtylib.common.blockentity.module.EnergyModule;
-import io.github.darealturtywurty.turtylib.common.blockentity.module.InventoryModule;
+import io.github.darealturtywurty.turtylib.common.blockentity.module.SidedInventoryModule;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.function.Consumer;
+
+import static io.github.darealturtywurty.turtylib.common.blockentity.module.SidedInventoryModule.SidedInventoryHandler.SidedInventoryHandlerBuilder;
 
 public class CrusherBlockEntity extends ModularBlockEntity {
     public static final Component TITLE = Component.translatable("container." + Industria.MODID + ".crusher");
 
-    private final InventoryModule inventory;
+    private final SidedInventoryModule inventory;
     private final EnergyModule energy;
 
     private CrusherRecipe currentRecipe;
@@ -62,11 +71,12 @@ public class CrusherBlockEntity extends ModularBlockEntity {
 
     public CrusherBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(BlockEntityInit.CRUSHER.get(), pPos, pBlockState);
-        this.inventory = addModule(new InventoryModule(this, 2));
+        this.inventory = addModule(new SidedInventoryModule(
+                new SidedInventoryHandlerBuilder(this).setSide(Direction.UP, 1).setSide(Direction.DOWN, 1)));
         this.energy = addModule(new EnergyModule(this));
     }
 
-    public InventoryModule getInventory() {
+    public SidedInventoryModule getInventory() {
         return inventory;
     }
 
@@ -93,19 +103,24 @@ public class CrusherBlockEntity extends ModularBlockEntity {
     @Override
     public void tick() {
         super.tick();
-        if (this.level.isClientSide) return;
+        if (this.level == null || this.level.isClientSide) return;
 
         this.energy.getCapabilityInstance().receiveEnergy(1000, false);
 
         if (this.currentRecipe == null) {
-            Optional<CrusherRecipe> recipe = this.level.getRecipeManager()
-                    .getRecipeFor(CrusherRecipe.Type.INSTANCE, new RecipeWrapper(this.inventory.getCapabilityInstance()),
-                            this.level);
-            this.currentRecipe = recipe.orElse(null);
+            this.currentRecipe = getRecipeFor(this.level, this.inventory.getNullableInventory(Direction.UP),
+                    this.inventory.getNullableInventory(Direction.DOWN));
+
+            int currentRecipeTime = this.currentRecipeTime;
+            int currentRecipeEnergy = this.currentRecipeEnergy;
+
             this.currentRecipeTime = 0;
             this.currentRecipeEnergy = 0;
+            if (currentRecipeTime != this.currentRecipeTime || currentRecipeEnergy != this.currentRecipeEnergy)
+                update();
         } else {
-            if (this.currentRecipe.matches(this.inventory.getCapabilityInstance(), this.level)) {
+            if (this.currentRecipe.matches(this.inventory.getNullableInventory(Direction.UP),
+                    this.inventory.getNullableInventory(Direction.DOWN), this.level)) {
                 if (this.currentRecipeEnergy < this.currentRecipe.getEnergyCost()) {
                     this.currentRecipeEnergy += this.energy.getCapabilityInstance()
                             .extractEnergy(this.currentRecipe.getEnergyCost() - this.currentRecipeEnergy, false);
@@ -116,9 +131,10 @@ public class CrusherBlockEntity extends ModularBlockEntity {
                         this.currentRecipeEnergy = 0;
 
                         ItemStack output = this.currentRecipe.assemble(
-                                new RecipeWrapper(this.inventory.getCapabilityInstance()));
-                        if (this.inventory.getCapabilityInstance().insertItem(1, output, true).isEmpty()) {
-                            this.inventory.getCapabilityInstance().insertItem(1, output, false);
+                                new RecipeWrapper(this.inventory.getNullableInventory(Direction.UP)));
+                        if (this.inventory.getCapabilityInstance(Direction.DOWN).insertItem(0, output, true)
+                                .isEmpty()) {
+                            this.inventory.getCapabilityInstance(Direction.DOWN).insertItem(0, output, false);
                         } else {
                             Containers.dropItemStack(this.level, this.worldPosition.getX() + 0.5D,
                                     this.worldPosition.getY() + 1.0D, this.worldPosition.getZ() + 0.5D, output);
@@ -127,10 +143,35 @@ public class CrusherBlockEntity extends ModularBlockEntity {
                         this.currentRecipe = null;
                     }
                 }
+
+                update();
             } else {
+                int currentRecipeTime = this.currentRecipeTime;
+                int currentRecipeEnergy = this.currentRecipeEnergy;
+
                 this.currentRecipe = null;
                 this.currentRecipeTime = 0;
                 this.currentRecipeEnergy = 0;
+                if (currentRecipeTime != this.currentRecipeTime || currentRecipeEnergy != this.currentRecipeEnergy)
+                    update();
+            }
+        }
+
+        List<ItemEntity> entities = this.level.getEntitiesOfClass(ItemEntity.class,
+                CrusherBlock.PICKUP_AREA.move(this.worldPosition), entity -> {
+                    ItemStack stack = entity.getItem().copy();
+                    stack.setCount(1);
+                    return this.inventory.getCapabilityInstance(Direction.UP).insertItem(0, stack, true).isEmpty();
+                });
+        if (entities.isEmpty()) return;
+
+        for (ItemEntity entity : entities) {
+            ItemStack stack = entity.getItem().copy();
+            stack = this.inventory.getCapabilityInstance(Direction.UP).insertItem(0, stack, false);
+            if (stack.isEmpty()) {
+                entity.remove(Entity.RemovalReason.DISCARDED);
+            } else {
+                entity.setItem(stack);
             }
         }
     }
@@ -140,9 +181,10 @@ public class CrusherBlockEntity extends ModularBlockEntity {
         super.load(nbt);
         this.currentRecipeTime = nbt.getInt("CurrentRecipeTime");
         this.currentRecipeEnergy = nbt.getInt("CurrentRecipeEnergy");
-        this.currentRecipe = this.level.getRecipeManager()
-                .getRecipeFor(CrusherRecipe.Type.INSTANCE, new RecipeWrapper(this.inventory.getCapabilityInstance()),
-                        this.level).orElse(null);
+        if (this.level != null && !this.level.isClientSide) {
+            this.currentRecipe = getRecipeFor(this.level, this.inventory.getNullableInventory(Direction.UP),
+                    this.inventory.getNullableInventory(Direction.DOWN));
+        }
     }
 
     @Override
@@ -150,5 +192,33 @@ public class CrusherBlockEntity extends ModularBlockEntity {
         super.saveAdditional(nbt);
         nbt.putInt("CurrentRecipeTime", this.currentRecipeTime);
         nbt.putInt("CurrentRecipeEnergy", this.currentRecipeEnergy);
+    }
+
+    @Override
+    protected List<Consumer<CompoundTag>> getReadSyncData() {
+        List<Consumer<CompoundTag>> readSyncData = super.getReadSyncData();
+        readSyncData.add(nbt -> {
+            this.currentRecipeTime = nbt.getInt("CurrentRecipeTime");
+            this.currentRecipeEnergy = nbt.getInt("CurrentRecipeEnergy");
+        });
+
+        return readSyncData;
+    }
+
+    @Override
+    protected List<Consumer<CompoundTag>> getWriteSyncData() {
+        List<Consumer<CompoundTag>> writeSyncData = super.getWriteSyncData();
+        writeSyncData.add(nbt -> {
+            nbt.putInt("CurrentRecipeTime", this.currentRecipeTime);
+            nbt.putInt("CurrentRecipeEnergy", this.currentRecipeEnergy);
+        });
+
+        return writeSyncData;
+    }
+
+    private static CrusherRecipe getRecipeFor(Level level, ItemStackHandler input, ItemStackHandler output) {
+        return level.getRecipeManager().getRecipes().stream()
+                .filter(recipe -> recipe.getType() == CrusherRecipe.Type.INSTANCE).map(CrusherRecipe.class::cast)
+                .filter(recipe -> recipe.matches(input, output, level)).findFirst().orElse(null);
     }
 }

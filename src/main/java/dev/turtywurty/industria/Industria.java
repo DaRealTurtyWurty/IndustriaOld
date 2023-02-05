@@ -27,6 +27,7 @@ public class Industria {
         TagInit.Items.init();
 
         ItemInit.ITEMS.register(bus);
+        MachineUpgradeInit.MACHINE_UPGRADES.register(bus);
         BlockInit.BLOCKS.register(bus);
         BlockEntityInit.BLOCK_ENTITIES.register(bus);
         MenuInit.MENUS.register(bus);

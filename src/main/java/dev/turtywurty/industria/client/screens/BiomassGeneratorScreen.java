@@ -27,8 +27,8 @@ public class BiomassGeneratorScreen extends AbstractContainerScreen<BiomassGener
     protected void init() {
         super.init();
         addRenderableWidget(
-                new EnergyWidget.Builder(this.leftPos + 8, this.topPos + 14, 16, 50).energyStorage(this.menu::getEnergy,
-                        this.menu::getMaxEnergy).gradient(Gradient.of(0xFFFF0000, 0xFF660000)).tooltip().build(this));
+                new EnergyWidget.Builder(this.leftPos + 8, this.topPos + 16, 16, 50).energyStorage(this.menu::getEnergy,
+                        this.menu::getMaxEnergy).build(this));
     }
 
     @Override

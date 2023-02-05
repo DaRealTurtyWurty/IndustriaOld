@@ -1,0 +1,12 @@
+{
+    "type": "industria:crusher",
+    "input": {
+        "tag": "forge:ores/iron"
+    },
+    "output": {
+        "item": "minecraft:raw_iron",
+        "count": 2
+    },
+    "processTime": 10,
+    "energyCost": 1000
+}

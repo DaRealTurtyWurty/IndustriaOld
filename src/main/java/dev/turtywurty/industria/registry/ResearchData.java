@@ -1,4 +1,4 @@
-package dev.turtywurty.industria.data;
+package dev.turtywurty.industria.registry;
 
 import com.mojang.datafixers.util.Either;
 import io.github.darealturtywurty.turtylib.core.multiblock.Multiblock;

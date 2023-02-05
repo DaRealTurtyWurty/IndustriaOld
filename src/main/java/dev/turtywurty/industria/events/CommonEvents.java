@@ -112,11 +112,11 @@ public class CommonEvents {
 
                     living.getMainHandItem().shrink(1);
 
-                    ItemStack toInsert = inventory.insertItem(slot,
-                            ItemInit.IMPURE_FORMIC_ACID.get().getDefaultInstance(), false);
-                    if (!toInsert.isEmpty()) {
-                        living.spawnAtLocation(toInsert);
-                    }
+                    //ItemStack toInsert = inventory.insertItem(slot,
+                    //        ItemInit.IMPURE_FORMIC_ACID.get().getDefaultInstance(), false);
+                    //if (!toInsert.isEmpty()) {
+                    //    living.spawnAtLocation(toInsert);
+                    //}
                 });
             }
         }

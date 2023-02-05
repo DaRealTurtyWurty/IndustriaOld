@@ -1,7 +1,6 @@
 package dev.turtywurty.industria.recipes;
 
 import com.google.gson.JsonObject;
-import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.init.RecipeInit;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -11,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.minecraftforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class CrusherRecipe implements Recipe<Container> {
@@ -32,8 +31,13 @@ public class CrusherRecipe implements Recipe<Container> {
         this.energyCost = energyCost;
     }
 
-    public boolean matches(IItemHandlerModifiable container, Level level) {
-        return matches(new RecipeWrapper(container), level);
+    public boolean matches(IItemHandlerModifiable input, IItemHandlerModifiable output, Level level) {
+        if (level.isClientSide()) return false;
+
+
+        return this.input.test(input.getStackInSlot(0)) && (output.getStackInSlot(0)
+                .isEmpty() || ItemHandlerHelper.canItemStacksStack(output.getStackInSlot(0),
+                this.output) && output.getStackInSlot(0).getCount() < output.getStackInSlot(0).getMaxStackSize());
     }
 
     @Override

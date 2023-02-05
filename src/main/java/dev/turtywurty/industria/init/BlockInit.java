@@ -22,4 +22,7 @@ public class BlockInit {
     public static final RegistryObject<TreeTapBlock> TREE_TAP = BLOCKS.register("tree_tap", TreeTapBlock::new);
 
     public static final RegistryObject<AgitatorBlock> AGITATOR = BLOCKS.register("agitator", AgitatorBlock::new);
+
+    public static final RegistryObject<TreeDecapitatorBlock> TREE_DECAPITATOR = BLOCKS.register("tree_decapitator",
+            TreeDecapitatorBlock::new);
 }

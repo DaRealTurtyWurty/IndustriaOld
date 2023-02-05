@@ -1,7 +1,7 @@
 package dev.turtywurty.industria.init;
 
 import dev.turtywurty.industria.Industria;
-import dev.turtywurty.industria.data.ResearchData;
+import dev.turtywurty.industria.registry.ResearchData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;

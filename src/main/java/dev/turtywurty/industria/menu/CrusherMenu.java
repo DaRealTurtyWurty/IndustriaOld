@@ -5,6 +5,7 @@ import dev.turtywurty.industria.init.BlockInit;
 import dev.turtywurty.industria.init.MenuInit;
 import io.github.darealturtywurty.turtylib.common.container.slot.SlotNoPlace;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -17,7 +18,7 @@ public class CrusherMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess access;
     private final ContainerData data;
 
-    protected CrusherMenu(int containerId, Inventory playerInv, IItemHandler slots, BlockPos pos, ContainerData data) {
+    protected CrusherMenu(int containerId, Inventory playerInv, IItemHandler inputSlot, IItemHandler outputSlot, BlockPos pos, ContainerData data) {
         super(MenuInit.CRUSHER.get(), containerId);
         this.access = ContainerLevelAccess.create(playerInv.player.level, pos);
         this.data = data;
@@ -25,10 +26,10 @@ public class CrusherMenu extends AbstractContainerMenu {
         final int slotSizePlus2 = 18;
 
         // Input Slot
-        this.addSlot(new SlotItemHandler(slots, 0, 80, 13));
+        this.addSlot(new SlotItemHandler(inputSlot, 0, 80, 13));
 
         // Output Slot
-        this.addSlot(new SlotNoPlace(slots, 1, 80, 57));
+        this.addSlot(new SlotNoPlace(outputSlot, 0, 80, 57));
 
         // Player Inventory
         for (int row = 0; row < 3; ++row) {
@@ -46,12 +47,14 @@ public class CrusherMenu extends AbstractContainerMenu {
     }
 
     public static MenuConstructor getServerMenu(CrusherBlockEntity blockEntity, BlockPos pos) {
-        return (id, playerInv, player) -> new CrusherMenu(id, playerInv, blockEntity.getInventory().getCapabilityInstance(),
-                pos, blockEntity.getContainerData());
+        return (id, playerInv, player) -> new CrusherMenu(id, playerInv,
+                blockEntity.getInventory().getCapabilityInstance(Direction.UP),
+                blockEntity.getInventory().getCapabilityInstance(Direction.DOWN), pos, blockEntity.getContainerData());
     }
 
     public static CrusherMenu getClientMenu(int id, Inventory playerInv) {
-        return new CrusherMenu(id, playerInv, new ItemStackHandler(2), BlockPos.ZERO, new SimpleContainerData(6));
+        return new CrusherMenu(id, playerInv, new ItemStackHandler(1), new ItemStackHandler(1), BlockPos.ZERO,
+                new SimpleContainerData(6));
     }
 
     @Override

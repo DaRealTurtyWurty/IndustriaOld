@@ -4,6 +4,7 @@ import dev.turtywurty.industria.blockentity.BiomassGeneratorBlockEntity;
 import dev.turtywurty.industria.init.BlockInit;
 import dev.turtywurty.industria.init.MenuInit;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -42,12 +43,13 @@ public class BiomassGeneratorMenu extends AbstractContainerMenu {
     }
 
     public static MenuConstructor getServerMenu(BiomassGeneratorBlockEntity blockEntity, BlockPos pos) {
-        return (id, playerInv, player) -> new BiomassGeneratorMenu(id, playerInv, blockEntity.getInventory().getCapabilityInstance(),
-                pos, blockEntity.getContainerData());
+        return (id, playerInv, player) -> new BiomassGeneratorMenu(id, playerInv,
+                blockEntity.getInventory().getNullableInventory(Direction.UP), pos, blockEntity.getContainerData());
     }
 
     public static BiomassGeneratorMenu getClientMenu(int id, Inventory playerInv) {
-        return new BiomassGeneratorMenu(id, playerInv, new ItemStackHandler(1), BlockPos.ZERO, new SimpleContainerData(4));
+        return new BiomassGeneratorMenu(id, playerInv, new ItemStackHandler(1), BlockPos.ZERO,
+                new SimpleContainerData(4));
     }
 
     @Override

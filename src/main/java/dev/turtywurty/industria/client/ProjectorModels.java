@@ -1,6 +1,6 @@
 package dev.turtywurty.industria.client;
 
-import dev.turtywurty.industria.data.ResearchData;
+import dev.turtywurty.industria.registry.ResearchData;
 import net.minecraft.client.model.Model;
 import net.minecraftforge.registries.RegistryObject;
 

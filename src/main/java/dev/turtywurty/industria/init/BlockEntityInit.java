@@ -30,4 +30,8 @@ public class BlockEntityInit {
     public static final RegistryObject<BlockEntityType<AgitatorBlockEntity>> AGITATOR = BLOCK_ENTITIES.register(
             "agitator",
             () -> BlockEntityType.Builder.of(AgitatorBlockEntity::new, BlockInit.AGITATOR.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<TreeDecapitatorBlockEntity>> TREE_DECAPITATOR = BLOCK_ENTITIES.register(
+            "tree_decapitator",
+            () -> BlockEntityType.Builder.of(TreeDecapitatorBlockEntity::new, BlockInit.TREE_DECAPITATOR.get()).build(null));
 }

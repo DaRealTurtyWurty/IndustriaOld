@@ -17,7 +17,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
@@ -152,9 +151,8 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
             return null;
         }
 
-        return this.level.getRecipeManager()
-                .getRecipeFor(RecipeInit.AGITATOR_TYPE.get(), new RecipeWrapper(this.getInventory().getCapabilityInstance()),
-                        this.level).orElse(null);
+        return this.level.getRecipeManager().getRecipeFor(RecipeInit.AGITATOR_TYPE.get(),
+                new RecipeWrapper(this.getInventory().getCapabilityInstance()), this.level).orElse(null);
     }
 
     private boolean isValidRecipe(AgitatorRecipe recipe) {
@@ -210,14 +208,12 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
     public void tick() {
         super.tick();
 
-        if (this.level == null || this.level.isClientSide())
-            return;
+        if (this.level == null || this.level.isClientSide()) return;
 
         getEnergy().getCapabilityInstance().receiveEnergy(1000, false);
-        getFluidInventories()[0].getCapabilityInstance().fill(new FluidStack(Fluids.WATER, 1000),
-                IFluidHandler.FluidAction.EXECUTE);
-        if (!hasEnergy())
-            return;
+        getFluidInventories()[0].getCapabilityInstance()
+                .fill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
+        if (!hasEnergy()) return;
 
         AgitatorRecipe recipe = getRecipe();
         if (!isValidRecipe(recipe)) {
@@ -257,7 +253,8 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
                         continue;
                     }
 
-                    getFluidInventories()[index].getCapabilityInstance().drain(fluidStack, IFluidHandler.FluidAction.EXECUTE);
+                    getFluidInventories()[index].getCapabilityInstance()
+                            .drain(fluidStack, IFluidHandler.FluidAction.EXECUTE);
                 }
             }
 
@@ -284,9 +281,18 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
                         continue;
                     }
 
-                    getFluidInventories()[index].getCapabilityInstance().fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
+                    getFluidInventories()[index].getCapabilityInstance()
+                            .fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
                 }
             }
         }
+    }
+
+    public int getProgress() {
+        return this.progress;
+    }
+
+    public int getMaxProgress() {
+        return this.maxProgress;
     }
 }

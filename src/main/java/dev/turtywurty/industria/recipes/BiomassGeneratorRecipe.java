@@ -12,27 +12,9 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
-import org.jetbrains.annotations.Nullable;
 
-public class BiomassGeneratorRecipe implements Recipe<Container> {
+public record BiomassGeneratorRecipe(ResourceLocation id, Ingredient input, int energy) implements Recipe<Container> {
     public static final String ID = "biomass_generator";
-
-    private final ResourceLocation id;
-    private final Ingredient input;
-    private final int energy;
-
-
-    public BiomassGeneratorRecipe(ResourceLocation id, Ingredient input, int energy) {
-        this.id = id;
-        this.input = input;
-        this.energy = energy;
-    }
-
-    public boolean matches(IItemHandlerModifiable container, Level level) {
-        return matches(new RecipeWrapper(container), level);
-    }
 
     @Override
     public boolean matches(Container pContainer, Level pLevel) {
@@ -74,14 +56,6 @@ public class BiomassGeneratorRecipe implements Recipe<Container> {
         return RecipeInit.BIOMASS_GENERATOR_TYPE.get();
     }
 
-    public Ingredient getInput() {
-        return this.input;
-    }
-
-    public int getEnergy() {
-        return this.energy;
-    }
-
     public static final class Type implements RecipeType<BiomassGeneratorRecipe> {
         public static final BiomassGeneratorRecipe.Type INSTANCE = new BiomassGeneratorRecipe.Type();
 
@@ -109,7 +83,7 @@ public class BiomassGeneratorRecipe implements Recipe<Container> {
         }
 
         @Override
-        public @Nullable BiomassGeneratorRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
+        public BiomassGeneratorRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
             Ingredient input = Ingredient.fromNetwork(pBuffer);
             int energy = pBuffer.readInt();
 
@@ -118,8 +92,8 @@ public class BiomassGeneratorRecipe implements Recipe<Container> {
 
         @Override
         public void toNetwork(FriendlyByteBuf pBuffer, BiomassGeneratorRecipe pRecipe) {
-            pRecipe.getInput().toNetwork(pBuffer);
-            pBuffer.writeInt(pRecipe.getEnergy());
+            pRecipe.input().toNetwork(pBuffer);
+            pBuffer.writeInt(pRecipe.energy());
         }
     }
 }
