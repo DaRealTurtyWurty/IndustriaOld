@@ -1,6 +1,0 @@
-{
-    "parent": "block/cube_all",
-    "textures": {
-        "all": "industria:blocks/biomass_generator"
-    }
-}
