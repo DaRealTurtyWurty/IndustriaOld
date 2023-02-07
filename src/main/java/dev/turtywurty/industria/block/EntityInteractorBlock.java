@@ -2,11 +2,14 @@ package dev.turtywurty.industria.block;
 
 import dev.turtywurty.industria.blockentity.EntityInteractorBlockEntity;
 import dev.turtywurty.industria.init.BlockEntityInit;
+import dev.turtywurty.industria.menu.EntityInteractorMenu;
 import io.github.darealturtywurty.turtylib.common.blockentity.TickableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -47,7 +50,8 @@ public class EntityInteractorBlock extends Block implements EntityBlock {
     public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand,
                                  BlockHitResult pHit) {
         if (!pLevel.isClientSide() && pLevel.getBlockEntity(pPos) instanceof EntityInteractorBlockEntity blockEntity) {
-            blockEntity.openInventory((ServerPlayer) pPlayer);
+            MenuProvider provider = new SimpleMenuProvider(EntityInteractorMenu::getServerMenu,
+                    EntityInteractorBlockEntity.TITLE);
         }
 
         return InteractionResult.sidedSuccess(pLevel.isClientSide);

@@ -1,19 +1,21 @@
 package dev.turtywurty.industria.blockentity;
 
 import com.mojang.authlib.GameProfile;
+import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import io.github.darealturtywurty.turtylib.common.blockentity.ModularBlockEntity;
 import io.github.darealturtywurty.turtylib.common.blockentity.module.EnergyModule;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 public class EntityInteractorBlockEntity extends ModularBlockEntity {
+    public static final Component TITLE = Component.translatable(Industria.MODID + ".container.entity_interactor");
     private FakePlayer player;
     private UUID playerUUID;
     private int interactRate = 20;
@@ -95,12 +98,7 @@ public class EntityInteractorBlockEntity extends ModularBlockEntity {
         return this.energy;
     }
 
-    public void openInventory(ServerPlayer pPlayer) {
-        if (this.player != null) {
-            var provider = new SimpleMenuProvider(
-                    (pContainerId, pPlayerInventory, pPlayer1) -> this.player.inventoryMenu,
-                    this.player.getDisplayName());
-            NetworkHooks.openScreen(pPlayer, provider, this.worldPosition);
-        }
+    public ContainerData getContainerData() {
+        return null;
     }
 }
