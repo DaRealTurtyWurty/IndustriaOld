@@ -25,4 +25,7 @@ public class BlockInit {
 
     public static final RegistryObject<TreeDecapitatorBlock> TREE_DECAPITATOR = BLOCKS.register("tree_decapitator",
             TreeDecapitatorBlock::new);
+
+    public static final RegistryObject<EntityInteractorBlock> ENTITY_INTERACTOR = BLOCKS.register("entity_interactor",
+            EntityInteractorBlock::new);
 }

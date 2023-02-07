@@ -1,5 +1,6 @@
 package dev.turtywurty.industria.init;
 
+import ca.weblite.objc.Proxy;
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.blockentity.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -14,10 +15,11 @@ public class BlockEntityInit {
     public static final RegistryObject<BlockEntityType<CrusherBlockEntity>> CRUSHER = BLOCK_ENTITIES.register("crusher",
             () -> BlockEntityType.Builder.of(CrusherBlockEntity::new, BlockInit.CRUSHER.get()).build(null));
 
-    public static final RegistryObject<BlockEntityType<BiomassGeneratorBlockEntity>> BIOMASS_GENERATOR = BLOCK_ENTITIES.register(
+    public static final RegistryObject<BlockEntityType<BiomassGeneratorBlockEntity>> BIOMASS_GENERATOR =
+            BLOCK_ENTITIES.register(
             "biomass_generator",
             () -> BlockEntityType.Builder.of(BiomassGeneratorBlockEntity::new, BlockInit.BIOMASS_GENERATOR.get())
-                    .build(null));
+                                         .build(null));
 
     public static final RegistryObject<BlockEntityType<ResearcherBlockEntity>> RESEARCHER = BLOCK_ENTITIES.register(
             "researcher",
@@ -31,7 +33,15 @@ public class BlockEntityInit {
             "agitator",
             () -> BlockEntityType.Builder.of(AgitatorBlockEntity::new, BlockInit.AGITATOR.get()).build(null));
 
-    public static final RegistryObject<BlockEntityType<TreeDecapitatorBlockEntity>> TREE_DECAPITATOR = BLOCK_ENTITIES.register(
+    public static final RegistryObject<BlockEntityType<TreeDecapitatorBlockEntity>> TREE_DECAPITATOR =
+            BLOCK_ENTITIES.register(
             "tree_decapitator",
-            () -> BlockEntityType.Builder.of(TreeDecapitatorBlockEntity::new, BlockInit.TREE_DECAPITATOR.get()).build(null));
+            () -> BlockEntityType.Builder.of(TreeDecapitatorBlockEntity::new, BlockInit.TREE_DECAPITATOR.get())
+                                         .build(null));
+
+    public static final RegistryObject<BlockEntityType<EntityInteractorBlockEntity>> ENTITY_INTERACTOR =
+            BLOCK_ENTITIES.register(
+            "entity_interactor",
+            () -> BlockEntityType.Builder.of(EntityInteractorBlockEntity::new, BlockInit.ENTITY_INTERACTOR.get())
+                                         .build(null));
 }
