@@ -51,9 +51,12 @@ public class MenuInit {
             }));
 
     public static final RegistryObject<MenuType<EntityInteractorMenu>> ENTITY_INTERACTOR = MENUS.register(
-            "entity_interactor", () -> new MenuType<>(EntityInteractorMenu::getClientMenu));
+            "entity_interactor", () -> IForgeMenuType.create((windowId, inv, data) -> {
+                return EntityInteractorMenu.getClientMenu(windowId, inv, null);
+            }));
 
-    private static <T extends AbstractContainerMenu> MenuType<T> createPositionedMenu(ClientPositionedMenuConstructor<T> constructor) {
+    private static <T extends AbstractContainerMenu> MenuType<T> createPositionedMenu(
+            ClientPositionedMenuConstructor<T> constructor) {
         return IForgeMenuType.create((windowId, inv, data) -> {
             BlockPos pos = data.readBlockPos();
 

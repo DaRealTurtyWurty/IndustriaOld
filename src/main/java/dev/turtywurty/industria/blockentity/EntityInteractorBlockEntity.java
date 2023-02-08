@@ -30,6 +30,27 @@ public class EntityInteractorBlockEntity extends ModularBlockEntity {
 
     private final EnergyModule energy;
 
+    private final ContainerData containerData = new ContainerData() {
+        @Override
+        public int get(int pIndex) {
+            if(pIndex == 0) return energy.getCapabilityInstance().getEnergyStored();
+            if(pIndex == 1) return energy.getCapabilityInstance().getMaxEnergyStored();
+            if(pIndex == 2) return interactRate;
+            return 0;
+        }
+
+        @Override
+        public void set(int pIndex, int pValue) {
+            if(pIndex == 0) energy.getCapabilityInstance().setEnergy(pValue);
+            if(pIndex == 2) interactRate = pValue;
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+    };
+
     public EntityInteractorBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntityInit.ENTITY_INTERACTOR.get(), pos, state);
 
@@ -99,6 +120,6 @@ public class EntityInteractorBlockEntity extends ModularBlockEntity {
     }
 
     public ContainerData getContainerData() {
-        return null;
+        return this.containerData;
     }
 }
