@@ -2,6 +2,7 @@ package dev.turtywurty.industria.network;
 
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.network.clientbound.*;
+import dev.turtywurty.industria.network.serverbound.SBlockEntityLoadPacket;
 import dev.turtywurty.industria.network.serverbound.SRequestResearchDataPacket;
 import dev.turtywurty.industria.network.serverbound.SStartResearchPacket;
 import dev.turtywurty.industria.network.serverbound.SSwitchAgitatorIOTypePacket;
@@ -35,6 +36,9 @@ public final class PacketManager {
         register(SStartResearchPacket.class, SStartResearchPacket::new);
         register(CResearchFailedPacket.class, CResearchFailedPacket::new);
         register(SSwitchAgitatorIOTypePacket.class, SSwitchAgitatorIOTypePacket::new);
+        register(CFakePlayerCreatedPacket.class, CFakePlayerCreatedPacket::new);
+        register(SBlockEntityLoadPacket.class, SBlockEntityLoadPacket::new);
+
         Industria.LOGGER.info("Registered {} packets", NUM_PACKETS);
     }
 

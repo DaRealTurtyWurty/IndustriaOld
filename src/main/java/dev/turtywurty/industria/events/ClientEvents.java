@@ -34,6 +34,7 @@ public class ClientEvents {
                 MenuScreens.register(MenuInit.RESEARCHER.get(), ResearcherScreen::new);
                 MenuScreens.register(MenuInit.AGITATOR.get(), AgitatorScreen::new);
                 MenuScreens.register(MenuInit.TREE_DECAPITATOR.get(), TreeDecapitatorScreen::new);
+                MenuScreens.register(MenuInit.ENTITY_INTERACTOR.get(), EntityInteractorScreen::new);
 
                 Industria.LOGGER.info("Adding wood types to atlas");
                 for (WoodRegistrySet woodSet : WoodRegistrySet.getWoodSets()) {

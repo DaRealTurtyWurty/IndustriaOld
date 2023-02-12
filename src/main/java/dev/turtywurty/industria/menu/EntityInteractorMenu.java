@@ -6,51 +6,36 @@ import dev.turtywurty.industria.init.BlockInit;
 import dev.turtywurty.industria.init.MenuInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import org.jetbrains.annotations.Nullable;
 
-// TODO: Figure out how to pass the fake player inventory to the menu
 public class EntityInteractorMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess access;
     private final ContainerData data;
+    private final BlockPos pos;
 
-    protected EntityInteractorMenu(int containerId, Inventory playerInv, Container slots, BlockPos pos,
-                                   ContainerData data, @Nullable Player fakePlayer) {
+    protected EntityInteractorMenu(int containerId, Inventory playerInv, BlockPos pos, ContainerData data, @Nullable Player fakePlayer) {
         super(MenuInit.ENTITY_INTERACTOR.get(), containerId);
         this.access = ContainerLevelAccess.create(playerInv.player.level, pos);
         this.data = data;
+        this.pos = pos;
 
         final int slotSizePlus2 = 18;
 
-        // Fake Player Inventory
-        for (int row = 0; row < 3; ++row) {
-            for (int col = 0; col < 9; ++col) {
-                this.addSlot(new Slot(slots, col + row * 9 + 9, 8 + col * slotSizePlus2, 84 + row * slotSizePlus2));
-            }
-        }
-
-        // Fake Player Hotbar
-        for (int row = 0; row < 9; ++row) {
-            this.addSlot(new Slot(slots, row, 8 + row * slotSizePlus2, 142));
-        }
-
+        // Fake Player Armor
         for (int index = 0; index < 4; ++index) {
             final EquipmentSlot equipmentslot = InventoryMenu.SLOT_IDS[index];
-            this.addSlot(new Slot(playerInv, 39 - index, 8, 8 + index * 18) {
+            this.addSlot(new Slot(fakePlayer.getInventory(), 39 - index, 8, 8 + index * 18) {
                 @Override
                 public void set(ItemStack stack) {
                     ItemStack itemstack = this.getItem();
                     super.set(stack);
-                    if (fakePlayer != null) {
-                        fakePlayer.onEquipItem(equipmentslot, itemstack, stack);
-                    }
+
+                    fakePlayer.onEquipItem(equipmentslot, itemstack, stack);
                 }
 
                 @Override
@@ -60,14 +45,7 @@ public class EntityInteractorMenu extends AbstractContainerMenu {
 
                 @Override
                 public boolean mayPlace(ItemStack stack) {
-                    return fakePlayer != null && stack.canEquip(equipmentslot, fakePlayer);
-                }
-
-                @Override
-                public boolean mayPickup(Player player) {
-                    ItemStack itemstack = this.getItem();
-                    return (itemstack.isEmpty() || player.isCreative() || !EnchantmentHelper.hasBindingCurse(
-                            itemstack)) && super.mayPickup(player);
+                    return stack.canEquip(equipmentslot, fakePlayer);
                 }
 
                 @Override
@@ -78,29 +56,49 @@ public class EntityInteractorMenu extends AbstractContainerMenu {
             });
         }
 
+        // Fake Player Inventory
+        for (int row = 0; row < 3; ++row) {
+            for (int col = 0; col < 9; ++col) {
+                this.addSlot(new Slot(fakePlayer.getInventory(), col + row * 9 + 9, 8 + col * slotSizePlus2,
+                        84 + row * slotSizePlus2));
+            }
+        }
+
+        // Fake Player Hotbar
+        for (int row = 0; row < 9; ++row) {
+            this.addSlot(new Slot(fakePlayer.getInventory(), row, 8 + row * slotSizePlus2, 142));
+        }
+
+        // Fake Player Off-hand
+        this.addSlot(new Slot(fakePlayer.getInventory(), 40, 77, 62) {
+            public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+                return Pair.of(InventoryMenu.BLOCK_ATLAS, InventoryMenu.EMPTY_ARMOR_SLOT_SHIELD);
+            }
+        });
+
         // Player Inventory
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
-                this.addSlot(new Slot(playerInv, col + row * 9 + 9, 8 + col * slotSizePlus2, 84 + row * slotSizePlus2));
+                this.addSlot(
+                        new Slot(playerInv, col + row * 9 + 9, 8 + col * slotSizePlus2, 174 + row * slotSizePlus2));
             }
         }
 
         // Player Hotbar
         for (int row = 0; row < 9; ++row) {
-            this.addSlot(new Slot(playerInv, row, 8 + row * slotSizePlus2, 142));
+            this.addSlot(new Slot(playerInv, row, 8 + row * slotSizePlus2, 232));
         }
 
         this.addDataSlots(data);
     }
 
     public static MenuConstructor getServerMenu(EntityInteractorBlockEntity blockEntity, BlockPos pos) {
-        return (id, playerInv, player) -> new EntityInteractorMenu(id, playerInv,
-                blockEntity.getPlayer().getInventory(), pos, blockEntity.getContainerData(), blockEntity.getPlayer());
+        return (id, playerInv, player) -> new EntityInteractorMenu(id, playerInv, pos, blockEntity.getContainerData(),
+                blockEntity.getPlayer());
     }
 
-    public static EntityInteractorMenu getClientMenu(int id, Inventory playerInv, Player player) {
-        return new EntityInteractorMenu(id, playerInv, new SimpleContainer(41), BlockPos.ZERO,
-                new SimpleContainerData(3), player);
+    public static EntityInteractorMenu getClientMenu(int id, Inventory playerInv, Player player, BlockPos pos) {
+        return new EntityInteractorMenu(id, playerInv, pos, new SimpleContainerData(3), player);
     }
 
     @Override
@@ -143,5 +141,9 @@ public class EntityInteractorMenu extends AbstractContainerMenu {
 
     public int getInteractRate() {
         return this.data.get(2);
+    }
+
+    public BlockPos getPos() {
+        return this.pos;
     }
 }

@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 public class EntityInteractorBlock extends Block implements EntityBlock {
@@ -36,8 +37,7 @@ public class EntityInteractorBlock extends Block implements EntityBlock {
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState,
-                                                                  BlockEntityType<T> pBlockEntityType) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
         return pLevel.isClientSide() ? null : ($0, $1, $2, blockEntity) -> ((TickableBlockEntity) blockEntity).tick();
     }
 
@@ -47,11 +47,11 @@ public class EntityInteractorBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand,
-                                 BlockHitResult pHit) {
+    public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand, BlockHitResult pHit) {
         if (!pLevel.isClientSide() && pLevel.getBlockEntity(pPos) instanceof EntityInteractorBlockEntity blockEntity) {
-            MenuProvider provider = new SimpleMenuProvider(EntityInteractorMenu::getServerMenu,
+            MenuProvider provider = new SimpleMenuProvider(EntityInteractorMenu.getServerMenu(blockEntity, pPos),
                     EntityInteractorBlockEntity.TITLE);
+            NetworkHooks.openScreen((ServerPlayer) pPlayer, provider, pPos);
         }
 
         return InteractionResult.sidedSuccess(pLevel.isClientSide);

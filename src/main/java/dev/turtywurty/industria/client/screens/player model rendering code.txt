@@ -1,0 +1,315 @@
+package dev.turtywurty.industria.client.model;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import dev.turtywurty.industria.Industria;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
+
+public class PlayerModel extends Model {
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(
+            new ResourceLocation(Industria.MODID, "player"), "main");
+
+    private final ModelPart main;
+    private final ModelPart Head;
+    private final ModelPart Body;
+    private final ModelPart RightArm;
+    private final ModelPart LeftArm;
+    private final ModelPart RightLeg;
+    private final ModelPart LeftLeg;
+
+    public PlayerModel(ModelPart root) {
+        super(RenderType::entityTranslucent);
+        this.main = root.getChild("main");
+        this.Head = this.main.getChild("Head");
+        this.Body = this.main.getChild("Body");
+        this.RightArm = this.main.getChild("RightArm");
+        this.LeftArm = this.main.getChild("LeftArm");
+        this.RightLeg = this.main.getChild("RightLeg");
+        this.LeftLeg = this.main.getChild("LeftLeg");
+    }
+
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+
+        PartDefinition main = partdefinition.addOrReplaceChild("main", CubeListBuilder.create(),
+                PartPose.offset(0.0F, 7.0F, 0.0F));
+
+        main.addOrReplaceChild("LeftLeg", CubeListBuilder.create().texOffs(16, 48)
+                        .addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.0F)).texOffs(0, 48)
+                        .addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.25F)),
+                PartPose.offset(1.9F, 5.0F, 0.0F));
+
+        main.addOrReplaceChild("RightLeg", CubeListBuilder.create().texOffs(0, 16)
+                        .addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.0F)).texOffs(0, 32)
+                        .addBox(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.25F)),
+                PartPose.offset(-1.9F, 5.0F, 0.0F));
+
+        main.addOrReplaceChild("LeftArm", CubeListBuilder.create().texOffs(32, 48)
+                        .addBox(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.0F)).texOffs(48, 48)
+                        .addBox(-1.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.25F)),
+                PartPose.offset(5.0F, -5.0F, 0.0F));
+
+        main.addOrReplaceChild("RightArm", CubeListBuilder.create().texOffs(40, 16)
+                        .addBox(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.0F)).texOffs(40, 32)
+                        .addBox(-3.0F, -2.0F, -2.0F, 4.0F, 12.0F, 4.0F, new CubeDeformation(0.25F)),
+                PartPose.offset(-5.0F, -5.0F, 0.0F));
+
+        main.addOrReplaceChild("Body", CubeListBuilder.create().texOffs(16, 16)
+                        .addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(0.0F)).texOffs(16, 32)
+                        .addBox(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, new CubeDeformation(0.25F)),
+                PartPose.offset(0.0F, -7.0F, 0.0F));
+
+        main.addOrReplaceChild("Head", CubeListBuilder.create().texOffs(0, 0)
+                        .addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new CubeDeformation(0.0F)).texOffs(32, 0)
+                        .addBox(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, new CubeDeformation(0.5F)),
+                PartPose.offset(0.0F, -7.0F, 0.0F));
+
+        return LayerDefinition.create(meshdefinition, 64, 64);
+    }
+
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        main.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+    }
+
+    public ModelPart getMain() {
+        return main;
+    }
+
+    public ModelPart getHead() {
+        return Head;
+    }
+
+    public ModelPart getBody() {
+        return Body;
+    }
+
+    public ModelPart getRightArm() {
+        return RightArm;
+    }
+
+    public ModelPart getLeftArm() {
+        return LeftArm;
+    }
+
+    public ModelPart getRightLeg() {
+        return RightLeg;
+    }
+
+    public ModelPart getLeftLeg() {
+        return LeftLeg;
+    }
+}
+
+@Override
+    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+
+        if (this.minecraft == null || this.minecraft.level == null) return;
+        if (this.minecraft.level.getBlockEntity(
+                this.menu.getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+            PoseStack modelPose = RenderSystem.getModelViewStack();
+            modelPose.pushPose();
+            modelPose.translate(this.leftPos + 50, this.topPos + 30, 1050);
+            modelPose.scale(1.0F, 1.0F, -1.0F);
+            RenderSystem.applyModelViewMatrix();
+
+            var stack = new PoseStack();
+            stack.translate(0, 0, 1000);
+            stack.scale(25, 25, 25);
+
+            float mouseX = (float) (pMouseX - (this.leftPos + 50));
+            float mouseY = (float) (pMouseY - (this.topPos + 30));
+            float angleX = -(float) Math.atan(mouseX / 40.0F);
+            float angleY = -(float) Math.atan(mouseY / 40.0F);
+
+            stack.mulPose(Vector3f.YP.rotationDegrees(angleX * 40f));
+            stack.mulPose(Vector3f.XP.rotationDegrees(-angleY * 10f));
+            this.playerModel.getHead().xRot = Mth.lerp(0.1F, this.playerModel.getHead().xRot,
+                    -angleY * 40f * ((float) Math.PI / 180F));
+            this.playerModel.getHead().yRot = Mth.lerp(0.1F, this.playerModel.getHead().yRot,
+                    angleX * 40f * ((float) Math.PI / 180F));
+
+            float limbSwing = this.minecraft.player.tickCount / 8f + pPartialTick;
+
+            this.playerModel.getLeftArm().zRot = Mth.lerp(0.1F, this.playerModel.getLeftArm().zRot,
+                    Mth.cos(limbSwing * 0.6662F) / 8f);
+            this.playerModel.getRightArm().zRot = Mth.lerp(0.1F, this.playerModel.getRightArm().zRot,
+                    Mth.cos(limbSwing * 0.6662F + (float) Math.PI) / 8f);
+
+            this.playerModel.getLeftLeg().xRot = Mth.lerp(0.1F, this.playerModel.getLeftLeg().xRot,
+                    Mth.cos(limbSwing * 0.6662F) / 8f);
+            this.playerModel.getRightLeg().xRot = Mth.lerp(0.1F, this.playerModel.getRightLeg().xRot,
+                    Mth.cos(limbSwing * 0.6662F + (float) Math.PI) / 8f);
+
+            MultiBufferSource.BufferSource buffer = this.minecraft.renderBuffers().bufferSource();
+            VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityTranslucent(STEVE_TEXTURE));
+            RenderSystem.runAsFancy(() -> {
+                this.playerModel.renderToBuffer(stack, vertexConsumer, 15728640, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F,
+                        1.0F, 1.0F);
+
+                for (int index = 35; index < 40; index++) {
+                    ItemStack itemStack = blockEntity.getStackInSlot(index);
+                    EquipmentSlot equipmentSlot = EquipmentSlot.values()[(1 + index) - 35];
+
+                    stack.pushPose();
+                    stack.translate(0, -1.25f, 0);
+                    stack.scale(1.8f, 1.8f, 1.8f);
+                    if(equipmentSlot == EquipmentSlot.HEAD) {
+                        stack.scale(0.75f, 0.75f, 0.75f);
+                        stack.translate(0, 0.2f, 0);
+                    }
+
+                    renderArmorPart(stack, buffer, itemStack, equipmentSlot, this.playerModel.getHead().xRot,
+                            this.playerModel.getHead().yRot,
+                            this.playerModel.getLeftArm().zRot,
+                            this.playerModel.getRightArm().zRot, this.playerModel.getLeftLeg().xRot, this.playerModel.getRightLeg().xRot);
+                    stack.popPose();
+                }
+
+                ItemStack offhand = blockEntity.getStackInSlot(40);
+                if (!offhand.isEmpty()) {
+                    stack.pushPose();
+                    stack.translate(0.375f, 0.75f, -0.1f);
+                    stack.mulPose(Vector3f.YP.rotationDegrees(180f));
+                    stack.mulPose(Vector3f.XP.rotationDegrees(90f));
+                    stack.translate(this.playerModel.getLeftArm().zRot / 2f, 0, 0);
+                    Minecraft.getInstance().getItemRenderer()
+                            .renderStatic(offhand, ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND, 15728640,
+                                    OverlayTexture.NO_OVERLAY, stack, buffer, 0);
+                    stack.popPose();
+                }
+
+
+                ItemStack hand = blockEntity.getStackInSlot(this.selectedSlotButton.slot);
+                if (!hand.isEmpty()) {
+                    stack.pushPose();
+                    stack.translate(-0.375f, 0.75f, -0.1f);
+                    stack.mulPose(Vector3f.YP.rotationDegrees(180f));
+                    stack.mulPose(Vector3f.XP.rotationDegrees(90f));
+                    stack.translate(this.playerModel.getRightArm().zRot / 2f, 0, 0);
+                    Minecraft.getInstance().getItemRenderer()
+                            .renderStatic(hand, ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, 15728640,
+                                    OverlayTexture.NO_OVERLAY, stack, buffer, 0);
+                    stack.popPose();
+                }
+            });
+
+            buffer.endBatch();
+            pPoseStack.popPose();
+
+            modelPose.popPose();
+            RenderSystem.applyModelViewMatrix();
+        }
+
+        renderTooltip(pPoseStack, pMouseX, pMouseY);
+    }
+
+    private static void renderArmorPart(PoseStack poseStack, MultiBufferSource bufferSource, ItemStack stack,
+            EquipmentSlot slot, float headRotX, float headRotY, float leftArmZRot, float rightArmZRot,
+            float leftLegXRot, float rightLegXRot) {
+        if (!(stack.getItem() instanceof ArmorItem armorItem)) return;
+
+        EntityModelSet modelSet = Minecraft.getInstance().getEntityModels();
+        HumanoidModel<Player> humanoidModel = new HumanoidModel<>(modelSet.bakeLayer(
+                armorItem.getSlot() == EquipmentSlot.LEGS ? ModelLayers.PLAYER_INNER_ARMOR : ModelLayers.PLAYER_OUTER_ARMOR));
+
+        humanoidModel.setAllVisible(false);
+        switch (slot) {
+            case HEAD -> {
+                humanoidModel.head.visible = true;
+                humanoidModel.hat.visible = true;
+
+                humanoidModel.head.xRot = headRotX;
+                humanoidModel.head.yRot = headRotY;
+
+                humanoidModel.hat.xRot = headRotX;
+                humanoidModel.hat.yRot = headRotY;
+            }
+            case CHEST -> {
+                humanoidModel.body.visible = true;
+                humanoidModel.rightArm.visible = true;
+                humanoidModel.leftArm.visible = true;
+
+                humanoidModel.leftArm.zRot = leftArmZRot;
+                humanoidModel.rightArm.zRot = rightArmZRot;
+
+                humanoidModel.leftArm.z += 0.001f;
+                humanoidModel.rightArm.z += 0.001f;
+
+                poseStack.translate(0, -0.03f, 0);
+            }
+            case LEGS -> {
+                humanoidModel.body.visible = true;
+                humanoidModel.rightLeg.visible = true;
+                humanoidModel.leftLeg.visible = true;
+
+                humanoidModel.leftLeg.xRot = leftLegXRot;
+                humanoidModel.rightLeg.xRot = rightLegXRot;
+            }
+            case FEET -> {
+                humanoidModel.rightLeg.visible = true;
+                humanoidModel.leftLeg.visible = true;
+
+                humanoidModel.leftLeg.xRot = leftLegXRot;
+                humanoidModel.rightLeg.xRot = rightLegXRot;
+
+                humanoidModel.leftLeg.y += 0.001f;
+            }
+        }
+
+        Model model = ForgeHooksClient.getArmorModel(Minecraft.getInstance().player, stack, slot, humanoidModel);
+
+        class Renderer {
+            void render(ResourceLocation armorResource, float red, float green, float blue) {
+                VertexConsumer vertexConsumer = ItemRenderer.getArmorFoilBuffer(bufferSource,
+                        RenderType.armorCutoutNoCull(armorResource), false, stack.hasFoil());
+                model.renderToBuffer(poseStack, vertexConsumer, 15728640, OverlayTexture.NO_OVERLAY, red, green, blue,
+                        1.0F);
+            }
+
+            ResourceLocation getResource(@Nullable String type) {
+                String texture = armorItem.getMaterial().getName();
+                String domain = "minecraft";
+                int index = texture.indexOf(':');
+                if (index != -1) {
+                    domain = texture.substring(0, index);
+                    texture = texture.substring(index + 1);
+                }
+
+                String overlay = type == null ? "" : String.format(Locale.ROOT, "_%s", type);
+                int layer = armorItem.getSlot() == EquipmentSlot.LEGS ? 2 : 1;
+                String path = String.format(Locale.ROOT, "%s:textures/models/armor/%s_layer_%d%s.png", domain, texture,
+                        layer, overlay);
+
+                path = ForgeHooksClient.getArmorTexture(Minecraft.getInstance().player, stack, path, slot, type);
+                ResourceLocation resource = ARMOR_LOCATION_CACHE.get(path);
+                if (resource == null) {
+                    resource = new ResourceLocation(path);
+                    ARMOR_LOCATION_CACHE.put(path, resource);
+                }
+
+                return resource;
+            }
+        }
+
+        var renderer = new Renderer();
+        if(armorItem instanceof DyeableLeatherItem dyeableLeatherItem) {
+            int color = dyeableLeatherItem.getColor(stack);
+            float red = (color >> 16 & 255) / 255.0F;
+            float green = (color >> 8 & 255) / 255.0F;
+            float blue = (color & 255) / 255.0F;
+
+            renderer.render(renderer.getResource(null), red, green, blue);
+            renderer.render(renderer.getResource("overlay"), 1.0F, 1.0F, 1.0F);
+        } else {
+            renderer.render(renderer.getResource(null), 1.0F, 1.0F, 1.0F);
+        }
+    }

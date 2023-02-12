@@ -1,13 +1,16 @@
 package dev.turtywurty.industria.init;
 
 import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.blockentity.EntityInteractorBlockEntity;
 import dev.turtywurty.industria.menu.*;
 import dev.turtywurty.industria.registry.MachineUpgrade;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -52,11 +55,18 @@ public class MenuInit {
 
     public static final RegistryObject<MenuType<EntityInteractorMenu>> ENTITY_INTERACTOR = MENUS.register(
             "entity_interactor", () -> IForgeMenuType.create((windowId, inv, data) -> {
-                return EntityInteractorMenu.getClientMenu(windowId, inv, null);
+                BlockPos pos = data.readBlockPos();
+
+                BlockEntity blockEntity = inv.player.level.getBlockEntity(pos);
+                Player player = null;
+                if (blockEntity instanceof EntityInteractorBlockEntity interactorBlockEntity) {
+                    player = interactorBlockEntity.getPlayer();
+                }
+
+                return EntityInteractorMenu.getClientMenu(windowId, inv, player, pos);
             }));
 
-    private static <T extends AbstractContainerMenu> MenuType<T> createPositionedMenu(
-            ClientPositionedMenuConstructor<T> constructor) {
+    private static <T extends AbstractContainerMenu> MenuType<T> createPositionedMenu(ClientPositionedMenuConstructor<T> constructor) {
         return IForgeMenuType.create((windowId, inv, data) -> {
             BlockPos pos = data.readBlockPos();
 

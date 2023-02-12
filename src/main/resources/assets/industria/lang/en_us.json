@@ -54,5 +54,10 @@
     "block.industria.projector": "Projector",
     "block.industria.tree_tap": "Tree Tap",
     "item.industria.rope": "Rope",
-    "item.industria.latex_bucket": "Bucket of Latex"
+    "item.industria.latex_bucket": "Bucket of Latex",
+    "block.industria.entity_interactor": "Entity Interactor",
+    "container.industria.entity_interactor": "Entity Interactor",
+    "gui.entity_interactor.settings.survival": "Survival",
+    "gui.entity_interactor.settings.creative": "Creative",
+    "gui.entity_interactor.settings.selected_slot": "Selected Slot"
 }
