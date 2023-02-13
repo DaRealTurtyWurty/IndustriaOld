@@ -1,27 +1,20 @@
 package dev.turtywurty.industria.client.screens;
 
-import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.blockentity.EntityInteractorBlockEntity;
 import dev.turtywurty.industria.menu.EntityInteractorMenu;
 import io.github.darealturtywurty.turtylib.client.ui.components.EnergyWidget;
 import io.github.darealturtywurty.turtylib.client.util.GuiUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StateSwitchingButton;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -47,6 +40,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
     private CreativeSurvivalButton creativeSurvivalButton;
     private SelectedSlotButton selectedSlotButton;
 
+    private
 
     public EntityInteractorScreen(EntityInteractorMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -127,8 +121,15 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
     @Override
     public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        renderPlayer(pPoseStack, pMouseX, pMouseY);
+        renderTooltip(pPoseStack, pMouseX, pMouseY);
+    }
 
-        if(Minecraft.getInstance().level.getBlockEntity(this.menu.getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+    private void renderPlayer(PoseStack pPoseStack, float pMouseX, float pMouseY) {
+        if (this.minecraft == null || this.minecraft.level == null) return;
+
+        if (this.minecraft.level.getBlockEntity(
+                this.menu.getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
             Player player = blockEntity.getPlayer();
             player.setInvisible(false);
 
@@ -146,14 +147,12 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             player.setYHeadRot(Mth.lerp(0.1f, yHeadRot, angleX * 40f));
             player.yHeadRotO = Mth.lerp(0.1f, yHeadRotO, angleX * 40f);
 
-            GuiUtils.renderEntity(pPoseStack, player, new Vec3(-angleY * 10f, 180 + angleX * 40f, 0), new Vec3(30, 30, 30),
-                    new Vec3(0, 0, 0), this.leftPos + 50, this.topPos + 75,
-                    Minecraft.getInstance().getPartialTick());
+            GuiUtils.renderEntity(pPoseStack, player, new Vec3(-angleY * 10f, 180 + angleX * 40f, 0),
+                    new Vec3(30, 30, 30), new Vec3(0, 0, 0), this.leftPos + 50, this.topPos + 75,
+                    this.minecraft.getPartialTick());
 
             player.setInvisible(true);
         }
-
-        renderTooltip(pPoseStack, pMouseX, pMouseY);
     }
 
     private class CreativeSurvivalButton extends StateSwitchingButton {
@@ -257,6 +256,73 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             }
 
             return super.mouseScrolled(pMouseX, pMouseY, pDelta);
+        }
+    }
+
+    public class ExperienceWidget {
+        private final ExperienceBar experienceBar;
+        private final Button addLevelButton, removeLevelButton, addExpButton, removeExpButton;
+        private final int x;
+        private final int y;
+        private final int width;
+        private final int height;
+
+        public ExperienceWidget(int x, int y, int width, int height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+
+            this.experienceBar = new ExperienceBar(x, y, width, height);
+            this.addLevelButton = new Button(x + width + 2, y, 20, 20,
+                    Component.translatable("gui.entity_interactor.settings.add_level"),
+                    (button) -> this.experienceBar.addLevel());
+
+            this.removeLevelButton = new Button(x + width + 2, y + 20, 20, 20,
+                    Component.translatable("gui.entity_interactor.settings.remove_level"),
+                    (button) -> this.experienceBar.removeLevel());
+
+            this.addExpButton = new Button(x + width + 2, y + 40, 20, 20,
+                    Component.translatable("gui.entity_interactor.settings.add_exp"),
+                    (button) -> this.experienceBar.addExp());
+
+            this.removeExpButton = new Button(x + width + 2, y + 60, 20, 20,
+                    Component.translatable("gui.entity_interactor.settings.remove_exp"),
+                    (button) -> this.experienceBar.removeExp());
+
+            addWidgets();
+        }
+
+        public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            this.experienceBar.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+            this.addLevelButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+            this.removeLevelButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+            this.addExpButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+            this.removeExpButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        }
+
+        private void addWidgets() {
+            EntityInteractorScreen.this.addWidget(this.experienceBar);
+            EntityInteractorScreen.this.addWidget(this.addLevelButton);
+            EntityInteractorScreen.this.addWidget(this.removeLevelButton);
+            EntityInteractorScreen.this.addWidget(this.addExpButton);
+            EntityInteractorScreen.this.addWidget(this.removeExpButton);
+        }
+    }
+
+    public class ExperienceBar extends AbstractWidget {
+        public ExperienceBar(int pX, int pY, int pWidth, int pHeight) {
+            super(pX, pY, pWidth, pHeight, Component.empty());
+        }
+
+        @Override
+        public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+            defaultButtonNarrationText(pNarrationElementOutput);
+        }
+
+        @Override
+        public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+
         }
     }
 }
