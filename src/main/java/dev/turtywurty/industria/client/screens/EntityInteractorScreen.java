@@ -9,6 +9,8 @@ import dev.turtywurty.industria.menu.EntityInteractorMenu;
 import io.github.darealturtywurty.turtylib.client.ui.components.EnergyWidget;
 import io.github.darealturtywurty.turtylib.client.util.GuiUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StateSwitchingButton;
@@ -22,6 +24,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.gui.widget.ForgeSlider;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class EntityInteractorScreen extends AbstractContainerScreen<EntityInteractorMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID,
@@ -40,7 +44,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
     private CreativeSurvivalButton creativeSurvivalButton;
     private SelectedSlotButton selectedSlotButton;
 
-    private
+    private ExperienceWidget experienceWidget;
 
     public EntityInteractorScreen(EntityInteractorMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -75,6 +79,8 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
         this.creativeSurvivalButton = addRenderableWidget(new CreativeSurvivalButton());
         this.selectedSlotButton = addRenderableWidget(new SelectedSlotButton());
+
+        this.experienceWidget = new ExperienceWidget(this.leftPos - 7, this.topPos + 17, 36, 20);
     }
 
     private void onSettingsButtonClicked(Button pButton) {
@@ -242,7 +248,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             if (this.isHovered) {
                 EntityInteractorScreen.this.renderTooltip(pPoseStack,
                         Component.translatable("gui.entity_interactor.settings.selected_slot")
-                                .append(": " + (this.slot + 1)), pMouseX, pMouseY);
+                                 .append(": " + (this.slot + 1)), pMouseX, pMouseY);
             }
         }
 
@@ -273,22 +279,32 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             this.width = width;
             this.height = height;
 
+            AtomicReference<Player> player = new AtomicReference<>();
+            if (Minecraft.getInstance().level.getBlockEntity(EntityInteractorScreen.this.getMenu()
+                                                                                        .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                player.set(blockEntity.getPlayer());
+            }
+
+            if (player.get() == null) {
+                throw new IllegalStateException("EntityInteractorScreen's player is null!");
+            }
+
             this.experienceBar = new ExperienceBar(x, y, width, height);
             this.addLevelButton = new Button(x + width + 2, y, 20, 20,
                     Component.translatable("gui.entity_interactor.settings.add_level"),
-                    (button) -> this.experienceBar.addLevel());
+                    (button) -> player.get().giveExperienceLevels(1));
 
             this.removeLevelButton = new Button(x + width + 2, y + 20, 20, 20,
                     Component.translatable("gui.entity_interactor.settings.remove_level"),
-                    (button) -> this.experienceBar.removeLevel());
+                    (button) -> player.get().giveExperienceLevels(-1));
 
             this.addExpButton = new Button(x + width + 2, y + 40, 20, 20,
                     Component.translatable("gui.entity_interactor.settings.add_exp"),
-                    (button) -> this.experienceBar.addExp());
+                    (button) -> player.get().giveExperiencePoints(1));
 
             this.removeExpButton = new Button(x + width + 2, y + 60, 20, 20,
                     Component.translatable("gui.entity_interactor.settings.remove_exp"),
-                    (button) -> this.experienceBar.removeExp());
+                    (button) -> player.get().giveExperiencePoints(-1));
 
             addWidgets();
         }
@@ -322,6 +338,45 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
         @Override
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            renderExperienceBar(pPoseStack, this.x);
+        }
+
+        public void renderExperienceBar(PoseStack pPoseStack, int pXPos) {
+            RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
+
+            AtomicReference<Player> player = new AtomicReference<>();
+            if (Minecraft.getInstance().level.getBlockEntity(EntityInteractorScreen.this.getMenu()
+                                                                                        .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                player.set(blockEntity.getPlayer());
+            }
+
+            if (player.get() == null) {
+                Industria.LOGGER.error("Player is null",
+                        new IllegalStateException("EntityInteractorScreen's player is null!"));
+                return;
+            }
+
+            int forNextLevel = player.get().getXpNeededForNextLevel();
+            if (forNextLevel > 0) {
+                int progress = (int) (player.get().experienceProgress * 183.0F);
+                int y = EntityInteractorScreen.this.height - 32 + 3;
+                this.blit(pPoseStack, pXPos, y, 0, 64, 182, 5);
+                if (progress > 0) {
+                    this.blit(pPoseStack, pXPos, y, 0, 69, progress, 5);
+                }
+            }
+
+            if (player.get().experienceLevel > 0) {
+                Font font = EntityInteractorScreen.this.font;
+                String xpLevel = "" + player.get().experienceLevel;
+                int x = (EntityInteractorScreen.this.width - font.width(xpLevel)) / 2;
+                int y = EntityInteractorScreen.this.height - 31 - 4;
+                font.draw(pPoseStack, xpLevel, (float) (x + 1), (float) y, 0);
+                font.draw(pPoseStack, xpLevel, (float) (x - 1), (float) y, 0);
+                font.draw(pPoseStack, xpLevel, (float) x, (float) (y + 1), 0);
+                font.draw(pPoseStack, xpLevel, (float) x, (float) (y - 1), 0);
+                font.draw(pPoseStack, xpLevel, (float) x, (float) y, 8453920);
+            }
 
         }
     }

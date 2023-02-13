@@ -15,10 +15,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.network.NetworkDirection;
 import org.jetbrains.annotations.NotNull;
@@ -72,7 +74,19 @@ public class EntityInteractorBlockEntity extends ModularBlockEntity implements C
         if (this.level == null || this.level.isClientSide) return;
 
         this.ticks++;
-        if (this.ticks % 50 == 0) update();
+        if (this.ticks % this.interactRate == 0) {
+            List<Entity> entities = this.level.getEntitiesOfClass(Entity.class, new AABB(this.worldPosition).inflate(5),
+                    entity -> !(entity instanceof Player));
+            entities.forEach(entity -> {
+                if (this.player != null) {
+                    entity.interact(this.player, this.player.getMainHandItem()
+                                                            .isEmpty() ? InteractionHand.OFF_HAND :
+                            InteractionHand.MAIN_HAND);
+                }
+            });
+
+            this.energy.getCapabilityInstance().extractEnergy(100, false);
+        }
     }
 
     @Override
@@ -184,7 +198,7 @@ public class EntityInteractorBlockEntity extends ModularBlockEntity implements C
     public void setPlayer(Player player) {
         this.player = player;
 
-        if(this.level.isClientSide) {
+        if (this.level.isClientSide) {
             this.player.load(this.playerData);
         }
     }
