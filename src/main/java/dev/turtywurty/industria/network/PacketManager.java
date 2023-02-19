@@ -2,10 +2,7 @@ package dev.turtywurty.industria.network;
 
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.network.clientbound.*;
-import dev.turtywurty.industria.network.serverbound.SBlockEntityLoadPacket;
-import dev.turtywurty.industria.network.serverbound.SRequestResearchDataPacket;
-import dev.turtywurty.industria.network.serverbound.SStartResearchPacket;
-import dev.turtywurty.industria.network.serverbound.SSwitchAgitatorIOTypePacket;
+import dev.turtywurty.industria.network.serverbound.*;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -38,6 +35,11 @@ public final class PacketManager {
         register(SSwitchAgitatorIOTypePacket.class, SSwitchAgitatorIOTypePacket::new);
         register(CFakePlayerCreatedPacket.class, CFakePlayerCreatedPacket::new);
         register(SBlockEntityLoadPacket.class, SBlockEntityLoadPacket::new);
+        register(SExperienceButtonPacket.class, SExperienceButtonPacket::new);
+        register(SChangeSelectedSlotPacket.class, SChangeSelectedSlotPacket::new);
+        register(SSwitchGameModePacket.class, SSwitchGameModePacket::new);
+        register(SRequestPlayerGameModePacket.class, SRequestPlayerGameModePacket::new);
+        register(CReceivePlayerGameModePacket.class, CReceivePlayerGameModePacket::new);
 
         Industria.LOGGER.info("Registered {} packets", NUM_PACKETS);
     }

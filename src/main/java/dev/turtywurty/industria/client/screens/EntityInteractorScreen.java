@@ -6,6 +6,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.blockentity.EntityInteractorBlockEntity;
 import dev.turtywurty.industria.menu.EntityInteractorMenu;
+import dev.turtywurty.industria.network.PacketManager;
+import dev.turtywurty.industria.network.serverbound.SChangeSelectedSlotPacket;
+import dev.turtywurty.industria.network.serverbound.SExperienceButtonPacket;
+import dev.turtywurty.industria.network.serverbound.SRequestPlayerGameModePacket;
+import dev.turtywurty.industria.network.serverbound.SSwitchGameModePacket;
 import io.github.darealturtywurty.turtylib.client.ui.components.EnergyWidget;
 import io.github.darealturtywurty.turtylib.client.util.GuiUtils;
 import net.minecraft.client.Minecraft;
@@ -22,6 +27,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.gui.widget.ForgeSlider;
 
@@ -78,9 +84,22 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
                         10, 100, 20, true));
 
         this.creativeSurvivalButton = addRenderableWidget(new CreativeSurvivalButton());
-        this.selectedSlotButton = addRenderableWidget(new SelectedSlotButton());
+        PacketManager.sendToServer(new SRequestPlayerGameModePacket(this.menu.getPos()));
 
-        this.experienceWidget = new ExperienceWidget(this.leftPos - 7, this.topPos + 17, 36, 20);
+        this.selectedSlotButton = addRenderableWidget(new SelectedSlotButton());
+        if (Minecraft.getInstance().level != null) {
+            if (Minecraft.getInstance().level.getBlockEntity(
+                    this.getMenu().getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                this.selectedSlotButton.setSlot(blockEntity.getPlayer().getInventory().selected);
+            }
+        }
+
+        this.experienceWidget = new ExperienceWidget(this.leftPos - 70, this.topPos + 56, 62);
+    }
+
+    // TODO: Let this work for spectator and adventure mode
+    public void receivePlayerGameMode(GameType type) {
+        this.creativeSurvivalButton.setStateTriggered(type == GameType.CREATIVE);
     }
 
     private void onSettingsButtonClicked(Button pButton) {
@@ -89,6 +108,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         this.creativeSurvivalButton.active = this.settingsOpen;
         this.selectedSlotButton.visible = this.settingsOpen;
         this.selectedSlotButton.active = this.settingsOpen;
+        this.experienceWidget.setVisible(this.settingsOpen);
     }
 
     @Override
@@ -127,6 +147,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
     @Override
     public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        this.experienceWidget.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         renderPlayer(pPoseStack, pMouseX, pMouseY);
         renderTooltip(pPoseStack, pMouseX, pMouseY);
     }
@@ -195,6 +216,16 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             Component tooltip = isStateTriggered() ? CREATIVE : SURVIVAL;
             EntityInteractorScreen.this.renderTooltip(pPoseStack, tooltip, pMouseX, pMouseY);
         }
+
+        @Override
+        public void setStateTriggered(boolean pTriggered) {
+            if(isStateTriggered() == pTriggered) return;
+
+            PacketManager.sendToServer(
+                    new SSwitchGameModePacket(isStateTriggered(), EntityInteractorScreen.this.getMenu().getPos()));
+
+            super.setStateTriggered(pTriggered);
+        }
     }
 
     public class SelectedSlotButton extends Button {
@@ -238,6 +269,8 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         protected boolean clicked(double pMouseX, double pMouseY) {
             if (this.isHovered) {
                 this.slot = (this.slot + 1) % 9;
+                PacketManager.sendToServer(
+                        new SChangeSelectedSlotPacket(this.slot, EntityInteractorScreen.this.getMenu().getPos()));
             }
 
             return super.clicked(pMouseX, pMouseY);
@@ -248,7 +281,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             if (this.isHovered) {
                 EntityInteractorScreen.this.renderTooltip(pPoseStack,
                         Component.translatable("gui.entity_interactor.settings.selected_slot")
-                                 .append(": " + (this.slot + 1)), pMouseX, pMouseY);
+                                .append(": " + (this.slot + 1)), pMouseX, pMouseY);
             }
         }
 
@@ -263,25 +296,23 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
             return super.mouseScrolled(pMouseX, pMouseY, pDelta);
         }
+
+        public void setSlot(int slot) {
+            if (slot < 0) slot = 0;
+            else if (slot > 8) slot = 8;
+
+            this.slot = slot;
+        }
     }
 
     public class ExperienceWidget {
         private final ExperienceBar experienceBar;
         private final Button addLevelButton, removeLevelButton, addExpButton, removeExpButton;
-        private final int x;
-        private final int y;
-        private final int width;
-        private final int height;
 
-        public ExperienceWidget(int x, int y, int width, int height) {
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-
+        public ExperienceWidget(int x, int y, int width) {
             AtomicReference<Player> player = new AtomicReference<>();
             if (Minecraft.getInstance().level.getBlockEntity(EntityInteractorScreen.this.getMenu()
-                                                                                        .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                    .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
                 player.set(blockEntity.getPlayer());
             }
 
@@ -289,22 +320,14 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
                 throw new IllegalStateException("EntityInteractorScreen's player is null!");
             }
 
-            this.experienceBar = new ExperienceBar(x, y, width, height);
-            this.addLevelButton = new Button(x + width + 2, y, 20, 20,
-                    Component.translatable("gui.entity_interactor.settings.add_level"),
-                    (button) -> player.get().giveExperienceLevels(1));
+            this.experienceBar = new ExperienceBar(x - 1, y + 14, width);
 
-            this.removeLevelButton = new Button(x + width + 2, y + 20, 20, 20,
-                    Component.translatable("gui.entity_interactor.settings.remove_level"),
-                    (button) -> player.get().giveExperienceLevels(-1));
+            this.addLevelButton = new ExperienceButton(x + 36, y, SExperienceButtonPacket.Type.ADD_LEVEL);
+            this.removeLevelButton = new ExperienceButton(x, y, SExperienceButtonPacket.Type.REMOVE_LEVEL);
+            this.addExpButton = new ExperienceButton(x + 36, y + 20, SExperienceButtonPacket.Type.ADD_EXP);
+            this.removeExpButton = new ExperienceButton(x, y + 20, SExperienceButtonPacket.Type.REMOVE_EXP);
 
-            this.addExpButton = new Button(x + width + 2, y + 40, 20, 20,
-                    Component.translatable("gui.entity_interactor.settings.add_exp"),
-                    (button) -> player.get().giveExperiencePoints(1));
-
-            this.removeExpButton = new Button(x + width + 2, y + 60, 20, 20,
-                    Component.translatable("gui.entity_interactor.settings.remove_exp"),
-                    (button) -> player.get().giveExperiencePoints(-1));
+            setVisible(EntityInteractorScreen.this.settingsOpen);
 
             addWidgets();
         }
@@ -324,11 +347,62 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             EntityInteractorScreen.this.addWidget(this.addExpButton);
             EntityInteractorScreen.this.addWidget(this.removeExpButton);
         }
+
+        public void setVisible(boolean settingsOpen) {
+            this.experienceBar.visible = settingsOpen;
+            this.addLevelButton.visible = settingsOpen;
+            this.removeLevelButton.visible = settingsOpen;
+            this.addExpButton.visible = settingsOpen;
+            this.removeExpButton.visible = settingsOpen;
+
+            this.experienceBar.active = settingsOpen;
+            this.addLevelButton.active = settingsOpen;
+            this.removeLevelButton.active = settingsOpen;
+            this.addExpButton.active = settingsOpen;
+            this.removeExpButton.active = settingsOpen;
+        }
+    }
+
+    public class ExperienceButton extends Button {
+        private final SExperienceButtonPacket.Type type;
+
+        public ExperienceButton(int pX, int pY, SExperienceButtonPacket.Type type) {
+            super(pX, pY, 23, 12, Component.literal(type.getText()), ($) -> {
+            });
+
+            this.type = type;
+        }
+
+        @Override
+        public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            if (!this.visible || !this.active) return;
+
+            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, WIDGETS);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+            int i = getYImage(this.isHovered) - 1;
+            blit(pPoseStack, this.x, this.y, 0, 84 + (i * this.height), this.width, this.height);
+
+            drawString(pPoseStack, Minecraft.getInstance().font, this.getMessage(), this.x + 2, this.y + 2, 0xFFFFFF);
+        }
+
+        @Override
+        protected boolean clicked(double pMouseX, double pMouseY) {
+            if (this.isHovered) {
+                PacketManager.sendToServer(
+                        new SExperienceButtonPacket(this.type, EntityInteractorScreen.this.getMenu().getPos()));
+            }
+
+            return super.clicked(pMouseX, pMouseY);
+        }
     }
 
     public class ExperienceBar extends AbstractWidget {
-        public ExperienceBar(int pX, int pY, int pWidth, int pHeight) {
-            super(pX, pY, pWidth, pHeight, Component.empty());
+        public ExperienceBar(int pX, int pY, int pWidth) {
+            super(pX, pY, pWidth, 5, Component.empty());
         }
 
         @Override
@@ -342,11 +416,13 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         }
 
         public void renderExperienceBar(PoseStack pPoseStack, int pXPos) {
-            RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
+            if (!this.visible || !this.active) return;
+
+            if (Minecraft.getInstance().level == null) return;
 
             AtomicReference<Player> player = new AtomicReference<>();
             if (Minecraft.getInstance().level.getBlockEntity(EntityInteractorScreen.this.getMenu()
-                                                                                        .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                    .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
                 player.set(blockEntity.getPlayer());
             }
 
@@ -356,28 +432,41 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
                 return;
             }
 
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, GuiComponent.GUI_ICONS_LOCATION);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
             int forNextLevel = player.get().getXpNeededForNextLevel();
             if (forNextLevel > 0) {
-                int progress = (int) (player.get().experienceProgress * 183.0F);
-                int y = EntityInteractorScreen.this.height - 32 + 3;
-                this.blit(pPoseStack, pXPos, y, 0, 64, 182, 5);
+                int progress = (int) (player.get().experienceProgress * 64f);
+                blit(pPoseStack, pXPos, y, 0, 64, this.width / 2, 5);
+                blit(pPoseStack, pXPos + this.width / 2, y, 183 - this.width / 2, 64, this.width / 2, 5);
                 if (progress > 0) {
-                    this.blit(pPoseStack, pXPos, y, 0, 69, progress, 5);
+                    if (progress < 61) {
+                        blit(pPoseStack, pXPos, y, 0, 69, progress, 5);
+                    } else {
+                        blit(pPoseStack, pXPos, y, 0, 69, progress / 2, 5);
+                        blit(pPoseStack, pXPos + progress / 2, y, 183 - progress / 2, 69, progress / 2, 5);
+                    }
                 }
             }
 
             if (player.get().experienceLevel > 0) {
                 Font font = EntityInteractorScreen.this.font;
                 String xpLevel = "" + player.get().experienceLevel;
-                int x = (EntityInteractorScreen.this.width - font.width(xpLevel)) / 2;
-                int y = EntityInteractorScreen.this.height - 31 - 4;
-                font.draw(pPoseStack, xpLevel, (float) (x + 1), (float) y, 0);
-                font.draw(pPoseStack, xpLevel, (float) (x - 1), (float) y, 0);
-                font.draw(pPoseStack, xpLevel, (float) x, (float) (y + 1), 0);
-                font.draw(pPoseStack, xpLevel, (float) x, (float) (y - 1), 0);
-                font.draw(pPoseStack, xpLevel, (float) x, (float) y, 8453920);
+                float x = this.x + (this.width / 2f) - font.width(xpLevel) / 2f;
+                float y = this.y - 10;
+                font.draw(pPoseStack, xpLevel, x + 1, y, 0);
+                font.draw(pPoseStack, xpLevel, x - 1, y, 0);
+                font.draw(pPoseStack, xpLevel, x, y + 1, 0);
+                font.draw(pPoseStack, xpLevel, x, y - 1, 0);
+                font.draw(pPoseStack, xpLevel, x, y, 0x80FF20);
             }
+        }
 
+        @Override
+        protected boolean clicked(double pMouseX, double pMouseY) {
+            return false;
         }
     }
 }
