@@ -18,28 +18,33 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.StateSwitchingButton;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.gui.widget.ForgeSlider;
+import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class EntityInteractorScreen extends AbstractContainerScreen<EntityInteractorMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID,
             "textures/gui/entity_interactor.png");
     private static final ResourceLocation WIDGETS = new ResourceLocation(Industria.MODID,
             "textures/gui/entity_interactor_widgets.png");
-
-    private static final ResourceLocation STEVE_TEXTURE = new ResourceLocation("textures/entity/steve.png");
 
     private final double originalGuiScale;
 
@@ -49,8 +54,8 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
     private ForgeSlider interactRateSlider;
     private CreativeSurvivalButton creativeSurvivalButton;
     private SelectedSlotButton selectedSlotButton;
-
     private ExperienceWidget experienceWidget;
+    private EffectSelectorWidget effectSelectorWidget;
 
     public EntityInteractorScreen(EntityInteractorMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -95,11 +100,13 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         }
 
         this.experienceWidget = new ExperienceWidget(this.leftPos - 70, this.topPos + 56, 62);
+
+        this.effectSelectorWidget = addRenderableWidget(new EffectSelectorWidget());
     }
 
     // TODO: Let this work for spectator and adventure mode
     public void receivePlayerGameMode(GameType type) {
-        this.creativeSurvivalButton.setStateTriggered(type == GameType.CREATIVE);
+        this.creativeSurvivalButton.setGameMode(type);
     }
 
     private void onSettingsButtonClicked(Button pButton) {
@@ -182,13 +189,12 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         }
     }
 
-    private class CreativeSurvivalButton extends StateSwitchingButton {
-        private static final Component CREATIVE = Component.translatable("gui.entity_interactor.settings.creative");
-        private static final Component SURVIVAL = Component.translatable("gui.entity_interactor.settings.survival");
+    private class CreativeSurvivalButton extends AbstractWidget {
+        private GameType gameType = GameType.SURVIVAL;
 
         private CreativeSurvivalButton() {
-            super(EntityInteractorScreen.this.leftPos - 70, EntityInteractorScreen.this.topPos + 10, 20, 20, false);
-            initTextureValues(0, 0, 20, 20, WIDGETS);
+            super(EntityInteractorScreen.this.leftPos - 70, EntityInteractorScreen.this.topPos + 10, 20, 20,
+                    Component.empty());
             this.visible = EntityInteractorScreen.this.settingsOpen;
             this.active = EntityInteractorScreen.this.settingsOpen;
         }
@@ -196,7 +202,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         @Override
         protected boolean clicked(double pMouseX, double pMouseY) {
             if (isMouseOver(pMouseX, pMouseY)) {
-                setStateTriggered(!isStateTriggered());
+                setGameMode(GameType.values()[(this.gameType.ordinal() + 1) % GameType.values().length]);
             }
 
             return super.clicked(pMouseX, pMouseY);
@@ -213,18 +219,33 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
         @Override
         public void renderToolTip(PoseStack pPoseStack, int pMouseX, int pMouseY) {
-            Component tooltip = isStateTriggered() ? CREATIVE : SURVIVAL;
+            Component tooltip = this.gameType.getShortDisplayName();
             EntityInteractorScreen.this.renderTooltip(pPoseStack, tooltip, pMouseX, pMouseY);
         }
 
         @Override
-        public void setStateTriggered(boolean pTriggered) {
-            if(isStateTriggered() == pTriggered) return;
+        public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+            defaultButtonNarrationText(pNarrationElementOutput);
+        }
 
-            PacketManager.sendToServer(
-                    new SSwitchGameModePacket(isStateTriggered(), EntityInteractorScreen.this.getMenu().getPos()));
+        public void setGameMode(GameType pGameType) {
+            GameType oldGameType = this.gameType;
+            this.gameType = pGameType;
+            if (oldGameType != this.gameType) {
+                PacketManager.sendToServer(
+                        new SSwitchGameModePacket(this.gameType, EntityInteractorScreen.this.getMenu().getPos()));
+            }
+        }
 
-            super.setStateTriggered(pTriggered);
+        @Override
+        public void renderButton(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.setShaderTexture(0, WIDGETS);
+
+            int xOffset = this.gameType.ordinal() * this.width;
+            int yOffset = (this.isHovered ? 1 : 0) * this.height;
+            blit(pPoseStack, this.x, this.y, xOffset, yOffset, this.width, this.height);
         }
     }
 
@@ -281,7 +302,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             if (this.isHovered) {
                 EntityInteractorScreen.this.renderTooltip(pPoseStack,
                         Component.translatable("gui.entity_interactor.settings.selected_slot")
-                                .append(": " + (this.slot + 1)), pMouseX, pMouseY);
+                                 .append(": " + (this.slot + 1)), pMouseX, pMouseY);
             }
         }
 
@@ -311,8 +332,11 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
         public ExperienceWidget(int x, int y, int width) {
             AtomicReference<Player> player = new AtomicReference<>();
+            if (Minecraft.getInstance().level == null)
+                throw new IllegalStateException("EntityInteractorScreen's level is null!");
+
             if (Minecraft.getInstance().level.getBlockEntity(EntityInteractorScreen.this.getMenu()
-                    .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                                                                                        .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
                 player.set(blockEntity.getPlayer());
             }
 
@@ -377,7 +401,8 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible || !this.active) return;
 
-            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+            this.isHovered =
+                    pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, WIDGETS);
@@ -422,7 +447,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
             AtomicReference<Player> player = new AtomicReference<>();
             if (Minecraft.getInstance().level.getBlockEntity(EntityInteractorScreen.this.getMenu()
-                    .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                                                                                        .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
                 player.set(blockEntity.getPlayer());
             }
 
@@ -467,6 +492,103 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         @Override
         protected boolean clicked(double pMouseX, double pMouseY) {
             return false;
+        }
+    }
+
+    public class EffectSelectorWidget extends EditBox {
+        private MobEffect effect = MobEffects.ABSORPTION;
+        private final List<String> autocompleteOptions = new ArrayList<>();
+        private int autocompleteIndex = 0;
+
+        public EffectSelectorWidget() {
+            super(EntityInteractorScreen.this.font, EntityInteractorScreen.this.leftPos - 50,
+                    EntityInteractorScreen.this.topPos + 80, 60, 40, Component.empty());
+
+            Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
+            setResponder(this::respondToInput);
+            setBordered(true);
+        }
+
+        @Override
+        public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+            defaultButtonNarrationText(pNarrationElementOutput);
+        }
+
+        private void respondToInput(String input) {
+            Map<String, MobEffect> effects = ForgeRegistries.MOB_EFFECTS.getEntries().stream()
+                                                                        .filter(entry -> entry.getKey().toString()
+                                                                                              .contains(input)).collect(
+                            Collectors.toMap(entry -> entry.getKey().toString(), Map.Entry::getValue));
+
+            autocompleteOptions.clear();
+            if (effects.isEmpty()) return;
+
+            if (effects.size() == 1) {
+                this.effect = effects.values().iterator().next();
+                return;
+            }
+
+            autocompleteOptions.addAll(effects.keySet());
+            autocompleteOptions.sort(String::compareTo);
+        }
+
+        @Override
+        public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            if (!this.visible || !this.active) return;
+
+            this.isHovered =
+                    pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+
+            super.renderButton(pPoseStack, pMouseX, pMouseY, pPartialTick);
+
+            if (!this.autocompleteOptions.isEmpty() && isFocused()) {
+                GuiComponent.fill(pPoseStack, this.x, this.y + this.height, this.x + this.width,
+                        this.y + this.height + (10 * this.autocompleteOptions.size()), 0x131313);
+
+                for (int index = 0; index < this.autocompleteOptions.size(); index++) {
+                    String option = this.autocompleteOptions.get(index);
+
+                    if (index == this.autocompleteIndex) {
+                        GuiComponent.fill(pPoseStack, this.x, this.y + this.height + (10 * index), this.x + this.width,
+                                this.y + this.height + (10 * index) + 10, 0x1A1A1A);
+                    }
+
+                    GuiComponent.drawString(pPoseStack, EntityInteractorScreen.this.font, option, this.x + 2,
+                            this.y + this.height + (10 * index) + 2, 0xFFFFFF);
+                }
+            }
+
+            if (this.isHovered) {
+                renderToolTip(pPoseStack, pMouseX, pMouseY);
+            }
+        }
+
+        @Override
+        protected boolean clicked(double pMouseX, double pMouseY) {
+            if (this.autocompleteOptions.isEmpty() || !this.active) return super.clicked(pMouseX, pMouseY);
+
+            if (pMouseX >= this.x && pMouseY >= this.y + this.height && pMouseX < this.x + this.width && pMouseY < this.y + this.height + (10 * this.autocompleteOptions.size())) {
+                int index = (int) ((pMouseY - (this.y + this.height)) / 10);
+                if (index == this.autocompleteIndex) {
+                    this.effect = ForgeRegistries.MOB_EFFECTS.getValue(
+                            new ResourceLocation(this.autocompleteOptions.get(index)));
+                    this.autocompleteOptions.clear();
+                } else {
+                    this.autocompleteIndex = index;
+                }
+
+                return true;
+            }
+
+            return super.clicked(pMouseX, pMouseY);
+        }
+
+        @Override
+        public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers) {
+            if(!this.active)
+                return super.keyReleased(pKeyCode, pScanCode, pModifiers);
+
+
         }
     }
 }

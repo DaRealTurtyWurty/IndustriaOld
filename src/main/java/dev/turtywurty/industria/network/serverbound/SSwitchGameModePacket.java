@@ -10,22 +10,22 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.network.NetworkEvent;
 
 public class SSwitchGameModePacket extends Packet {
-    private final boolean creative;
+    private final GameType gameType;
     private final BlockPos pos;
 
-    public SSwitchGameModePacket(boolean creative, BlockPos pos) {
-        this.creative = creative;
+    public SSwitchGameModePacket(GameType gameType, BlockPos pos) {
+        this.gameType = gameType;
         this.pos = pos;
     }
 
     public SSwitchGameModePacket(FriendlyByteBuf buf) {
-        this.creative = buf.readBoolean();
+        this.gameType = buf.readEnum(GameType.class);
         this.pos = buf.readBlockPos();
     }
 
     @Override
     public void encode(FriendlyByteBuf buf) {
-        buf.writeBoolean(this.creative);
+        buf.writeEnum(this.gameType);
         buf.writeBlockPos(this.pos);
     }
 
@@ -36,8 +36,7 @@ public class SSwitchGameModePacket extends Packet {
 
             BlockEntity be = context.getSender().level.getBlockEntity(this.pos);
             if (be instanceof EntityInteractorBlockEntity blockEntity && blockEntity.getPlayer() instanceof ServerPlayer player) {
-                // TODO: Implement spectator and adventure mode
-                player.setGameMode(this.creative ? GameType.CREATIVE : GameType.SURVIVAL);
+                player.setGameMode(this.gameType);
             }
 
             context.setPacketHandled(true);
