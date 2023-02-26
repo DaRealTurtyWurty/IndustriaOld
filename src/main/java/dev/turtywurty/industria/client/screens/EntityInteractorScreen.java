@@ -3,6 +3,7 @@ package dev.turtywurty.industria.client.screens;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.blockentity.EntityInteractorBlockEntity;
 import dev.turtywurty.industria.menu.EntityInteractorMenu;
@@ -20,25 +21,25 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.gui.widget.ForgeSlider;
+import net.minecraftforge.client.gui.widget.ScrollPanel;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 public class EntityInteractorScreen extends AbstractContainerScreen<EntityInteractorMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID,
@@ -52,10 +53,10 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
     private Button settingsButton;
     private ForgeSlider interactRateSlider;
-    private CreativeSurvivalButton creativeSurvivalButton;
+    private GameModeButton gameModeButton;
     private SelectedSlotButton selectedSlotButton;
     private ExperienceWidget experienceWidget;
-    private EffectSelectorWidget effectSelectorWidget;
+    private EffectsWidget effectsWidget;
 
     public EntityInteractorScreen(EntityInteractorMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
@@ -88,7 +89,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
                 new ForgeSlider(this.leftPos + 97, this.topPos + 60, 50, 20, Component.empty(), Component.literal("/t"),
                         10, 100, 20, true));
 
-        this.creativeSurvivalButton = addRenderableWidget(new CreativeSurvivalButton());
+        this.gameModeButton = addRenderableWidget(new GameModeButton());
         PacketManager.sendToServer(new SRequestPlayerGameModePacket(this.menu.getPos()));
 
         this.selectedSlotButton = addRenderableWidget(new SelectedSlotButton());
@@ -101,18 +102,17 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
         this.experienceWidget = new ExperienceWidget(this.leftPos - 70, this.topPos + 56, 62);
 
-        this.effectSelectorWidget = addRenderableWidget(new EffectSelectorWidget());
+        this.effectsWidget = new EffectsWidget(this.leftPos - 70, this.topPos + 80, 62);
     }
 
-    // TODO: Let this work for spectator and adventure mode
     public void receivePlayerGameMode(GameType type) {
-        this.creativeSurvivalButton.setGameMode(type);
+        this.gameModeButton.setGameMode(type);
     }
 
     private void onSettingsButtonClicked(Button pButton) {
         this.settingsOpen = !this.settingsOpen;
-        this.creativeSurvivalButton.visible = this.settingsOpen;
-        this.creativeSurvivalButton.active = this.settingsOpen;
+        this.gameModeButton.visible = this.settingsOpen;
+        this.gameModeButton.active = this.settingsOpen;
         this.selectedSlotButton.visible = this.settingsOpen;
         this.selectedSlotButton.active = this.settingsOpen;
         this.experienceWidget.setVisible(this.settingsOpen);
@@ -189,10 +189,14 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         }
     }
 
-    private class CreativeSurvivalButton extends AbstractWidget {
+    private void openEffectAdder() {
+        Minecraft.getInstance().pushGuiLayer(new EffectAdderScreen());
+    }
+
+    private class GameModeButton extends AbstractWidget {
         private GameType gameType = GameType.SURVIVAL;
 
-        private CreativeSurvivalButton() {
+        private GameModeButton() {
             super(EntityInteractorScreen.this.leftPos - 70, EntityInteractorScreen.this.topPos + 10, 20, 20,
                     Component.empty());
             this.visible = EntityInteractorScreen.this.settingsOpen;
@@ -302,7 +306,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             if (this.isHovered) {
                 EntityInteractorScreen.this.renderTooltip(pPoseStack,
                         Component.translatable("gui.entity_interactor.settings.selected_slot")
-                                 .append(": " + (this.slot + 1)), pMouseX, pMouseY);
+                                .append(": " + (this.slot + 1)), pMouseX, pMouseY);
             }
         }
 
@@ -336,7 +340,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
                 throw new IllegalStateException("EntityInteractorScreen's level is null!");
 
             if (Minecraft.getInstance().level.getBlockEntity(EntityInteractorScreen.this.getMenu()
-                                                                                        .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                    .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
                 player.set(blockEntity.getPlayer());
             }
 
@@ -352,7 +356,6 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             this.removeExpButton = new ExperienceButton(x, y + 20, SExperienceButtonPacket.Type.REMOVE_EXP);
 
             setVisible(EntityInteractorScreen.this.settingsOpen);
-
             addWidgets();
         }
 
@@ -362,14 +365,6 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             this.removeLevelButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
             this.addExpButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
             this.removeExpButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
-        }
-
-        private void addWidgets() {
-            EntityInteractorScreen.this.addWidget(this.experienceBar);
-            EntityInteractorScreen.this.addWidget(this.addLevelButton);
-            EntityInteractorScreen.this.addWidget(this.removeLevelButton);
-            EntityInteractorScreen.this.addWidget(this.addExpButton);
-            EntityInteractorScreen.this.addWidget(this.removeExpButton);
         }
 
         public void setVisible(boolean settingsOpen) {
@@ -384,6 +379,14 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             this.removeLevelButton.active = settingsOpen;
             this.addExpButton.active = settingsOpen;
             this.removeExpButton.active = settingsOpen;
+        }
+
+        private void addWidgets() {
+            EntityInteractorScreen.this.addWidget(this.experienceBar);
+            EntityInteractorScreen.this.addWidget(this.addLevelButton);
+            EntityInteractorScreen.this.addWidget(this.removeLevelButton);
+            EntityInteractorScreen.this.addWidget(this.addExpButton);
+            EntityInteractorScreen.this.addWidget(this.removeExpButton);
         }
     }
 
@@ -401,8 +404,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible || !this.active) return;
 
-            this.isHovered =
-                    pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, WIDGETS);
@@ -447,7 +449,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
             AtomicReference<Player> player = new AtomicReference<>();
             if (Minecraft.getInstance().level.getBlockEntity(EntityInteractorScreen.this.getMenu()
-                                                                                        .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                    .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
                 player.set(blockEntity.getPlayer());
             }
 
@@ -495,18 +497,82 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         }
     }
 
-    public class EffectSelectorWidget extends EditBox {
-        private MobEffect effect = MobEffects.ABSORPTION;
-        private final List<String> autocompleteOptions = new ArrayList<>();
-        private int autocompleteIndex = 0;
+    public class EffectsWidget {
+        private final ScrollPanel effectsPanel;
+        private final AddEffectButton addEffectButton;
+        private final RemoveEffectButton removeEffectButton;
+        private boolean isDeleteMode = false;
 
-        public EffectSelectorWidget() {
-            super(EntityInteractorScreen.this.font, EntityInteractorScreen.this.leftPos - 50,
-                    EntityInteractorScreen.this.topPos + 80, 60, 40, Component.empty());
+        public EffectsWidget(int pX, int pY, int pWidth) {
+            this.effectsPanel = new ScrollPanel(EntityInteractorScreen.this.minecraft, pWidth, 100, pY, pX) {
 
-            Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
-            setResponder(this::respondToInput);
-            setBordered(true);
+                @Override
+                public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+                }
+
+                @Override
+                public NarrationPriority narrationPriority() {
+                    return NarrationPriority.NONE;
+                }
+
+                @Override
+                protected int getContentHeight() {
+                    return 0;
+                }
+
+                @Override
+                protected void drawPanel(PoseStack poseStack, int entryRight, int relativeY, Tesselator tess, int mouseX, int mouseY) {
+
+                }
+            };
+
+            this.addEffectButton = new AddEffectButton(pX + pWidth - 20, pY + 100);
+            this.removeEffectButton = new RemoveEffectButton(this, pX + pWidth - 40, pY + 100);
+
+            setVisible(EntityInteractorScreen.this.settingsOpen);
+            addWidgets();
+        }
+
+        public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            if (EntityInteractorScreen.this.settingsOpen) {
+                this.effectsPanel.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+            }
+
+            this.addEffectButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+            this.removeEffectButton.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        }
+
+        public void setVisible(boolean visible) {
+            this.addEffectButton.visible = visible;
+            this.removeEffectButton.visible = visible;
+            this.addEffectButton.active = visible;
+            this.removeEffectButton.active = visible;
+
+            if (EntityInteractorScreen.this.children().contains(this.effectsPanel)) {
+                EntityInteractorScreen.this.removeWidget(this.effectsPanel);
+            } else {
+                EntityInteractorScreen.this.addWidget(this.effectsPanel);
+            }
+        }
+
+        private void addWidgets() {
+            EntityInteractorScreen.this.addWidget(this.addEffectButton);
+            EntityInteractorScreen.this.addWidget(this.removeEffectButton);
+        }
+
+        public void setDeleteMode(boolean deleteMode) {
+            this.isDeleteMode = deleteMode;
+            // TODO: Add overlay to effect buttons
+        }
+
+        public boolean isDeleteMode() {
+            return this.isDeleteMode;
+        }
+    }
+
+    public class AddEffectButton extends AbstractWidget {
+        public AddEffectButton(int pX, int pY) {
+            super(pX, pY, 20, 20, Component.empty());
         }
 
         @Override
@@ -514,81 +580,164 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             defaultButtonNarrationText(pNarrationElementOutput);
         }
 
-        private void respondToInput(String input) {
-            Map<String, MobEffect> effects = ForgeRegistries.MOB_EFFECTS.getEntries().stream()
-                                                                        .filter(entry -> entry.getKey().toString()
-                                                                                              .contains(input)).collect(
-                            Collectors.toMap(entry -> entry.getKey().toString(), Map.Entry::getValue));
+        @Override
+        protected boolean clicked(double pMouseX, double pMouseY) {
+            if (!this.active || !this.isHovered) return false;
 
-            autocompleteOptions.clear();
-            if (effects.isEmpty()) return;
-
-            if (effects.size() == 1) {
-                this.effect = effects.values().iterator().next();
-                return;
-            }
-
-            autocompleteOptions.addAll(effects.keySet());
-            autocompleteOptions.sort(String::compareTo);
+            EntityInteractorScreen.this.openEffectAdder();
+            return true;
         }
 
         @Override
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            if (!this.visible || !this.active) return;
+            if (!this.visible) return;
 
-            this.isHovered =
-                    pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
 
-            super.renderButton(pPoseStack, pMouseX, pMouseY, pPartialTick);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, WIDGETS);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 
-            if (!this.autocompleteOptions.isEmpty() && isFocused()) {
-                GuiComponent.fill(pPoseStack, this.x, this.y + this.height, this.x + this.width,
-                        this.y + this.height + (10 * this.autocompleteOptions.size()), 0x131313);
-
-                for (int index = 0; index < this.autocompleteOptions.size(); index++) {
-                    String option = this.autocompleteOptions.get(index);
-
-                    if (index == this.autocompleteIndex) {
-                        GuiComponent.fill(pPoseStack, this.x, this.y + this.height + (10 * index), this.x + this.width,
-                                this.y + this.height + (10 * index) + 10, 0x1A1A1A);
-                    }
-
-                    GuiComponent.drawString(pPoseStack, EntityInteractorScreen.this.font, option, this.x + 2,
-                            this.y + this.height + (10 * index) + 2, 0xFFFFFF);
-                }
-            }
+            int yIncrement = this.isHovered ? 20 : 0;
+            blit(pPoseStack, this.x, this.y, 0, 108 + yIncrement, this.width, this.height);
 
             if (this.isHovered) {
                 renderToolTip(pPoseStack, pMouseX, pMouseY);
             }
         }
+    }
 
-        @Override
-        protected boolean clicked(double pMouseX, double pMouseY) {
-            if (this.autocompleteOptions.isEmpty() || !this.active) return super.clicked(pMouseX, pMouseY);
+    public class RemoveEffectButton extends AbstractWidget {
+        private final EffectsWidget parent;
 
-            if (pMouseX >= this.x && pMouseY >= this.y + this.height && pMouseX < this.x + this.width && pMouseY < this.y + this.height + (10 * this.autocompleteOptions.size())) {
-                int index = (int) ((pMouseY - (this.y + this.height)) / 10);
-                if (index == this.autocompleteIndex) {
-                    this.effect = ForgeRegistries.MOB_EFFECTS.getValue(
-                            new ResourceLocation(this.autocompleteOptions.get(index)));
-                    this.autocompleteOptions.clear();
-                } else {
-                    this.autocompleteIndex = index;
-                }
+        public RemoveEffectButton(EffectsWidget parent, int pX, int pY) {
+            super(pX, pY, 20, 20, Component.empty());
 
-                return true;
-            }
-
-            return super.clicked(pMouseX, pMouseY);
+            this.parent = parent;
         }
 
         @Override
-        public boolean keyReleased(int pKeyCode, int pScanCode, int pModifiers) {
-            if(!this.active)
-                return super.keyReleased(pKeyCode, pScanCode, pModifiers);
+        public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+            defaultButtonNarrationText(pNarrationElementOutput);
+        }
 
+        @Override
+        protected boolean clicked(double pMouseX, double pMouseY) {
+            if (!this.active || !this.isHovered) return false;
 
+            this.parent.setDeleteMode(!this.parent.isDeleteMode());
+            return true;
+        }
+
+        @Override
+        public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            if (!this.visible) return;
+
+            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, WIDGETS);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+
+            int yIncrement = this.isHovered ? 20 : 0;
+            blit(pPoseStack, this.x, this.y, 20, 108 + yIncrement, this.width, this.height);
+
+            if (this.isHovered) {
+                renderToolTip(pPoseStack, pMouseX, pMouseY);
+            }
+        }
+    }
+
+    public static class EffectAdderScreen extends Screen {
+        private static final Component TITLE = Component.translatable(
+                "gui." + Industria.MODID + ".entity_interactor.effect_adder");
+
+        private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID,
+                "textures/gui/effect_adder.png");
+
+        private int leftPos, topPos;
+        private int imageWidth, imageHeight;
+
+        public EffectAdderScreen() {
+            super(TITLE);
+
+            this.imageWidth = 176;
+            this.imageHeight = 166;
+        }
+
+        @Override
+        protected void init() {
+            super.init();
+
+            this.leftPos = (this.width - this.imageWidth) / 2;
+            this.topPos = (this.height - this.imageHeight) / 2;
+
+            addRenderableWidget(new SearchBar());
+        }
+
+        @Override
+        public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            renderBackground(pPoseStack);
+
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderTexture(0, TEXTURE);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            blit(pPoseStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+
+            super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        }
+
+        public class SearchBar extends EditBox {
+            private final List<MobEffect> suggestions = new ArrayList<>();
+
+            public SearchBar() {
+                super(Minecraft.getInstance().font, EffectAdderScreen.this.leftPos + 10,
+                        EffectAdderScreen.this.topPos + 10, EffectAdderScreen.this.imageWidth - 20, 20,
+                        Component.empty());
+
+                setMaxLength(getMaxLength());
+                setResponder(this::onTextChanged);
+
+                setFocus(true);
+                setCanLoseFocus(false);
+
+                setSuggestion(ForgeRegistries.MOB_EFFECTS.getKeys().stream().map(ResourceLocation::toString).sorted()
+                        .findFirst().orElse("Search..."));
+
+                setTextColor(0xFFFFFF);
+                setTextColorUneditable(0xAAAAAA);
+
+                setBordered(false);
+            }
+
+            private static int getMaxLength() {
+                return ForgeRegistries.MOB_EFFECTS.getKeys().stream().map(ResourceLocation::toString)
+                        .mapToInt(String::length).max().orElse(32);
+            }
+
+            private void onTextChanged(String text) {
+                this.suggestions.clear();
+                this.suggestions.addAll(ForgeRegistries.MOB_EFFECTS.getEntries().stream()
+                        .filter(entry -> entry.getKey().location().toString().contains(text)).map(Map.Entry::getValue)
+                        .toList());
+            }
+
+            @Override
+            public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+                super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+
+                if (this.suggestions.isEmpty()) return;
+
+                for (int index = 0; index < this.suggestions.size(); index++) {
+                    MobEffect effect = this.suggestions.get(index);
+
+                    GuiComponent.fill(pPoseStack, this.x, this.y + this.height + index * 10, this.x + this.width,
+                            this.y + this.height + (index + 1) * 10, 0x88000000);
+
+                    Minecraft.getInstance().font.draw(pPoseStack, effect.getDisplayName(), x + 2, y + 2 + index * 10,
+                            0xFFFFFF);
+                }
+            }
         }
     }
 }
