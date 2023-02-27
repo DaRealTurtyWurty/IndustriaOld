@@ -116,6 +116,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         this.selectedSlotButton.visible = this.settingsOpen;
         this.selectedSlotButton.active = this.settingsOpen;
         this.experienceWidget.setVisible(this.settingsOpen);
+        this.effectsWidget.setVisible(this.settingsOpen);
     }
 
     @Override
@@ -155,6 +156,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
     public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         this.experienceWidget.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        this.effectsWidget.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
         renderPlayer(pPoseStack, pMouseX, pMouseY);
         renderTooltip(pPoseStack, pMouseX, pMouseY);
     }
@@ -306,7 +308,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             if (this.isHovered) {
                 EntityInteractorScreen.this.renderTooltip(pPoseStack,
                         Component.translatable("gui.entity_interactor.settings.selected_slot")
-                                .append(": " + (this.slot + 1)), pMouseX, pMouseY);
+                                 .append(": " + (this.slot + 1)), pMouseX, pMouseY);
             }
         }
 
@@ -340,7 +342,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
                 throw new IllegalStateException("EntityInteractorScreen's level is null!");
 
             if (Minecraft.getInstance().level.getBlockEntity(EntityInteractorScreen.this.getMenu()
-                    .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                                                                                        .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
                 player.set(blockEntity.getPlayer());
             }
 
@@ -404,7 +406,8 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible || !this.active) return;
 
-            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+            this.isHovered =
+                    pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, WIDGETS);
@@ -449,7 +452,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
             AtomicReference<Player> player = new AtomicReference<>();
             if (Minecraft.getInstance().level.getBlockEntity(EntityInteractorScreen.this.getMenu()
-                    .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                                                                                        .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
                 player.set(blockEntity.getPlayer());
             }
 
@@ -521,7 +524,8 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
                 }
 
                 @Override
-                protected void drawPanel(PoseStack poseStack, int entryRight, int relativeY, Tesselator tess, int mouseX, int mouseY) {
+                protected void drawPanel(PoseStack poseStack, int entryRight, int relativeY, Tesselator tess,
+                                         int mouseX, int mouseY) {
 
                 }
             };
@@ -592,14 +596,12 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible) return;
 
-            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
-
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderTexture(0, WIDGETS);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+            this.isHovered =
+                    pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
 
             int yIncrement = this.isHovered ? 20 : 0;
-            blit(pPoseStack, this.x, this.y, 0, 108 + yIncrement, this.width, this.height);
+            GuiUtils.drawQuadSplitSprite(pPoseStack, WIDGETS_LOCATION, this.x, this.y, this.width, this.height, 0,
+                    66 + yIncrement, 199, 85 + yIncrement);
 
             if (this.isHovered) {
                 renderToolTip(pPoseStack, pMouseX, pMouseY);
@@ -633,7 +635,8 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible) return;
 
-            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+            this.isHovered =
+                    pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, WIDGETS);
@@ -656,7 +659,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
                 "textures/gui/effect_adder.png");
 
         private int leftPos, topPos;
-        private int imageWidth, imageHeight;
+        private final int imageWidth, imageHeight;
 
         public EffectAdderScreen() {
             super(TITLE);
@@ -702,7 +705,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
                 setCanLoseFocus(false);
 
                 setSuggestion(ForgeRegistries.MOB_EFFECTS.getKeys().stream().map(ResourceLocation::toString).sorted()
-                        .findFirst().orElse("Search..."));
+                                                         .findFirst().orElse("Search..."));
 
                 setTextColor(0xFFFFFF);
                 setTextColorUneditable(0xAAAAAA);
@@ -712,14 +715,15 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
             private static int getMaxLength() {
                 return ForgeRegistries.MOB_EFFECTS.getKeys().stream().map(ResourceLocation::toString)
-                        .mapToInt(String::length).max().orElse(32);
+                                                  .mapToInt(String::length).max().orElse(32);
             }
 
             private void onTextChanged(String text) {
                 this.suggestions.clear();
                 this.suggestions.addAll(ForgeRegistries.MOB_EFFECTS.getEntries().stream()
-                        .filter(entry -> entry.getKey().location().toString().contains(text)).map(Map.Entry::getValue)
-                        .toList());
+                                                                   .filter(entry -> entry.getKey().location().toString()
+                                                                                         .contains(text))
+                                                                   .map(Map.Entry::getValue).toList());
             }
 
             @Override
