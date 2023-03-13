@@ -3,7 +3,7 @@ package dev.turtywurty.industria.block;
 import dev.turtywurty.industria.blockentity.EntityInteractorBlockEntity;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.menu.EntityInteractorMenu;
-import io.github.darealturtywurty.turtylib.common.blockentity.TickableBlockEntity;
+import dev.turtywurty.turtylib.common.blockentity.TickableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

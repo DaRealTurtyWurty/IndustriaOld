@@ -2,7 +2,7 @@ package dev.turtywurty.industria.menu.slots;
 
 import dev.turtywurty.industria.items.MachineUpgradeItem;
 import dev.turtywurty.industria.registry.MachineUpgrade;
-import io.github.darealturtywurty.turtylib.common.container.slot.SlotWithRestriction;
+import dev.turtywurty.turtylib.common.container.slot.SlotWithRestriction;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;

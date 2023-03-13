@@ -7,7 +7,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import dev.turtywurty.industria.init.RecipeInit;
-import io.github.darealturtywurty.turtylib.core.util.Either3;
+import dev.turtywurty.turtylib.core.util.Either3;
 import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;

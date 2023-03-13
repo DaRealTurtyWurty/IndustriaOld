@@ -3,7 +3,7 @@ package dev.turtywurty.industria.block;
 import dev.turtywurty.industria.blockentity.ProjectorBlockEntity;
 import dev.turtywurty.industria.client.screens.ProjectorScreen;
 import dev.turtywurty.industria.init.BlockEntityInit;
-import io.github.darealturtywurty.turtylib.common.blockentity.TickableBlockEntity;
+import dev.turtywurty.turtylib.common.blockentity.TickableBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;

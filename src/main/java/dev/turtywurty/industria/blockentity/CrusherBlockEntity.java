@@ -4,9 +4,9 @@ import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.block.CrusherBlock;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.recipes.CrusherRecipe;
-import io.github.darealturtywurty.turtylib.common.blockentity.ModularBlockEntity;
-import io.github.darealturtywurty.turtylib.common.blockentity.module.EnergyModule;
-import io.github.darealturtywurty.turtylib.common.blockentity.module.SidedInventoryModule;
+import dev.turtywurty.turtylib.common.blockentity.ModularBlockEntity;
+import dev.turtywurty.turtylib.common.blockentity.module.EnergyModule;
+import dev.turtywurty.turtylib.common.blockentity.module.SidedInventoryModule;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static io.github.darealturtywurty.turtylib.common.blockentity.module.SidedInventoryModule.SidedInventoryHandler.SidedInventoryHandlerBuilder;
+import static dev.turtywurty.turtylib.common.blockentity.module.SidedInventoryModule.SidedInventoryHandler.SidedInventoryHandlerBuilder;
 
 public class CrusherBlockEntity extends ModularBlockEntity {
     public static final Component TITLE = Component.translatable("container." + Industria.MODID + ".crusher");

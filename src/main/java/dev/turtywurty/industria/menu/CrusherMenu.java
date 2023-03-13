@@ -3,7 +3,7 @@ package dev.turtywurty.industria.menu;
 import dev.turtywurty.industria.blockentity.CrusherBlockEntity;
 import dev.turtywurty.industria.init.BlockInit;
 import dev.turtywurty.industria.init.MenuInit;
-import io.github.darealturtywurty.turtylib.common.container.slot.SlotNoPlace;
+import dev.turtywurty.turtylib.common.container.slot.SlotNoPlace;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Inventory;

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.menu.TreeDecapitatorMenu;
-import io.github.darealturtywurty.turtylib.client.ui.components.EnergyWidget;
+import dev.turtywurty.turtylib.client.ui.components.EnergyWidget;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;

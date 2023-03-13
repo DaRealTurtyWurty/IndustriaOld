@@ -7,7 +7,7 @@ import dev.turtywurty.industria.blockentity.AgitatorBlockEntity;
 import dev.turtywurty.industria.menu.AgitatorMenu;
 import dev.turtywurty.industria.menu.slots.ToggleSlot;
 import dev.turtywurty.industria.menu.slots.ToggleSlotItemHandler;
-import io.github.darealturtywurty.turtylib.client.ui.components.FluidWidget;
+import dev.turtywurty.turtylib.client.ui.components.FluidWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;

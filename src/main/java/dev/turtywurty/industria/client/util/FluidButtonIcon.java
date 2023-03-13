@@ -1,8 +1,8 @@
 package dev.turtywurty.industria.client.util;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.darealturtywurty.turtylib.client.util.ClientUtils;
-import io.github.darealturtywurty.turtylib.client.util.GuiUtils;
+import dev.turtywurty.turtylib.client.util.ClientUtils;
+import dev.turtywurty.turtylib.client.util.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.level.material.Fluid;

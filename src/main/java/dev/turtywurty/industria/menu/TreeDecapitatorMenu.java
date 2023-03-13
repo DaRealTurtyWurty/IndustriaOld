@@ -5,7 +5,7 @@ import dev.turtywurty.industria.init.BlockInit;
 import dev.turtywurty.industria.init.MenuInit;
 import dev.turtywurty.industria.menu.slots.MachineUpgradeSlot;
 import dev.turtywurty.industria.registry.MachineUpgrade;
-import io.github.darealturtywurty.turtylib.common.container.slot.SlotNoPlace;
+import dev.turtywurty.turtylib.common.container.slot.SlotNoPlace;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;

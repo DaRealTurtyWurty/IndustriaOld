@@ -13,7 +13,7 @@ import dev.turtywurty.industria.menu.ResearcherMenu;
 import dev.turtywurty.industria.network.PacketManager;
 import dev.turtywurty.industria.network.serverbound.SRequestResearchDataPacket;
 import dev.turtywurty.industria.network.serverbound.SStartResearchPacket;
-import io.github.darealturtywurty.turtylib.client.ui.components.EnergyWidget;
+import dev.turtywurty.turtylib.client.ui.components.EnergyWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

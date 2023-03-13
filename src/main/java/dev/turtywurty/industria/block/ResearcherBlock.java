@@ -6,7 +6,7 @@ import dev.turtywurty.industria.init.ReloadListenerInit;
 import dev.turtywurty.industria.menu.ResearcherMenu;
 import dev.turtywurty.industria.network.PacketManager;
 import dev.turtywurty.industria.network.clientbound.CSyncResearchDataPacket;
-import io.github.darealturtywurty.turtylib.common.blockentity.TickableBlockEntity;
+import dev.turtywurty.turtylib.common.blockentity.TickableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

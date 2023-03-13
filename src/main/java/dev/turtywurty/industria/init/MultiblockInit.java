@@ -1,8 +1,8 @@
 package dev.turtywurty.industria.init;
 
 import dev.turtywurty.industria.Industria;
-import io.github.darealturtywurty.turtylib.TurtyLib;
-import io.github.darealturtywurty.turtylib.core.multiblock.Multiblock;
+import dev.turtywurty.turtylib.TurtyLib;
+import dev.turtywurty.turtylib.core.multiblock.Multiblock;
 import net.minecraftforge.registries.DeferredRegister;
 
 public class MultiblockInit {

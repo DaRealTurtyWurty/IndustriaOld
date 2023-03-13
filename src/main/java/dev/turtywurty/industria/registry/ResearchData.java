@@ -1,7 +1,7 @@
 package dev.turtywurty.industria.registry;
 
 import com.mojang.datafixers.util.Either;
-import io.github.darealturtywurty.turtylib.core.multiblock.Multiblock;
+import dev.turtywurty.turtylib.core.multiblock.Multiblock;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

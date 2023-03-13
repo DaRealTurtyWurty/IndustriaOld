@@ -1,7 +1,7 @@
 package dev.turtywurty.industria.client.util;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.darealturtywurty.turtylib.client.util.GuiUtils;
+import dev.turtywurty.turtylib.client.util.GuiUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 

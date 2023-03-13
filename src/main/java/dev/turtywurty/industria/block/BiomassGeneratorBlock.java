@@ -3,8 +3,8 @@ package dev.turtywurty.industria.block;
 import dev.turtywurty.industria.blockentity.BiomassGeneratorBlockEntity;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.menu.BiomassGeneratorMenu;
-import io.github.darealturtywurty.turtylib.common.blockentity.TickableBlockEntity;
-import io.github.darealturtywurty.turtylib.core.util.MathUtils;
+import dev.turtywurty.turtylib.common.blockentity.TickableBlockEntity;
+import dev.turtywurty.turtylib.core.util.MathUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -35,7 +35,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
-import static io.github.darealturtywurty.turtylib.core.util.MathUtils.nextFloat;
+import static dev.turtywurty.turtylib.core.util.MathUtils.nextFloat;
 
 public class BiomassGeneratorBlock extends Block implements EntityBlock {
     private static final VoxelShape SHAPE = makeShape();

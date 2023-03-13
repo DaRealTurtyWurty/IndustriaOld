@@ -3,7 +3,7 @@ package dev.turtywurty.industria.block;
 import dev.turtywurty.industria.blockentity.TreeDecapitatorBlockEntity;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.menu.TreeDecapitatorMenu;
-import io.github.darealturtywurty.turtylib.common.blockentity.TickableBlockEntity;
+import dev.turtywurty.turtylib.common.blockentity.TickableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;

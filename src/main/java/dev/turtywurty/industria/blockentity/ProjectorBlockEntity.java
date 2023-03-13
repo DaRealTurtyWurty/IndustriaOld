@@ -3,7 +3,7 @@ package dev.turtywurty.industria.blockentity;
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.data.ResearchDataOld;
 import dev.turtywurty.industria.init.BlockEntityInit;
-import io.github.darealturtywurty.turtylib.common.blockentity.ModularBlockEntity;
+import dev.turtywurty.turtylib.common.blockentity.ModularBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;

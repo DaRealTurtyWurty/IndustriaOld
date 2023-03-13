@@ -6,14 +6,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.blockentity.EntityInteractorBlockEntity;
+import dev.turtywurty.industria.client.util.AutocompleteWidget;
 import dev.turtywurty.industria.menu.EntityInteractorMenu;
 import dev.turtywurty.industria.network.PacketManager;
 import dev.turtywurty.industria.network.serverbound.SChangeSelectedSlotPacket;
 import dev.turtywurty.industria.network.serverbound.SExperienceButtonPacket;
 import dev.turtywurty.industria.network.serverbound.SRequestPlayerGameModePacket;
 import dev.turtywurty.industria.network.serverbound.SSwitchGameModePacket;
-import io.github.darealturtywurty.turtylib.client.ui.components.EnergyWidget;
-import io.github.darealturtywurty.turtylib.client.util.GuiUtils;
+import dev.turtywurty.turtylib.client.ui.components.EnergyWidget;
+import dev.turtywurty.turtylib.client.util.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
@@ -37,9 +38,11 @@ import net.minecraftforge.client.gui.widget.ScrollPanel;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class EntityInteractorScreen extends AbstractContainerScreen<EntityInteractorMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID,
@@ -675,7 +678,24 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             this.leftPos = (this.width - this.imageWidth) / 2;
             this.topPos = (this.height - this.imageHeight) / 2;
 
-            addRenderableWidget(new SearchBar());
+            var searchbar = new AutocompleteWidget.Builder<MobEffect>(this.leftPos + 10,
+                    this.topPos + 10, this.imageWidth - 20, 20).maxSuggestions(10).suggestionProvider(
+                                                                       (search) -> ForgeRegistries.MOB_EFFECTS.getEntries().stream()
+                                                                                                              .filter((entry) -> entry.getKey().location().toString()
+                                                                                                                                      .contains(search))
+                                                                                                              .map(Map.Entry::getValue).collect(Collectors.toList()))
+                                                               .suggestionRenderer(MobEffect::getDisplayName).build();
+            searchbar.setTextColor(0xFFFFFF);
+            searchbar.setTextColorUneditable(0xAAAAAA);
+            searchbar.setBordered(false);
+            searchbar.setMaxLength(32);
+            searchbar.setFocus(true);
+            searchbar.setCanLoseFocus(false);
+            searchbar.setSuggestion(
+                    ForgeRegistries.MOB_EFFECTS.getKeys().stream().min(Comparator.comparing(ResourceLocation::toString))
+                                               .map(ResourceLocation::toString).orElse("No suggestions"));
+
+            addRenderableWidget(searchbar);
         }
 
         @Override
@@ -688,60 +708,6 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             blit(pPoseStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
             super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
-        }
-
-        public class SearchBar extends EditBox {
-            private final List<MobEffect> suggestions = new ArrayList<>();
-
-            public SearchBar() {
-                super(Minecraft.getInstance().font, EffectAdderScreen.this.leftPos + 10,
-                        EffectAdderScreen.this.topPos + 10, EffectAdderScreen.this.imageWidth - 20, 20,
-                        Component.empty());
-
-                setMaxLength(getMaxLength());
-                setResponder(this::onTextChanged);
-
-                setFocus(true);
-                setCanLoseFocus(false);
-
-                setSuggestion(ForgeRegistries.MOB_EFFECTS.getKeys().stream().map(ResourceLocation::toString).sorted()
-                                                         .findFirst().orElse("Search..."));
-
-                setTextColor(0xFFFFFF);
-                setTextColorUneditable(0xAAAAAA);
-
-                setBordered(false);
-            }
-
-            private static int getMaxLength() {
-                return ForgeRegistries.MOB_EFFECTS.getKeys().stream().map(ResourceLocation::toString)
-                                                  .mapToInt(String::length).max().orElse(32);
-            }
-
-            private void onTextChanged(String text) {
-                this.suggestions.clear();
-                this.suggestions.addAll(ForgeRegistries.MOB_EFFECTS.getEntries().stream()
-                                                                   .filter(entry -> entry.getKey().location().toString()
-                                                                                         .contains(text))
-                                                                   .map(Map.Entry::getValue).toList());
-            }
-
-            @Override
-            public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-                super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
-
-                if (this.suggestions.isEmpty()) return;
-
-                for (int index = 0; index < this.suggestions.size(); index++) {
-                    MobEffect effect = this.suggestions.get(index);
-
-                    GuiComponent.fill(pPoseStack, this.x, this.y + this.height + index * 10, this.x + this.width,
-                            this.y + this.height + (index + 1) * 10, 0x88000000);
-
-                    Minecraft.getInstance().font.draw(pPoseStack, effect.getDisplayName(), x + 2, y + 2 + index * 10,
-                            0xFFFFFF);
-                }
-            }
         }
     }
 }
