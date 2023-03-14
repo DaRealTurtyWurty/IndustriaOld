@@ -20,7 +20,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -37,9 +36,7 @@ import net.minecraftforge.client.gui.widget.ForgeSlider;
 import net.minecraftforge.client.gui.widget.ScrollPanel;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -311,7 +308,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             if (this.isHovered) {
                 EntityInteractorScreen.this.renderTooltip(pPoseStack,
                         Component.translatable("gui.entity_interactor.settings.selected_slot")
-                                 .append(": " + (this.slot + 1)), pMouseX, pMouseY);
+                                .append(": " + (this.slot + 1)), pMouseX, pMouseY);
             }
         }
 
@@ -345,7 +342,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
                 throw new IllegalStateException("EntityInteractorScreen's level is null!");
 
             if (Minecraft.getInstance().level.getBlockEntity(EntityInteractorScreen.this.getMenu()
-                                                                                        .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                    .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
                 player.set(blockEntity.getPlayer());
             }
 
@@ -409,8 +406,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible || !this.active) return;
 
-            this.isHovered =
-                    pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, WIDGETS);
@@ -455,7 +451,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
             AtomicReference<Player> player = new AtomicReference<>();
             if (Minecraft.getInstance().level.getBlockEntity(EntityInteractorScreen.this.getMenu()
-                                                                                        .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
+                    .getPos()) instanceof EntityInteractorBlockEntity blockEntity) {
                 player.set(blockEntity.getPlayer());
             }
 
@@ -527,8 +523,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
                 }
 
                 @Override
-                protected void drawPanel(PoseStack poseStack, int entryRight, int relativeY, Tesselator tess,
-                                         int mouseX, int mouseY) {
+                protected void drawPanel(PoseStack poseStack, int entryRight, int relativeY, Tesselator tess, int mouseX, int mouseY) {
 
                 }
             };
@@ -599,8 +594,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible) return;
 
-            this.isHovered =
-                    pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
 
             int yIncrement = this.isHovered ? 20 : 0;
             GuiUtils.drawQuadSplitSprite(pPoseStack, WIDGETS_LOCATION, this.x, this.y, this.width, this.height, 0,
@@ -638,8 +632,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible) return;
 
-            this.isHovered =
-                    pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, WIDGETS);
@@ -678,13 +671,12 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             this.leftPos = (this.width - this.imageWidth) / 2;
             this.topPos = (this.height - this.imageHeight) / 2;
 
-            var searchbar = new AutocompleteWidget.Builder<MobEffect>(this.leftPos + 10,
-                    this.topPos + 10, this.imageWidth - 20, 20).maxSuggestions(10).suggestionProvider(
-                                                                       (search) -> ForgeRegistries.MOB_EFFECTS.getEntries().stream()
-                                                                                                              .filter((entry) -> entry.getKey().location().toString()
-                                                                                                                                      .contains(search))
-                                                                                                              .map(Map.Entry::getValue).collect(Collectors.toList()))
-                                                               .suggestionRenderer(MobEffect::getDisplayName).build();
+            var searchbar = new AutocompleteWidget.Builder<MobEffect>(this.leftPos + 10, this.topPos + 10,
+                    this.imageWidth - 20, 20).maxSuggestions(10).suggestionProvider(
+                            (search) -> ForgeRegistries.MOB_EFFECTS.getEntries().stream()
+                                    .filter((entry) -> entry.getKey().location().toString().contains(search))
+                                    .map(Map.Entry::getValue).collect(Collectors.toList()))
+                    .suggestionRenderer(MobEffect::getDisplayName).build();
             searchbar.setTextColor(0xFFFFFF);
             searchbar.setTextColorUneditable(0xAAAAAA);
             searchbar.setBordered(false);
@@ -693,7 +685,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             searchbar.setCanLoseFocus(false);
             searchbar.setSuggestion(
                     ForgeRegistries.MOB_EFFECTS.getKeys().stream().min(Comparator.comparing(ResourceLocation::toString))
-                                               .map(ResourceLocation::toString).orElse("No suggestions"));
+                            .map(ResourceLocation::toString).orElse("No suggestions"));
 
             addRenderableWidget(searchbar);
         }

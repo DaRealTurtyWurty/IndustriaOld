@@ -1,12 +1,14 @@
 package dev.turtywurty.industria.client.util;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import dev.turtywurty.turtylib.client.util.GuiUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -14,7 +16,7 @@ import java.util.function.Function;
 
 public class SimpleButton extends AbstractWidget {
     private RenderableButtonIcon icon;
-    private Function<SimpleButton, Collection<Component>> tooltip = button -> List.of();
+    private Function<SimpleButton, List<Component>> tooltip = button -> List.of();
     private Optional<Component> narration = Optional.empty();
     private Function<SimpleButton, Boolean> clickedHandler = button -> true;
 
@@ -33,7 +35,7 @@ public class SimpleButton extends AbstractWidget {
         this.icon = icon;
     }
 
-    public void setTooltip(Function<SimpleButton, Collection<Component>> tooltip) {
+    public void setTooltip(Function<SimpleButton, List<Component>> tooltip) {
         this.tooltip = Objects.requireNonNullElseGet(tooltip, () -> button -> List.of());
     }
 
@@ -52,11 +54,33 @@ public class SimpleButton extends AbstractWidget {
         return this.clickedHandler.apply(this);
     }
 
+    @Override
+    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        if(!this.visible) return;
+
+        this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+
+        int yIncrement = this.isHovered ? 20 : 0;
+        GuiUtils.drawQuadSplitSprite(pPoseStack, WIDGETS_LOCATION, this.x, this.y, this.width, this.height, 0,
+                66 + yIncrement, 199, 85 + yIncrement);
+
+        if (this.isHovered) {
+            renderToolTip(pPoseStack, pMouseX, pMouseY);
+        }
+    }
+
+    @Override
+    public void renderToolTip(PoseStack pPoseStack, int pMouseX, int pMouseY) {
+        if (this.tooltip != null && Minecraft.getInstance().screen != null && this.visible && this.isHovered) {
+            Minecraft.getInstance().screen.renderComponentTooltip(pPoseStack, this.tooltip.apply(this), pMouseX, pMouseY);
+        }
+    }
+
     public static class Builder {
         private final int x, y;
         private int width, height;
         private RenderableButtonIcon icon;
-        private Function<SimpleButton, Collection<Component>> tooltip;
+        private Function<SimpleButton, List<Component>> tooltip;
         private Optional<Component> narration = Optional.empty();
         private Function<SimpleButton, Boolean> onClickHandler;
 
@@ -82,7 +106,7 @@ public class SimpleButton extends AbstractWidget {
             return this;
         }
 
-        public Builder tooltip(Function<SimpleButton, Collection<Component>> tooltip) {
+        public Builder tooltip(Function<SimpleButton, List<Component>> tooltip) {
             this.tooltip = tooltip;
             return this;
         }
