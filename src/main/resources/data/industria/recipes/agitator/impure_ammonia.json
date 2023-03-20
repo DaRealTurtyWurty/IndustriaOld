@@ -1,0 +1,19 @@
+{
+    "type": "industria:agitator",
+    "ingredients": [
+        {
+            "FluidName": "industria:ammonia",
+            "Amount": 750
+        },
+        {
+            "FluidName": "industria:nitrogen",
+            "Amount": 250
+        }
+    ],
+    "results": [
+        {
+            "FluidName": "industria:impure_ammonia",
+            "Amount": 500
+        }
+    ]
+}

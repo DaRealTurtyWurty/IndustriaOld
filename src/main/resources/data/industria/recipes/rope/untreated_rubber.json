@@ -1,0 +1,11 @@
+{
+    "type": "industria:rope",
+    "input": {
+        "item": "industria:clean_coagulated_latex_bucket"
+    },
+    "output": {
+        "item": "industria:untreated_rubber",
+        "Count": 1
+    },
+    "time": 100
+}

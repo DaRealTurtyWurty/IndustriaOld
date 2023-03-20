@@ -1,0 +1,11 @@
+{
+    "type": "industria:rope",
+    "input": {
+        "item": "industria:clean_sodium_carbonate"
+    },
+    "output": {
+        "item": "industria:sodium_carbonate",
+        "Count": 1
+    },
+    "time": 100
+}

@@ -1,0 +1,11 @@
+{
+    "type": "industria:rope",
+    "input": {
+        "item": "industria:latex_bucket"
+    },
+    "output": {
+        "item": "industria:coagulated_latex_bucket",
+        "Count": 1
+    },
+    "time": 100
+}

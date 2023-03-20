@@ -1,0 +1,15 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "industria:latex_bucket"
+        },
+        {
+            "item": "industria:sodium_bisulfate"
+        }
+    ],
+    "result": {
+        "item": "industria:coagulated_latex_bucket",
+        "Count": 1
+    }
+}

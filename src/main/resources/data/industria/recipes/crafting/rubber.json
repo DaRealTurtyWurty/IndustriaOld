@@ -1,0 +1,15 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "industria:untreated_rubber"
+        },
+        {
+            "item": "industria:sulfur"
+        }
+    ],
+    "result": {
+        "item": "industria:rubber",
+        "Count": 1
+    }
+}
