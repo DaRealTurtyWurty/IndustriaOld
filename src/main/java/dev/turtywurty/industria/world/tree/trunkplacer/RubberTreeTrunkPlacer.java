@@ -39,7 +39,7 @@ public class RubberTreeTrunkPlacer extends TrunkPlacer {
 
     @Override
     protected @NotNull TrunkPlacerType<?> type() {
-        return TrunkPlacerInit.RUBBER_TREE_TRUNK_PLACER;
+        return TrunkPlacerInit.RUBBER_TREE_TRUNK_PLACER.get();
     }
 
     @Override

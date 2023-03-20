@@ -39,6 +39,7 @@ public class Industria {
         EntityDataSerializerInit.ENTITY_DATA_SERIALIZERS.register(bus);
         FluidInit.FLUIDS.register(bus);
         FluidInit.FLUID_TYPES.register(bus);
+        TrunkPlacerInit.TRUNK_PLACER_TYPES.register(bus);
         WoodSetInit.init();
     }
 
