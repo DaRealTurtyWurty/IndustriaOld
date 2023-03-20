@@ -19,12 +19,33 @@
             "type": "minecraft:block_predicate_filter",
             "predicate": {
                 "type": "minecraft:would_survive",
+                "offset": [
+                    0,
+                    -1,
+                    0
+                ],
                 "state": {
                     "Name": "industria:rubber_sapling",
                     "Properties": {
                         "age": "0"
                     }
                 }
+            }
+        },
+        {
+            "type": "minecraft:block_predicate_filter",
+            "predicate": {
+                "type": "minecraft:matching_blocks",
+                "offset": [
+                    0,
+                    1,
+                    0
+                ],
+                "blocks": [
+                    "minecraft:air",
+                    "minecraft:cave_air",
+                    "minecraft:void_air"
+                ]
             }
         }
     ]
