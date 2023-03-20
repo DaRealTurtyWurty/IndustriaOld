@@ -12,6 +12,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CSyncResearchPacket extends Packet {
     private final List<ResearchAdvancer> researchAdvancers;
@@ -35,6 +36,7 @@ public class CSyncResearchPacket extends Packet {
     @Override
     public void encode(FriendlyByteBuf buf) {
         this.researchAdvancers.stream().map(ResearchAdvancer::getResearchItem).map(ForgeRegistries.ITEMS::getKey)
+                .filter(Objects::nonNull)
                 .forEach(buf::writeResourceLocation);
     }
 
