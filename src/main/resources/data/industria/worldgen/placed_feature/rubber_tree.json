@@ -1,16 +1,31 @@
 {
-  "feature": "industria:rubber_tree",
-  "placement": [
-    {
-      "type": "minecraft:count",
-      "count": 2
-    },
-    {
-      "type": "minecraft:in_square"
-    },
-    {
-      "type": "minecraft:heightmap",
-      "heightmap": "OCEAN_FLOOR"
-    }
-  ]
+    "feature": "industria:rubber_tree",
+    "placement": [
+        {
+            "type": "minecraft:count",
+            "count": 2
+        },
+        {
+            "type": "minecraft:in_square"
+        },
+        {
+            "type": "minecraft:heightmap",
+            "heightmap": "OCEAN_FLOOR"
+        },
+        {
+            "type": "minecraft:biome"
+        },
+        {
+            "type": "minecraft:block_predicate_filter",
+            "predicate": {
+                "type": "minecraft:would_survive",
+                "state": {
+                    "Name": "industria:rubber_sapling",
+                    "Properties": {
+                        "age": "0"
+                    }
+                }
+            }
+        }
+    ]
 }

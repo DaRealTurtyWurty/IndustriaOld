@@ -1,6 +1,6 @@
 {
-  "type": "forge:add_features",
-  "features": "industria:rubber_tree",
-  "biomes": "#minecraft:is_jungle",
-  "step": "vegetal_decoration"
+    "type": "forge:add_features",
+    "features": "industria:rubber_tree",
+    "biomes": "#minecraft:is_jungle",
+    "step": "vegetal_decoration"
 }
