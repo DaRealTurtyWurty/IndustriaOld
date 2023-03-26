@@ -40,6 +40,7 @@ public final class PacketManager {
         register(SSwitchGameModePacket.class, SSwitchGameModePacket::new);
         register(SRequestPlayerGameModePacket.class, SRequestPlayerGameModePacket::new);
         register(CReceivePlayerGameModePacket.class, CReceivePlayerGameModePacket::new);
+        register(CAgitatorFluidUpdatePacket.class, CAgitatorFluidUpdatePacket::new);
 
         Industria.LOGGER.info("Registered {} packets", NUM_PACKETS);
     }

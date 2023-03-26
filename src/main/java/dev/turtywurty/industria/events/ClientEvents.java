@@ -7,16 +7,19 @@ import dev.turtywurty.industria.client.entityrenderers.WoodBoatRenderer;
 import dev.turtywurty.industria.client.model.*;
 import dev.turtywurty.industria.client.screens.*;
 import dev.turtywurty.industria.entity.WoodBoat;
-import dev.turtywurty.industria.init.*;
+import dev.turtywurty.industria.init.BlockEntityInit;
+import dev.turtywurty.industria.init.EntityInit;
+import dev.turtywurty.industria.init.MenuInit;
+import dev.turtywurty.industria.init.WoodSetInit;
 import dev.turtywurty.industria.init.util.WoodRegistrySet;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.BiomeColors;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -48,8 +51,10 @@ public class ClientEvents {
             Industria.LOGGER.info("Registering block entity renderers");
             event.registerBlockEntityRenderer(BlockEntityInit.RESEARCHER.get(), ResearcherBlockEntityRenderer::new);
             event.registerBlockEntityRenderer(BlockEntityInit.CRUSHER.get(), CrusherBlockEntityRenderer::new);
-            event.registerBlockEntityRenderer(BlockEntityInit.BIOMASS_GENERATOR.get(), BiomassGeneratorBlockEntityRenderer::new);
-            event.registerBlockEntityRenderer(BlockEntityInit.TREE_DECAPITATOR.get(), TreeDecapitatorBlockEntityRenderer::new);
+            event.registerBlockEntityRenderer(BlockEntityInit.BIOMASS_GENERATOR.get(),
+                    BiomassGeneratorBlockEntityRenderer::new);
+            event.registerBlockEntityRenderer(BlockEntityInit.TREE_DECAPITATOR.get(),
+                    TreeDecapitatorBlockEntityRenderer::new);
             event.registerBlockEntityRenderer(BlockEntityInit.AGITATOR.get(), AgitatorBlockEntityRenderer::new);
 
             Industria.LOGGER.info("Registering entity renderers");
@@ -93,6 +98,11 @@ public class ClientEvents {
             event.register((stack, tintIndex) -> blockColors.getColor(
                             WoodSetInit.RUBBER_WOOD_SET.leaves.get().defaultBlockState(), null, null, tintIndex),
                     WoodSetInit.RUBBER_WOOD_SET.leaves.get());
+        }
+
+        @SubscribeEvent
+        public static void registerSpecialModels(ModelEvent.RegisterAdditional event) {
+            event.register(new ResourceLocation(Industria.MODID, "block/agitator_fluid"));
         }
     }
 }

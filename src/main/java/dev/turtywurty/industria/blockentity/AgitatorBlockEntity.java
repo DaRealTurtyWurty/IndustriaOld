@@ -1,29 +1,31 @@
 package dev.turtywurty.industria.blockentity;
 
 import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.blockentity.util.directional.MultiDirectionalFluidModule;
 import dev.turtywurty.industria.client.screens.AgitatorScreen.SwitchingWidget.IOType;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.init.RecipeInit;
+import dev.turtywurty.industria.menu.AgitatorMenu;
 import dev.turtywurty.industria.network.PacketManager;
 import dev.turtywurty.industria.network.serverbound.SSwitchAgitatorIOTypePacket;
 import dev.turtywurty.industria.recipes.AgitatorRecipe;
 import dev.turtywurty.turtylib.common.blockentity.ModularBlockEntity;
 import dev.turtywurty.turtylib.common.blockentity.module.EnergyModule;
-import dev.turtywurty.turtylib.common.blockentity.module.FluidModule;
 import dev.turtywurty.turtylib.common.blockentity.module.InventoryModule;
 import dev.turtywurty.turtylib.core.util.Either3;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -31,10 +33,10 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
     public static final Component TITLE = Component.translatable("container." + Industria.MODID + ".agitator");
 
     private final InventoryModule itemInventory;
-    private final FluidModule[] fluidInventories = new FluidModule[6];
+    private final MultiDirectionalFluidModule fluidInventory;
     private final EnergyModule energy;
-
     private final IOType[] types = new IOType[]{IOType.FLUID, IOType.FLUID, IOType.FLUID, IOType.FLUID, IOType.FLUID, IOType.FLUID};
+    private final List<AgitatorMenu> openMenus = new ArrayList<>();
 
     private int progress = 0;
     private int maxProgress = 100;
@@ -70,10 +72,10 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
         super(BlockEntityInit.AGITATOR.get(), pos, state);
 
         this.itemInventory = addModule(new InventoryModule(this, 6));
-
-        for (int index = 0; index < 6; index++) {
-            this.fluidInventories[index] = addModule(new FluidModule(this, 10000));
-        }
+        this.fluidInventory = addModule(new MultiDirectionalFluidModule(
+                new MultiDirectionalFluidModule.Builder(this).updateCallback(this::updateFluids)
+                        .addTank(10000, Direction.NORTH).addTank(10000, Direction.EAST).addTank(10000, Direction.SOUTH)
+                        .addTank(10000, Direction.WEST).addTank(10000, Direction.UP).addTank(10000, Direction.DOWN)));
 
         this.energy = addModule(new EnergyModule(this, new EnergyModule.Builder().capacity(10000).maxReceive(1000)));
     }
@@ -82,8 +84,8 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
         return this.itemInventory;
     }
 
-    public FluidModule[] getFluidInventories() {
-        return this.fluidInventories;
+    public MultiDirectionalFluidModule getFluidInventory() {
+        return this.fluidInventory;
     }
 
     public EnergyModule getEnergy() {
@@ -117,7 +119,8 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
     @Override
     protected List<Consumer<CompoundTag>> getWriteSyncData() {
         return List.of(tag -> tag.putIntArray("types",
-                new int[]{this.types[0].ordinal(), this.types[1].ordinal(), this.types[2].ordinal(), this.types[3].ordinal(), this.types[4].ordinal(), this.types[5].ordinal()}));
+                        new int[]{this.types[0].ordinal(), this.types[1].ordinal(), this.types[2].ordinal(), this.types[3].ordinal(), this.types[4].ordinal(), this.types[5].ordinal()}),
+                tag -> fluidInventory.serialize(this, tag));
     }
 
     @Override
@@ -127,7 +130,7 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
             for (int index = 0; index < 6; index++) {
                 this.types[index] = IOType.values()[types[index]];
             }
-        });
+        }, tag -> fluidInventory.deserialize(this, tag));
     }
 
     public void setIOType(int index, IOType type) {
@@ -161,6 +164,7 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
         }
 
         for (int index = 0; index < 3; index++) {
+            Direction direction = Direction.values()[index];
             Either3<AgitatorRecipe.CountedIngredient, FluidStack, FluidStack> input = recipe.getInput(index);
             IOType type = this.types[index];
             if (input == null) {
@@ -191,7 +195,7 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
                     return false;
                 }
 
-                if (!getFluidInventories()[index].getCapabilityInstance().isFluidValid(index, fluidStack)) {
+                if (!getFluidInventory().getTank(direction).map(tank -> tank.isFluidValid(fluidStack)).orElse(false)) {
                     return false;
                 }
             }
@@ -211,8 +215,6 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
         if (this.level == null || this.level.isClientSide()) return;
 
         getEnergy().getCapabilityInstance().receiveEnergy(1000, false);
-        getFluidInventories()[0].getCapabilityInstance()
-                .fill(new FluidStack(Fluids.WATER, 1000), IFluidHandler.FluidAction.EXECUTE);
         if (!hasEnergy()) return;
 
         AgitatorRecipe recipe = getRecipe();
@@ -229,6 +231,8 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
             this.progress = 0;
             this.maxProgress = 0;
             for (int index = 0; index < 3; index++) {
+                Direction direction = Direction.values()[index];
+
                 Either3<AgitatorRecipe.CountedIngredient, FluidStack, FluidStack> input = recipe.getInput(index);
                 IOType type = this.types[index];
                 if (input == null) {
@@ -253,12 +257,14 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
                         continue;
                     }
 
-                    getFluidInventories()[index].getCapabilityInstance()
-                            .drain(fluidStack, IFluidHandler.FluidAction.EXECUTE);
+                    getFluidInventory().getTank(direction)
+                            .ifPresent(tank -> tank.drain(fluidStack, IFluidHandler.FluidAction.EXECUTE));
                 }
             }
 
             for (int index = 3; index < 6; index++) {
+                Direction direction = Direction.values()[index];
+
                 Either3<ItemStack, FluidStack, FluidStack> output = recipe.getOutput(index - 3);
                 IOType type = this.types[index];
                 if (output == null) {
@@ -281,8 +287,8 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
                         continue;
                     }
 
-                    getFluidInventories()[index].getCapabilityInstance()
-                            .fill(fluidStack, IFluidHandler.FluidAction.EXECUTE);
+                    getFluidInventory().getTank(direction)
+                            .ifPresent(tank -> tank.fill(fluidStack, IFluidHandler.FluidAction.EXECUTE));
                 }
             }
         }
@@ -294,5 +300,18 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
 
     public int getMaxProgress() {
         return this.maxProgress;
+    }
+
+    public void addMenu(AgitatorMenu menu) {
+        this.openMenus.add(menu);
+    }
+
+    public void removeMenu(AgitatorMenu menu) {
+        this.openMenus.remove(menu);
+    }
+
+    public void updateFluids() {
+        this.update();
+        this.openMenus.forEach(AgitatorMenu::broadcastFluidChanges);
     }
 }

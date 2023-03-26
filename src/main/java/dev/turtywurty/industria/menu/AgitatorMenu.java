@@ -1,22 +1,37 @@
 package dev.turtywurty.industria.menu;
 
 import dev.turtywurty.industria.blockentity.AgitatorBlockEntity;
+import dev.turtywurty.industria.blockentity.util.directional.MultiDirectionalFluidTank;
 import dev.turtywurty.industria.init.BlockInit;
 import dev.turtywurty.industria.init.MenuInit;
 import dev.turtywurty.industria.menu.slots.ToggleSlotItemHandler;
+import dev.turtywurty.industria.network.PacketManager;
+import dev.turtywurty.industria.network.clientbound.CAgitatorFluidUpdatePacket;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
 
 public class AgitatorMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess access;
     private final ContainerData data;
     private final BlockPos pos;
+    private final List<FluidStack> fluids = new ArrayList<>();
+    @Nullable
+    private AgitatorBlockEntity blockEntity;
+    @Nullable
+    private Player player;
 
     protected AgitatorMenu(int containerId, Inventory playerInv, IItemHandler slots, BlockPos pos, ContainerData data) {
         super(MenuInit.AGITATOR.get(), containerId);
@@ -37,8 +52,8 @@ public class AgitatorMenu extends AbstractContainerMenu {
         // Player Inventory
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 9; ++col) {
-                this.addSlot(new Slot(playerInv, col + row * 9 + 9, 8 + col * slotSizePlus2,
-                        145 + row * slotSizePlus2));
+                this.addSlot(
+                        new Slot(playerInv, col + row * 9 + 9, 8 + col * slotSizePlus2, 145 + row * slotSizePlus2));
             }
         }
 
@@ -51,8 +66,24 @@ public class AgitatorMenu extends AbstractContainerMenu {
     }
 
     public static MenuConstructor getServerMenu(AgitatorBlockEntity blockEntity, BlockPos pos) {
-        return (id, playerInv, player) -> new AgitatorMenu(id, playerInv, blockEntity.getInventory().getCapabilityInstance(),
-                pos, blockEntity.getContainerData());
+        return (id, playerInv, player) -> {
+            var menu = new AgitatorMenu(id, playerInv, blockEntity.getInventory().getCapabilityInstance(), pos,
+                    blockEntity.getContainerData());
+
+            blockEntity.getFluidInventory().getFluidHandler().getFluidTanks().stream().sorted(getTankComparator())
+                    .map(MultiDirectionalFluidTank::getFluid).forEachOrdered(fluidStack -> {
+                        System.out.println(
+                                "Sending Fluid: " + fluidStack.getDisplayName().getString() + " " + fluidStack.getAmount());
+                        menu.fluids.add(fluidStack);
+                    });
+
+
+            menu.blockEntity = blockEntity;
+            menu.blockEntity.addMenu(menu);
+
+            menu.player = player;
+            return menu;
+        };
     }
 
     public static AgitatorMenu getClientMenu(int id, Inventory playerInv, BlockPos pos) {
@@ -90,6 +121,38 @@ public class AgitatorMenu extends AbstractContainerMenu {
         return stillValid(this.access, pPlayer, BlockInit.AGITATOR.get());
     }
 
+    public void broadcastFluidChanges() {
+        if (this.blockEntity != null && this.player != null) {
+            List<FluidStack> stacks = this.blockEntity.getFluidInventory().getFluidHandler().getFluidTanks().stream()
+                    .sorted(getTankComparator()).map(MultiDirectionalFluidTank::getFluid).toList();
+
+            boolean changed = false;
+            for (int index = 0; index < stacks.size(); index++) {
+                FluidStack stack = stacks.get(index);
+                if (!stack.isFluidEqual(this.fluids.get(index)) || stack.getAmount() != this.fluids.get(index).getAmount()) {
+                    changed = true;
+                    break;
+                }
+            }
+
+            if (changed) {
+                for (int index = 0; index < this.fluids.size(); index++) {
+                    this.fluids.set(index, stacks.get(index));
+                }
+
+                PacketManager.sendToClient(new CAgitatorFluidUpdatePacket(this.pos, this.fluids), this.player);
+            }
+        }
+    }
+
+    @Override
+    public void removed(Player pPlayer) {
+        super.removed(pPlayer);
+        if (this.blockEntity != null) {
+            this.blockEntity.removeMenu(this);
+        }
+    }
+
     public int getProgress() {
         return this.data.get(0);
     }
@@ -108,5 +171,21 @@ public class AgitatorMenu extends AbstractContainerMenu {
 
     public BlockPos getPos() {
         return this.pos;
+    }
+
+    public List<FluidStack> getFluids() {
+        return this.fluids;
+    }
+
+    private static Comparator<MultiDirectionalFluidTank> getTankComparator() {
+        return (tank0, tank1) -> {
+            EnumSet<Direction> tank0Directions = tank0.getDirections();
+            EnumSet<Direction> tank1Directions = tank1.getDirections();
+
+            int tank0Ordinals = tank0Directions.stream().mapToInt(Direction::ordinal).sum();
+            int tank1Ordinals = tank1Directions.stream().mapToInt(Direction::ordinal).sum();
+
+            return Integer.compare(tank0Ordinals, tank1Ordinals);
+        };
     }
 }

@@ -3,6 +3,8 @@ package dev.turtywurty.industria.block;
 import dev.turtywurty.industria.blockentity.AgitatorBlockEntity;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.menu.AgitatorMenu;
+import dev.turtywurty.industria.network.PacketManager;
+import dev.turtywurty.industria.network.clientbound.CAgitatorFluidUpdatePacket;
 import dev.turtywurty.turtylib.common.blockentity.TickableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,6 +24,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class AgitatorBlock extends Block implements EntityBlock {
     public AgitatorBlock() {
@@ -46,6 +50,10 @@ public class AgitatorBlock extends Block implements EntityBlock {
             var provider = new SimpleMenuProvider(AgitatorMenu.getServerMenu(blockEntity, pPos),
                     AgitatorBlockEntity.TITLE);
             NetworkHooks.openScreen((ServerPlayer) pPlayer, provider, pPos);
+            PacketManager.sendToClient(
+                    new CAgitatorFluidUpdatePacket(pPos,
+                            List.copyOf(((AgitatorMenu) pPlayer.containerMenu).getFluids())),
+                    pPlayer);
         }
 
         return InteractionResult.sidedSuccess(pLevel.isClientSide());

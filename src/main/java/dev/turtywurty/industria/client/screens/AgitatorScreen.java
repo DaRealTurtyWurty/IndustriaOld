@@ -17,11 +17,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -50,6 +50,9 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
     @Override
     public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
         super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        this.renderables.stream().filter(Objects::nonNull).filter(AbstractWidget.class::isInstance)
+                .map(AbstractWidget.class::cast)
+                .forEachOrdered(widget -> widget.renderToolTip(pPoseStack, pMouseX, pMouseY));
         renderTooltip(pPoseStack, pMouseX, pMouseY);
     }
 
@@ -71,12 +74,17 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
                 new SwitchingWidget(this.menu, 5, this.leftPos + 135, this.topPos + 90, 20, 20));
 
         this.fluidWidget0 = addRenderableWidget(
-                new FluidWidget(new FluidStack(Fluids.WATER, 500), 0, 0, 16, 47, 10, 10));
-        this.fluidWidget1 = addRenderableWidget(new FluidWidget(FluidStack.EMPTY, 0, 0, 16, 47, 10, 10));
-        this.fluidWidget2 = addRenderableWidget(new FluidWidget(FluidStack.EMPTY, 0, 0, 16, 47, 10, 10));
-        this.fluidWidget3 = addRenderableWidget(new FluidWidget(FluidStack.EMPTY, 0, 0, 16, 47, 10, 10));
-        this.fluidWidget4 = addRenderableWidget(new FluidWidget(FluidStack.EMPTY, 0, 0, 16, 47, 10, 10));
-        this.fluidWidget5 = addRenderableWidget(new FluidWidget(FluidStack.EMPTY, 0, 0, 16, 47, 10, 10));
+                new FluidWidget(FluidStack.EMPTY, FluidWidget.Orientation.BOTTOM_TOP, 0, 0, 16, 47, 16, 16, 10000));
+        this.fluidWidget1 = addRenderableWidget(
+                new FluidWidget(FluidStack.EMPTY, FluidWidget.Orientation.BOTTOM_TOP, 0, 0, 16, 47, 16, 16, 10000));
+        this.fluidWidget2 = addRenderableWidget(
+                new FluidWidget(FluidStack.EMPTY, FluidWidget.Orientation.BOTTOM_TOP, 0, 0, 16, 47, 16, 16, 10000));
+        this.fluidWidget3 = addRenderableWidget(
+                new FluidWidget(FluidStack.EMPTY, FluidWidget.Orientation.BOTTOM_TOP, 0, 0, 16, 47, 16, 16, 10000));
+        this.fluidWidget4 = addRenderableWidget(
+                new FluidWidget(FluidStack.EMPTY, FluidWidget.Orientation.BOTTOM_TOP, 0, 0, 16, 47, 16, 16, 10000));
+        this.fluidWidget5 = addRenderableWidget(
+                new FluidWidget(FluidStack.EMPTY, FluidWidget.Orientation.BOTTOM_TOP, 0, 0, 16, 47, 16, 16, 10000));
 
         this.switchingWidget0.addSlot(SwitchingWidget.IOType.ITEM, 0);
         this.switchingWidget0.addFluid(SwitchingWidget.IOType.FLUID, this.fluidWidget0);
@@ -95,6 +103,17 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
 
         this.switchingWidget5.addSlot(SwitchingWidget.IOType.ITEM, 5);
         this.switchingWidget5.addFluid(SwitchingWidget.IOType.FLUID, this.fluidWidget5);
+
+        updateFluids(this.menu.getFluids());
+    }
+
+    public void updateFluids(List<FluidStack> fluidStacks) {
+        this.fluidWidget0.setFluid(fluidStacks.get(0));
+        this.fluidWidget1.setFluid(fluidStacks.get(1));
+        this.fluidWidget2.setFluid(fluidStacks.get(2));
+        this.fluidWidget3.setFluid(fluidStacks.get(3));
+        this.fluidWidget4.setFluid(fluidStacks.get(4));
+        this.fluidWidget5.setFluid(fluidStacks.get(5));
     }
 
     public class SwitchingWidget extends AbstractWidget {
@@ -217,25 +236,26 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible) return;
             if (this.active) {
-                if(firstRender) {
+                if (firstRender) {
                     this.firstRender = false;
 
                     IOType currentType = this.current.getLeft();
 
                     this.values.forEach((type, object) -> {
                         // check to see if the object is empty
-                        if(object instanceof FluidWidget fluidWidget) {
-                            if(!isFluidEmpty(fluidWidget)) {
+                        if (object instanceof FluidWidget fluidWidget) {
+                            if (!isFluidEmpty(fluidWidget)) {
                                 this.current = Pair.of(type, fluidWidget);
                                 fluidWidget.active = true;
+                                fluidWidget.visible = true;
                                 fluidWidget.setShouldDrawBorder(true);
                                 fluidWidget.x = this.x + 2;
                                 fluidWidget.y = this.y - 60;
                                 this.active = false;
                                 disableNonCurrent();
                             }
-                        } else if(object instanceof Integer slotIndex) {
-                            if(!isSlotEmpty(slotIndex)) {
+                        } else if (object instanceof Integer slotIndex) {
+                            if (!isSlotEmpty(slotIndex)) {
                                 this.current = Pair.of(type, slotIndex);
                                 final Slot slot = this.menu.slots.get(slotIndex);
                                 if (slot instanceof ToggleSlot toggleSlot) {
@@ -254,20 +274,21 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
                         }
                     });
 
-                    if(isCurrentEmpty()) {
-                        if(Minecraft.getInstance().level == null)
-                            return;
+                    if (isCurrentEmpty()) {
+                        if (Minecraft.getInstance().level == null) return;
 
-                        if(Minecraft.getInstance().level.getBlockEntity(this.menu.getPos()) instanceof AgitatorBlockEntity agitator) {
+                        if (Minecraft.getInstance().level.getBlockEntity(
+                                this.menu.getPos()) instanceof AgitatorBlockEntity agitator) {
                             IOType type = agitator.getIOType(this.index);
-                            if(this.values.containsKey(type)) {
+                            if (this.values.containsKey(type)) {
                                 this.current = Pair.of(type, this.values.get(type));
-                                if(this.current.getRight() instanceof FluidWidget fluidWidget) {
+                                if (this.current.getRight() instanceof FluidWidget fluidWidget) {
                                     fluidWidget.active = true;
+                                    fluidWidget.visible = true;
                                     fluidWidget.setShouldDrawBorder(true);
                                     fluidWidget.x = this.x + 2;
                                     fluidWidget.y = this.y - 60;
-                                } else if(this.current.getRight() instanceof Integer slotIndex) {
+                                } else if (this.current.getRight() instanceof Integer slotIndex) {
                                     final Slot slot = this.menu.slots.get(slotIndex);
                                     if (slot instanceof ToggleSlot toggleSlot) {
                                         toggleSlot.setActive(true);
@@ -286,7 +307,7 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
                         }
                     }
 
-                    if(this.current.getLeft() != currentType) {
+                    if (this.current.getLeft() != currentType) {
                         updateType();
                     }
                 }
@@ -318,10 +339,6 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             int yChange = getYImage(this.isHovered) * this.height;
             blit(pPoseStack, this.x, this.y, 194, yChange, this.width, this.height);
-
-            if (this.isHovered) {
-                this.renderToolTip(pPoseStack, pMouseX, pMouseY);
-            }
 
             // Render current value
             Object value = this.values.get(this.current.getLeft());
@@ -356,10 +373,10 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
         }
 
         private void updateType() {
-            if(Minecraft.getInstance().level == null)
-                return;
+            if (Minecraft.getInstance().level == null) return;
 
-            if(Minecraft.getInstance().level.getBlockEntity(this.menu.getPos()) instanceof AgitatorBlockEntity agitator) {
+            if (Minecraft.getInstance().level.getBlockEntity(
+                    this.menu.getPos()) instanceof AgitatorBlockEntity agitator) {
                 agitator.setIOType(this.index, this.current.getLeft());
             }
         }
@@ -425,6 +442,7 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
             } else if (oldVal instanceof FluidWidget oldWidget && oldWidget.isActive()) {
                 if (oldWidget.getInfo().getFluidStack() == null || oldWidget.getInfo().getFluidStack().isEmpty()) {
                     oldWidget.active = false;
+                    oldWidget.visible = false;
                 } else {
                     changed = false;
                 }
@@ -446,6 +464,7 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
                 }
             } else if (newVal instanceof FluidWidget newWidget && !newWidget.isActive()) {
                 newWidget.active = true;
+                newWidget.visible = true;
             }
 
             return true;
@@ -461,6 +480,13 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
 
             public IOType previous() {
                 return values()[(this.ordinal() - 1) % values().length];
+            }
+        }
+
+        @Override
+        public void renderToolTip(PoseStack pPoseStack, int pMouseX, int pMouseY) {
+            if (this.isHovered) {
+                super.renderToolTip(pPoseStack, pMouseX, pMouseY);
             }
         }
     }
