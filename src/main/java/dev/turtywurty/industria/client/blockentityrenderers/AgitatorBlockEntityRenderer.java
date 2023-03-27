@@ -46,6 +46,7 @@ public class AgitatorBlockEntityRenderer implements BlockEntityRenderer<Agitator
                 .map(MultiDirectionalFluidTank::getFluid).toList();
         if (!fluids.isEmpty()) {
             int fluidIndex = 0;
+            float combinedHeight = 0.05f;
             for (FluidStack fluid : fluids) {
                 if (fluid.isEmpty()) continue;
 
@@ -62,20 +63,22 @@ public class AgitatorBlockEntityRenderer implements BlockEntityRenderer<Agitator
                 RenderType renderType = ItemBlockRenderTypes.getRenderLayer(fluid.getFluid().defaultFluidState());
 
                 pPoseStack.pushPose();
-                pPoseStack.translate(0, 0.05 + fluidIndex++ * 0.25, 0);
+                final double maxHeight = 0.25;
+                int amount = fluid.getAmount();
+                int capacity = pBlockEntity.getFluidInventory().getFluidHandler().getTankCapacity(fluidIndex);
+                double ratio = (double) amount / (double) capacity;
+                pPoseStack.scale(1.0F, (float) ratio, 1.0F);
+
+                double height = maxHeight * ratio;
+                combinedHeight += height;
+
+                pPoseStack.translate(0, combinedHeight, 0);
                 renderTintedModel(pPoseStack.last(), pBufferSource.getBuffer(renderType), null, replacedModel,
                         1.0F,
                         1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, pPackedLight, pPackedOverlay, ModelData.EMPTY, renderType);
                 pPoseStack.popPose();
             }
         }
-
-        pPoseStack.pushPose();
-        pPoseStack.translate(0.5, 0.5, 0.5);
-        pPoseStack.scale(1.0F, -1.0F, -1.0F);
-        this.model.renderToBuffer(pPoseStack, pBufferSource.getBuffer(this.model.renderType(TEXTURE)), pPackedLight,
-                pPackedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
-        pPoseStack.popPose();
 
         pPoseStack.pushPose();
         pPoseStack.translate(0.5, 0.343745, 0.5);

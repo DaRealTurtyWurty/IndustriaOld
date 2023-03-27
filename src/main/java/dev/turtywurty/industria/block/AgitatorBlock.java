@@ -61,6 +61,6 @@ public class AgitatorBlock extends Block implements EntityBlock {
 
     @Override
     public RenderShape getRenderShape(BlockState pState) {
-        return RenderShape.ENTITYBLOCK_ANIMATED;
+        return RenderShape.MODEL;
     }
 }
