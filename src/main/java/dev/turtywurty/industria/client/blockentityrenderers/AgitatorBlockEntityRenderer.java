@@ -79,7 +79,6 @@ public class AgitatorBlockEntityRenderer implements BlockEntityRenderer<Agitator
                 float maxHeight = 0.25f;
                 float amount = fluid.getAmount();
                 float capacity = pBlockEntity.getFluidInventory().getFluidHandler().getTankCapacity(fluidIndex);
-                System.out.println("Amount: " + amount + " Capacity: " + capacity);
                 float ratio = amount / capacity;
                 float height = maxHeight * ratio;
 
