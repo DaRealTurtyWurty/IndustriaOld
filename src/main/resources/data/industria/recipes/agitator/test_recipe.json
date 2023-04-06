@@ -6,14 +6,18 @@
             "Amount": 500
         },
         {
-            "item": "industria:biomass",
-            "Count": 1
+            "FluidName": "minecraft:lava",
+            "Amount": 500
+        },
+        {
+            "FluidName": "mekanism:superheated_sodium",
+            "Amount": 500
         }
     ],
     "results": [
         {
             "FluidName": "minecraft:water",
-            "Amount": 750
+            "Amount": 250
         },
         {
             "item": "minecraft:bone_meal",

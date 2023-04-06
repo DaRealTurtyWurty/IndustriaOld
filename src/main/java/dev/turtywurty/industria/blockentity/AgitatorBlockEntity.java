@@ -41,7 +41,6 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
     private final IOType[] types = new IOType[]{IOType.FLUID, IOType.FLUID, IOType.FLUID, IOType.FLUID, IOType.FLUID, IOType.FLUID};
     private final List<AgitatorMenu> openMenus = new ArrayList<>();
 
-
     private int progress = 0;
     private int maxProgress = 100;
 
