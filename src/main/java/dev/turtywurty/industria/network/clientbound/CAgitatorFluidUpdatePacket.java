@@ -1,5 +1,6 @@
 package dev.turtywurty.industria.network.clientbound;
 
+import dev.turtywurty.industria.blockentity.AgitatorBlockEntity;
 import dev.turtywurty.industria.client.screens.AgitatorScreen;
 import dev.turtywurty.industria.menu.AgitatorMenu;
 import dev.turtywurty.industria.network.Packet;
@@ -7,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -35,8 +37,9 @@ public class CAgitatorFluidUpdatePacket extends Packet {
     public void handle(NetworkEvent.Context context) {
         context.enqueueWork(() -> {
             Player player = Minecraft.getInstance().player;
+            if(player == null) return;
 
-            if (player != null && player.containerMenu instanceof AgitatorMenu menu && menu.getPos().equals(this.pos)) {
+            if (player.containerMenu instanceof AgitatorMenu menu && menu.getPos().equals(this.pos)) {
                 menu.getFluids().clear();
                 menu.getFluids().addAll(this.fluids);
 
@@ -45,7 +48,12 @@ public class CAgitatorFluidUpdatePacket extends Packet {
                 }
             }
 
-            context.setPacketHandled(true);
+            BlockEntity blockEntity = player.level.getBlockEntity(this.pos);
+            if (blockEntity instanceof AgitatorBlockEntity agitatorBlockEntity && agitatorBlockEntity.hasBERFluidUpdateCallback()) {
+                agitatorBlockEntity.getBERFluidUpdateCallback().accept(this.fluids);
+            }
         });
+
+        context.setPacketHandled(true);
     }
 }

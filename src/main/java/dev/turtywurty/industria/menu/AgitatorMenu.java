@@ -177,7 +177,7 @@ public class AgitatorMenu extends AbstractContainerMenu {
         return this.fluids;
     }
 
-    private static Comparator<MultiDirectionalFluidTank> getTankComparator() {
+    public static Comparator<MultiDirectionalFluidTank> getTankComparator() {
         return (tank0, tank1) -> {
             EnumSet<Direction> tank0Directions = tank0.getDirections();
             EnumSet<Direction> tank1Directions = tank1.getDirections();

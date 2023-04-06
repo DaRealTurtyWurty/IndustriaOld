@@ -2,11 +2,13 @@ package dev.turtywurty.industria.blockentity;
 
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.blockentity.util.directional.MultiDirectionalFluidModule;
+import dev.turtywurty.industria.blockentity.util.directional.MultiDirectionalFluidTank;
 import dev.turtywurty.industria.client.screens.AgitatorScreen.SwitchingWidget.IOType;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.init.RecipeInit;
 import dev.turtywurty.industria.menu.AgitatorMenu;
 import dev.turtywurty.industria.network.PacketManager;
+import dev.turtywurty.industria.network.clientbound.CAgitatorFluidUpdatePacket;
 import dev.turtywurty.industria.network.serverbound.SSwitchAgitatorIOTypePacket;
 import dev.turtywurty.industria.recipes.AgitatorRecipe;
 import dev.turtywurty.turtylib.common.blockentity.ModularBlockEntity;
@@ -25,6 +27,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -37,6 +40,7 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
     private final EnergyModule energy;
     private final IOType[] types = new IOType[]{IOType.FLUID, IOType.FLUID, IOType.FLUID, IOType.FLUID, IOType.FLUID, IOType.FLUID};
     private final List<AgitatorMenu> openMenus = new ArrayList<>();
+
 
     private int progress = 0;
     private int maxProgress = 100;
@@ -67,6 +71,9 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
             return 4;
         }
     };
+
+    private float prevRotorYRotation, rotorYRotation;
+    private Consumer<List<FluidStack>> berFluidUpdateCallback = null;
 
     public AgitatorBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntityInit.AGITATOR.get(), pos, state);
@@ -313,5 +320,20 @@ public class AgitatorBlockEntity extends ModularBlockEntity {
     public void updateFluids() {
         this.update();
         this.openMenus.forEach(AgitatorMenu::broadcastFluidChanges);
+        PacketManager.sendToAllClients(new CAgitatorFluidUpdatePacket(this.worldPosition,
+                this.fluidInventory.getFluidHandler().getFluidTanks().stream().map(MultiDirectionalFluidTank::getFluid)
+                        .toList()));
+    }
+
+    public Consumer<List<FluidStack>> getBERFluidUpdateCallback() {
+        return this.berFluidUpdateCallback;
+    }
+
+    public void setBERFluidUpdateCallback(Consumer<List<FluidStack>> berFluidUpdateCallback) {
+        this.berFluidUpdateCallback = berFluidUpdateCallback;
+    }
+
+    public boolean hasBERFluidUpdateCallback() {
+        return this.berFluidUpdateCallback != null;
     }
 }
