@@ -1,8 +1,7 @@
-package dev.turtywurty.industria.blockentity.util.directional;
+package dev.turtywurty.industria.blockentity.util.fluid.directional;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;

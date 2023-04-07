@@ -1,7 +1,7 @@
 package dev.turtywurty.industria.menu;
 
 import dev.turtywurty.industria.blockentity.AgitatorBlockEntity;
-import dev.turtywurty.industria.blockentity.util.directional.MultiDirectionalFluidTank;
+import dev.turtywurty.industria.blockentity.util.fluid.directional.MultiDirectionalFluidTank;
 import dev.turtywurty.industria.init.BlockInit;
 import dev.turtywurty.industria.init.MenuInit;
 import dev.turtywurty.industria.menu.slots.ToggleSlotItemHandler;

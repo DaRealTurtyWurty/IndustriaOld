@@ -1,4 +1,4 @@
-package dev.turtywurty.industria.blockentity.util;
+package dev.turtywurty.industria.blockentity.util.fluid;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;

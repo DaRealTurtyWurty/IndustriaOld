@@ -1,4 +1,4 @@
-package dev.turtywurty.industria.blockentity.util;
+package dev.turtywurty.industria.blockentity.util.fluid;
 
 import dev.turtywurty.turtylib.common.blockentity.ModularBlockEntity;
 import dev.turtywurty.turtylib.common.blockentity.module.CapabilityModule;

@@ -1,8 +1,8 @@
 package dev.turtywurty.industria.blockentity;
 
 import dev.turtywurty.industria.Industria;
-import dev.turtywurty.industria.blockentity.util.directional.MultiDirectionalFluidModule;
-import dev.turtywurty.industria.blockentity.util.directional.MultiDirectionalFluidTank;
+import dev.turtywurty.industria.blockentity.util.fluid.directional.MultiDirectionalFluidModule;
+import dev.turtywurty.industria.blockentity.util.fluid.directional.MultiDirectionalFluidTank;
 import dev.turtywurty.industria.client.screens.AgitatorScreen.SwitchingWidget.IOType;
 import dev.turtywurty.industria.init.BlockEntityInit;
 import dev.turtywurty.industria.init.RecipeInit;
@@ -27,7 +27,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.wrapper.RecipeWrapper;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;

@@ -1,4 +1,4 @@
-package dev.turtywurty.industria.blockentity.util;
+package dev.turtywurty.industria.blockentity.util.fluid;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;

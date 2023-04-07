@@ -1,4 +1,4 @@
-package dev.turtywurty.industria.blockentity.util.directional;
+package dev.turtywurty.industria.blockentity.util.fluid.directional;
 
 import dev.turtywurty.turtylib.common.blockentity.ModularBlockEntity;
 import dev.turtywurty.turtylib.common.blockentity.module.SidedCapabilityModule;

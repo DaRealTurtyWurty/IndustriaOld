@@ -1,4 +1,4 @@
-package dev.turtywurty.industria.blockentity.util.directional;
+package dev.turtywurty.industria.blockentity.util.fluid.directional;
 
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;

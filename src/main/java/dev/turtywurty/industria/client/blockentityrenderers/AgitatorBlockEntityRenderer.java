@@ -10,7 +10,7 @@ import com.mojang.math.Vector3f;
 import com.mojang.math.Vector4f;
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.blockentity.AgitatorBlockEntity;
-import dev.turtywurty.industria.blockentity.util.directional.MultiDirectionalFluidTank;
+import dev.turtywurty.industria.blockentity.util.fluid.directional.MultiDirectionalFluidTank;
 import dev.turtywurty.industria.client.model.AgitatorModel;
 import dev.turtywurty.industria.client.model.baked.ReplacedTextureColorModel;
 import dev.turtywurty.industria.client.rendertypes.AgitatorRenderType;
