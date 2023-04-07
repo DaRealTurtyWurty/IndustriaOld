@@ -29,6 +29,12 @@ public class BlockInit {
     public static final RegistryObject<EntityInteractorBlock> ENTITY_INTERACTOR = BLOCKS.register("entity_interactor",
             EntityInteractorBlock::new);
 
+    public static final RegistryObject<DistillationUnitBlock> DISTILLATION_UNIT = BLOCKS.register("distillation_unit",
+            DistillationUnitBlock::new);
+
+    public static final RegistryObject<ElectricHeaterBlock> ELECTRIC_HEATER = BLOCKS.register("electric_heater",
+            ElectricHeaterBlock::new);
+
     public static final RegistryObject<Block> TRONA_ORE = BLOCKS.register("trona_ore",
             () -> new Block(Block.Properties.copy(Blocks.STONE)));
     public static final RegistryObject<Block> NAHCOLITE_ORE = BLOCKS.register("nahcolite_ore",
