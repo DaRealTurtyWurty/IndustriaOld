@@ -1,6 +1,7 @@
 package dev.turtywurty.industria.init;
 
 import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.debug.DebugGogglesItem;
 import dev.turtywurty.industria.items.BasicResearchItem;
 import dev.turtywurty.industria.items.MachineUpgradeItem;
 import dev.turtywurty.industria.items.RopeItem;
@@ -93,6 +94,9 @@ public class ItemInit {
 
     public static final RegistryObject<MachineUpgradeItem> COUNT_ULTIMATE_UPGRADE = registerItem(
             "count_ultimate_upgrade", () -> new MachineUpgradeItem(MachineUpgradeInit.COUNT_ULTIMATE));
+
+    public static final RegistryObject<DebugGogglesItem> DEBUG_GOGGLES = registerItem("debug_goggles",
+            DebugGogglesItem::new);
 
     public static <T extends Item> RegistryObject<T> registerItem(String name, Supplier<T> item) {
         return ITEMS.register(name, item);
