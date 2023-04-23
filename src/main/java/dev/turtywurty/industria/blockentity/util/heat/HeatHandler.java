@@ -1,6 +1,7 @@
 package dev.turtywurty.industria.blockentity.util.heat;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.Mth;
 
 public class HeatHandler implements IHeatHandler {
@@ -72,9 +73,7 @@ public class HeatHandler implements IHeatHandler {
         float oldHeat = this.heat;
         this.heat = Mth.clamp(heat, 0, this.maxHeat);
 
-        if (oldHeat != this.heat) {
-            onChanged(oldHeat, this.heat);
-        }
+        onChanged(oldHeat, this.heat);
     }
 
     @Override
@@ -86,6 +85,8 @@ public class HeatHandler implements IHeatHandler {
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        setHeat(nbt.getFloat("Value"));
+        if (nbt.contains("Heat", Tag.TAG_COMPOUND)) {
+            this.heat = Mth.clamp(nbt.getCompound("Heat").getFloat("Value"), 0, this.maxHeat);
+        }
     }
 }

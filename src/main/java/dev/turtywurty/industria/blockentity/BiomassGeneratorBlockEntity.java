@@ -73,7 +73,7 @@ public class BiomassGeneratorBlockEntity extends ModularBlockEntity {
                 new SidedInventoryModule.SidedInventoryHandler.SidedInventoryHandlerBuilder(this).setSide(Direction.UP,
                         1)));
         this.energy = addModule(
-                new EnergyModule(this, new EnergyModule.Builder().capacity(10000).maxExtract(100).maxReceive(0)));
+                new EnergyModule(this, new EnergyModule.Builder().capacity(10000).maxExtract(10000).maxReceive(0)));
     }
 
     public SidedInventoryModule getInventory() {
@@ -153,7 +153,7 @@ public class BiomassGeneratorBlockEntity extends ModularBlockEntity {
         if (this.amountGenerated < this.currentRecipe.energy()) {
             this.amountGenerated++;
             this.runningTicks++;
-            this.energy.getCapabilityInstance().setEnergy(this.energy.getCapabilityInstance().getEnergyStored() + 1);
+            this.energy.getCapabilityInstance().setEnergy(this.energy.getCapabilityInstance().getEnergyStored() + this.currentRecipe.energy());
             return;
         }
 

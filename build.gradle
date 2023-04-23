@@ -91,9 +91,6 @@ dependencies {
     runtimeOnly(fg.deobf("mezz.jei:jei-1.19.2-forge:11.4.0.286"))
 
     runtimeOnly(fg.deobf("mekanism:Mekanism:1.19.2-10.3.2.469"))
-    //balm
-    runtimeOnly(fg.deobf("curse.maven:balm-531761:4442591"))
-    runtimeOnly(fg.deobf("curse.maven:cookingforblockheads-231484:4414171"))
 }
 
 jar {

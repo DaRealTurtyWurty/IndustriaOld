@@ -56,6 +56,8 @@ public class ClientEvents {
             event.registerBlockEntityRenderer(BlockEntityInit.TREE_DECAPITATOR.get(),
                     TreeDecapitatorBlockEntityRenderer::new);
             event.registerBlockEntityRenderer(BlockEntityInit.AGITATOR.get(), AgitatorBlockEntityRenderer::new);
+            event.registerBlockEntityRenderer(BlockEntityInit.DISTILLATION_TOWER.get(),
+                    DistillationTowerBlockEntityRenderer::new);
 
             Industria.LOGGER.info("Registering entity renderers");
             event.registerEntityRenderer(EntityInit.BOAT.get(), context -> new WoodBoatRenderer(context, false));
@@ -70,6 +72,8 @@ public class ClientEvents {
             event.registerLayerDefinition(CrusherModel.LAYER_LOCATION, CrusherModel::createMainLayer);
             event.registerLayerDefinition(BiomassGeneratorModel.LAYER_LOCATION, BiomassGeneratorModel::createMainLayer);
             event.registerLayerDefinition(AgitatorModel.LAYER_LOCATION, AgitatorModel::createMainLayer);
+            event.registerLayerDefinition(DistillationTowerModel.LAYER_LOCATION,
+                    DistillationTowerModel::createMainLayer);
 
             for (WoodBoat.Type type : WoodBoat.Type.values()) {
                 event.registerLayerDefinition(WoodBoatRenderer.createBoatModelName(type),

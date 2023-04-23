@@ -13,15 +13,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class DistillationUnitBlockEntity extends ModularBlockEntity {
+public class DistillationTowerBlockEntity extends ModularBlockEntity {
     private final FluidModuleV2 fluidModule;
     private final MultiblockModule multiblockModule;
 
-    public DistillationUnitBlockEntity(BlockPos pos, BlockState state) {
-        super(BlockEntityInit.DISTILLATION_UNIT.get(), pos, state);
+    public DistillationTowerBlockEntity(BlockPos pos, BlockState state) {
+        super(BlockEntityInit.DISTILLATION_TOWER.get(), pos, state);
 
-        this.multiblockModule = new MultiblockModule(MultiblockInit.DISTILLATION_UNIT);
-        this.fluidModule = new FluidModuleV2(this, new MultiFluidTank.Builder().withTanks(9, 10000).build());
+        this.multiblockModule = addModule(new MultiblockModule(MultiblockInit.DISTILLATION_TOWER));
+        this.fluidModule = addModule(new FluidModuleV2(this, new MultiFluidTank.Builder().withTanks(9, 10000).build()));
     }
 
     public FluidModuleV2 getFluidModule() {

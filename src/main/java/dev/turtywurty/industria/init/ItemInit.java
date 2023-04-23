@@ -40,8 +40,8 @@ public class ItemInit {
     public static final RegistryObject<BlockItem> TREE_DECAPITATOR = registerBlockItem("tree_decapitator",
             BlockInit.TREE_DECAPITATOR);
 
-    public static final RegistryObject<BlockItem> DISTILLATION_UNIT = registerBlockItem("distillation_unit",
-            BlockInit.DISTILLATION_UNIT);
+    public static final RegistryObject<BlockItem> DISTILLATION_TOWER = registerBlockItem("distillation_tower",
+            BlockInit.DISTILLATION_TOWER);
 
     public static final RegistryObject<BlockItem> ELECTRIC_HEATER = registerBlockItem("electric_heater",
             BlockInit.ELECTRIC_HEATER);

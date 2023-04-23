@@ -1,7 +1,6 @@
 package dev.turtywurty.industria.init;
 
 import dev.turtywurty.industria.Industria;
-import dev.turtywurty.industria.block.ElectricHeaterBlock;
 import dev.turtywurty.industria.blockentity.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.registries.DeferredRegister;
@@ -42,9 +41,9 @@ public class BlockEntityInit {
             () -> BlockEntityType.Builder.of(EntityInteractorBlockEntity::new, BlockInit.ENTITY_INTERACTOR.get())
                     .build(null));
 
-    public static final RegistryObject<BlockEntityType<DistillationUnitBlockEntity>> DISTILLATION_UNIT = BLOCK_ENTITIES.register(
-            "distillation_unit",
-            () -> BlockEntityType.Builder.of(DistillationUnitBlockEntity::new, BlockInit.DISTILLATION_UNIT.get())
+    public static final RegistryObject<BlockEntityType<DistillationTowerBlockEntity>> DISTILLATION_TOWER = BLOCK_ENTITIES.register(
+            "distillation_tower",
+            () -> BlockEntityType.Builder.of(DistillationTowerBlockEntity::new, BlockInit.DISTILLATION_TOWER.get())
                     .build(null));
     public static final RegistryObject<BlockEntityType<ElectricHeaterBlockEntity>> ELECTRIC_HEATER = BLOCK_ENTITIES.register(
             "electric_heater",

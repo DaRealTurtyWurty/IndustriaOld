@@ -41,6 +41,7 @@ public final class PacketManager {
         register(SRequestPlayerGameModePacket.class, SRequestPlayerGameModePacket::new);
         register(CReceivePlayerGameModePacket.class, CReceivePlayerGameModePacket::new);
         register(CAgitatorFluidUpdatePacket.class, CAgitatorFluidUpdatePacket::new);
+        register(SUpdateTargetTemperaturePacket.class, SUpdateTargetTemperaturePacket::new);
 
         Industria.LOGGER.info("Registered {} packets", NUM_PACKETS);
     }

@@ -3,22 +3,25 @@ package dev.turtywurty.industria.client.screens;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.turtywurty.industria.Industria;
+import dev.turtywurty.industria.blockentity.DistillationTowerBlockEntity;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-public class DistillationUnitScreen extends Screen {
-    private static final Component TITLE = Component.translatable("screen." + Industria.MODID + ".distillation_unit");
+public class DistillationTowerScreen extends Screen {
+    private static final Component TITLE = Component.translatable("screen." + Industria.MODID + ".distillation_tower");
     private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID,
-            "textures/gui/distillation_unit.png");
+            "textures/gui/distillation_tower.png");
 
+    private final DistillationTowerBlockEntity blockEntity;
     private final int imageWidth = 176;
     private final int imageHeight = 166;
     private int leftPos, topPos;
 
-    public DistillationUnitScreen() {
+    public DistillationTowerScreen(DistillationTowerBlockEntity blockEntity) {
         super(TITLE);
+        this.blockEntity = blockEntity;
     }
 
     @Override

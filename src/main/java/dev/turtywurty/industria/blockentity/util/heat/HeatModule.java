@@ -74,23 +74,23 @@ public class HeatModule implements CapabilityModule<IHeatHandler> {
     }
 
     public static final class Builder {
-        private int defaultHeat;
-        private int maxHeat;
-        private int heatTransferRate;
+        private float defaultHeat;
+        private float maxHeat;
+        private float heatTransferRate;
         private BiConsumer<Float, Float> onHeatChanged = ($0, $1) -> {
         };
 
-        public Builder defaultHeat(int defaultHeat) {
+        public Builder defaultHeat(float defaultHeat) {
             this.defaultHeat = defaultHeat;
             return this;
         }
 
-        public Builder maxHeat(int maxHeat) {
+        public Builder maxHeat(float maxHeat) {
             this.maxHeat = maxHeat;
             return this;
         }
 
-        public Builder heatTransferRate(int heatTransferRate) {
+        public Builder heatTransferRate(float heatTransferRate) {
             this.heatTransferRate = heatTransferRate;
             return this;
         }
