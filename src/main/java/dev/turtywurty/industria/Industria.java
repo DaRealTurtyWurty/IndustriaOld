@@ -1,5 +1,6 @@
 package dev.turtywurty.industria;
 
+import dev.turtywurty.industria.cables.Initialization;
 import dev.turtywurty.industria.client.ProjectorModels;
 import dev.turtywurty.industria.init.*;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -41,6 +42,8 @@ public class Industria {
         FluidInit.FLUID_TYPES.register(bus);
         TrunkPlacerInit.TRUNK_PLACER_TYPES.register(bus);
         WoodSetInit.init();
+
+        Initialization.init();
     }
 
     public static final CreativeModeTab TAB = new CreativeModeTab(Industria.MODID) {
