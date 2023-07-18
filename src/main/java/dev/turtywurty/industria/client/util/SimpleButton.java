@@ -25,10 +25,9 @@ public class SimpleButton extends AbstractWidget {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
         defaultButtonNarrationText(pNarrationElementOutput);
-        pNarrationElementOutput.add(NarratedElementType.HINT, this.narration.map(ArrayUtils::toArray)
-                .orElseGet(() -> this.tooltip.apply(this).toArray(Component[]::new)));
+        pNarrationElementOutput.add(NarratedElementType.HINT, this.narration.map(ArrayUtils::toArray).orElseGet(() -> this.tooltip.apply(this).toArray(Component[]::new)));
     }
 
     public void setIcon(RenderableButtonIcon icon) {
@@ -55,21 +54,20 @@ public class SimpleButton extends AbstractWidget {
     }
 
     @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-        if(!this.visible) return;
+    public void renderWidget(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        if (!this.visible) return;
 
-        this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+        this.isHovered = pMouseX >= getX() && pMouseY >= getY() && pMouseX < getX() + this.width && pMouseY < getY() + this.height;
 
         int yIncrement = this.isHovered ? 20 : 0;
-        GuiUtils.drawQuadSplitSprite(pPoseStack, WIDGETS_LOCATION, this.x, this.y, this.width, this.height, 0,
-                66 + yIncrement, 199, 85 + yIncrement);
+        GuiUtils.drawQuadSplitSprite(pPoseStack, WIDGETS_LOCATION, getX(), getY(), this.width, this.height, 0, 66 + yIncrement, 199, 85 + yIncrement);
 
         if (this.isHovered) {
             renderToolTip(pPoseStack, pMouseX, pMouseY);
         }
     }
 
-    @Override
+    @Deprecated(since = "1.19.3")
     public void renderToolTip(PoseStack pPoseStack, int pMouseX, int pMouseY) {
         if (this.tooltip != null && Minecraft.getInstance().screen != null && this.visible && this.isHovered) {
             Minecraft.getInstance().screen.renderComponentTooltip(pPoseStack, this.tooltip.apply(this), pMouseX, pMouseY);

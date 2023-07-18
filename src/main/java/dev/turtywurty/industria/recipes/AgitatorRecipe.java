@@ -8,7 +8,8 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import dev.turtywurty.industria.init.RecipeInit;
 import dev.turtywurty.turtylib.core.util.Either3;
-import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -22,6 +23,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -36,8 +38,8 @@ public record AgitatorRecipe(ResourceLocation id, GroupEither3<CountedIngredient
     }
 
     @Override
-    public ItemStack assemble(Container pContainer) {
-        return getResultItem();
+    public ItemStack assemble(Container pContainer, RegistryAccess pRegistryAccess) {
+        return getResultItem(pRegistryAccess);
     }
 
     @Override
@@ -46,7 +48,7 @@ public record AgitatorRecipe(ResourceLocation id, GroupEither3<CountedIngredient
     }
 
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
         return ItemStack.EMPTY;
     }
 
@@ -215,18 +217,18 @@ public record AgitatorRecipe(ResourceLocation id, GroupEither3<CountedIngredient
                 Ingredient ingredient;
                 boolean isTagged = false;
                 if (id.startsWith("#")) {
-                    TagKey<Item> tagKey = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(id.substring(1)));
+                    TagKey<Item> tagKey = TagKey.create(Registries.ITEM, new ResourceLocation(id.substring(1)));
                     ingredient = Ingredient.of(tagKey);
                     isTagged = true;
                 } else {
-                    Item item = Registry.ITEM.get(new ResourceLocation(id));
+                    Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(id));
                     ingredient = Ingredient.of(item);
                 }
 
                 int count = dynamic.get("Count").asInt(1);
                 return DataResult.success(new CountedIngredient(ingredient, count, isTagged));
             } catch (Exception exception) {
-                return DataResult.error("Failed to parse ingredient: " + exception.getMessage());
+                return DataResult.error(() -> "Failed to parse ingredient: " + exception.getMessage());
             }
         }, ingredient -> new Dynamic<>(JsonOps.INSTANCE, ingredient.toJson()));
 
@@ -249,10 +251,10 @@ public record AgitatorRecipe(ResourceLocation id, GroupEither3<CountedIngredient
                 if (allMatch && tagKey != null) {
                     id = "#" + tagKey.location();
                 } else {
-                    id = Registry.ITEM.getKey(ingredient().getItems()[0].getItem()).toString();
+                    id = ForgeRegistries.ITEMS.getKey(ingredient().getItems()[0].getItem()).toString();
                 }
             } else {
-                id = Registry.ITEM.getKey(ingredient().getItems()[0].getItem()).toString();
+                id = ForgeRegistries.ITEMS.getKey(ingredient().getItems()[0].getItem()).toString();
             }
 
             var json = new JsonObject();

@@ -21,5 +21,5 @@ public class FluidInit {
                     .canConvertToSource(false).density(4300).viscosity(4600).temperature(285),
             () -> FluidRegistryContainer.createExtension(
                     new FluidRegistryContainer.ClientExtensions(Industria.MODID, "latex").overlay("latex")),
-            BlockBehaviour.Properties.copy(Blocks.WATER), new Item.Properties().tab(Industria.TAB).stacksTo(1));
+            BlockBehaviour.Properties.copy(Blocks.WATER), new Item.Properties().stacksTo(1));
 }

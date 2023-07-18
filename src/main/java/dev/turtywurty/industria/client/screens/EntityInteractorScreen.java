@@ -39,6 +39,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class EntityInteractorScreen extends AbstractContainerScreen<EntityInteractorMenu> {
@@ -82,8 +83,10 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
                 this.menu::getEnergy, this.menu::getMaxEnergy).build(this));
 
         this.settingsButton = addRenderableWidget(
-                new Button(this.leftPos + 149, this.topPos + 60, 20, 20, Component.literal("S"),
-                        this::onSettingsButtonClicked));
+                Button.builder(Component.literal("S"), this::onSettingsButtonClicked)
+                        .pos(this.leftPos + 149, this.topPos + 60)
+                        .size(20, 20)
+                        .build());
 
         this.interactRateSlider = addRenderableWidget(
                 new ForgeSlider(this.leftPos + 97, this.topPos + 60, 50, 20, Component.empty(), Component.literal("/t"),
@@ -223,14 +226,14 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             }
         }
 
-        @Override
+        @Deprecated(since = "1.19.3")
         public void renderToolTip(PoseStack pPoseStack, int pMouseX, int pMouseY) {
             Component tooltip = this.gameType.getShortDisplayName();
             EntityInteractorScreen.this.renderTooltip(pPoseStack, tooltip, pMouseX, pMouseY);
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+        public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
             defaultButtonNarrationText(pNarrationElementOutput);
         }
 
@@ -244,14 +247,14 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         }
 
         @Override
-        public void renderButton(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.setShaderTexture(0, WIDGETS);
 
             int xOffset = this.gameType.ordinal() * this.width;
             int yOffset = (this.isHovered ? 1 : 0) * this.height;
-            blit(pPoseStack, this.x, this.y, xOffset, yOffset, this.width, this.height);
+            blit(pPoseStack, getX(), getY(), xOffset, yOffset, this.width, this.height);
         }
     }
 
@@ -261,7 +264,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         public SelectedSlotButton() {
             super(EntityInteractorScreen.this.leftPos - 71, EntityInteractorScreen.this.topPos + 32, 22, 22,
                     Component.empty(), ($) -> {
-                    });
+                    }, Supplier::get);
             this.visible = EntityInteractorScreen.this.settingsOpen;
             this.active = EntityInteractorScreen.this.settingsOpen;
         }
@@ -280,11 +283,11 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, WIDGETS);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            blit(pPoseStack, this.x, this.y, 0, 40 + yOffset, this.width, this.height);
+            blit(pPoseStack, getX(), getY(), 0, 40 + yOffset, this.width, this.height);
 
-            float xPos = this.x + (this.width / 2f) - (EntityInteractorScreen.this.font.width(
+            float xPos = getX() + (this.width / 2f) - (EntityInteractorScreen.this.font.width(
                     String.valueOf(this.slot + 1)) / 2f);
-            float yPos = this.y + (this.height / 2f) - (EntityInteractorScreen.this.font.lineHeight / 2f);
+            float yPos = getY() + (this.height / 2f) - (EntityInteractorScreen.this.font.lineHeight / 2f);
             EntityInteractorScreen.this.font.draw(pPoseStack, String.valueOf(this.slot + 1), xPos, yPos, 0xFFFFFF);
 
             if (this.isHovered) {
@@ -303,7 +306,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             return super.clicked(pMouseX, pMouseY);
         }
 
-        @Override
+        @Deprecated(since = "1.19.3")
         public void renderToolTip(PoseStack pPoseStack, int pMouseX, int pMouseY) {
             if (this.isHovered) {
                 EntityInteractorScreen.this.renderTooltip(pPoseStack,
@@ -397,7 +400,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
 
         public ExperienceButton(int pX, int pY, SExperienceButtonPacket.Type type) {
             super(pX, pY, 23, 12, Component.literal(type.getText()), ($) -> {
-            });
+            }, Supplier::get);
 
             this.type = type;
         }
@@ -406,16 +409,28 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible || !this.active) return;
 
-            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+            this.isHovered = pMouseX >= this.getX() && pMouseY >= this.getY() && pMouseX < this.getX() + this.width && pMouseY < this.getY() + this.height;
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, WIDGETS);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             int i = getYImage(this.isHovered) - 1;
-            blit(pPoseStack, this.x, this.y, 0, 84 + (i * this.height), this.width, this.height);
+            blit(pPoseStack, this.getX(), this.getY(), 0, 84 + (i * this.height), this.width, this.height);
 
-            drawString(pPoseStack, Minecraft.getInstance().font, this.getMessage(), this.x + 2, this.y + 2, 0xFFFFFF);
+            drawString(pPoseStack, Minecraft.getInstance().font, this.getMessage(), this.getX() + 2, this.getY() + 2, 0xFFFFFF);
+        }
+
+        public int getYImage(boolean pIsHovered) {
+            int i = 1;
+
+            if (!this.active) {
+                i = 0;
+            } else if (pIsHovered) {
+                i = 2;
+            }
+
+            return i;
         }
 
         @Override
@@ -435,13 +450,13 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+        public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
             defaultButtonNarrationText(pNarrationElementOutput);
         }
 
         @Override
-        public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-            renderExperienceBar(pPoseStack, this.x);
+        public void renderWidget(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+            renderExperienceBar(pPoseStack, this.getX());
         }
 
         public void renderExperienceBar(PoseStack pPoseStack, int pXPos) {
@@ -468,23 +483,23 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             int forNextLevel = player.get().getXpNeededForNextLevel();
             if (forNextLevel > 0) {
                 int progress = (int) (player.get().experienceProgress * 64f);
-                blit(pPoseStack, pXPos, y, 0, 64, this.width / 2, 5);
-                blit(pPoseStack, pXPos + this.width / 2, y, 183 - this.width / 2, 64, this.width / 2, 5);
+                blit(pPoseStack, pXPos, getY(), 0, 64, this.width / 2, 5);
+                blit(pPoseStack, pXPos + this.width / 2, getY(), 183 - this.width / 2, 64, this.width / 2, 5);
                 if (progress > 0) {
                     if (progress < 61) {
-                        blit(pPoseStack, pXPos, y, 0, 69, progress, 5);
+                        blit(pPoseStack, pXPos, getY(), 0, 69, progress, 5);
                     } else {
-                        blit(pPoseStack, pXPos, y, 0, 69, progress / 2, 5);
-                        blit(pPoseStack, pXPos + progress / 2, y, 183 - progress / 2, 69, progress / 2, 5);
+                        blit(pPoseStack, pXPos, getY(), 0, 69, progress / 2, 5);
+                        blit(pPoseStack, pXPos + progress / 2, getY(), 183 - progress / 2, 69, progress / 2, 5);
                     }
                 }
             }
 
             if (player.get().experienceLevel > 0) {
                 Font font = EntityInteractorScreen.this.font;
-                String xpLevel = "" + player.get().experienceLevel;
-                float x = this.x + (this.width / 2f) - font.width(xpLevel) / 2f;
-                float y = this.y - 10;
+                String xpLevel = String.valueOf(player.get().experienceLevel);
+                float x = this.getX() + (this.width / 2f) - font.width(xpLevel) / 2f;
+                float y = this.getY() - 10;
                 font.draw(pPoseStack, xpLevel, x + 1, y, 0);
                 font.draw(pPoseStack, xpLevel, x - 1, y, 0);
                 font.draw(pPoseStack, xpLevel, x, y + 1, 0);
@@ -578,7 +593,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+        public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
             defaultButtonNarrationText(pNarrationElementOutput);
         }
 
@@ -591,17 +606,17 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         }
 
         @Override
-        public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible) return;
 
-            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+            this.isHovered = pMouseX >= this.getX() && pMouseY >= this.getY() && pMouseX < this.getX() + this.width && pMouseY < this.getY() + this.height;
 
             int yIncrement = this.isHovered ? 20 : 0;
-            GuiUtils.drawQuadSplitSprite(pPoseStack, WIDGETS_LOCATION, this.x, this.y, this.width, this.height, 0,
+            GuiUtils.drawQuadSplitSprite(pPoseStack, WIDGETS_LOCATION, this.getX(), this.getY(), this.width, this.height, 0,
                     66 + yIncrement, 199, 85 + yIncrement);
 
             if (this.isHovered) {
-                renderToolTip(pPoseStack, pMouseX, pMouseY);
+                renderTooltip(pPoseStack, pMouseX, pMouseY);
             }
         }
     }
@@ -616,7 +631,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+        public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
             defaultButtonNarrationText(pNarrationElementOutput);
         }
 
@@ -629,20 +644,20 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
         }
 
         @Override
-        public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible) return;
 
-            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+            this.isHovered = pMouseX >= this.getX() && pMouseY >= this.getY() && pMouseX < this.getX() + this.width && pMouseY < this.getY() + this.height;
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, WIDGETS);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 
             int yIncrement = this.isHovered ? 20 : 0;
-            blit(pPoseStack, this.x, this.y, 20, 108 + yIncrement, this.width, this.height);
+            blit(pPoseStack, this.getX(), this.getY(), 20, 108 + yIncrement, this.width, this.height);
 
             if (this.isHovered) {
-                renderToolTip(pPoseStack, pMouseX, pMouseY);
+                renderTooltip(pPoseStack, pMouseX, pMouseY);
             }
         }
     }
@@ -681,7 +696,7 @@ public class EntityInteractorScreen extends AbstractContainerScreen<EntityIntera
             searchbar.setTextColorUneditable(0xAAAAAA);
             searchbar.setBordered(false);
             searchbar.setMaxLength(32);
-            searchbar.setFocus(true);
+            searchbar.setFocused(true);
             searchbar.setCanLoseFocus(false);
             searchbar.setSuggestion(
                     ForgeRegistries.MOB_EFFECTS.getKeys().stream().min(Comparator.comparing(ResourceLocation::toString))

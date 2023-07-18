@@ -116,8 +116,8 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
             boolean currentEmpty = isCurrentEmpty();
             if (isFluidEmpty(widget) || currentEmpty) {
                 widget.setShouldDrawBorder(true);
-                widget.x = this.x + 2;
-                widget.y = this.y - 60;
+                widget.setX(getX() + 2);
+                widget.setY(getY() - 60);
 
                 if (currentEmpty) {
                     widget.active = true;
@@ -138,8 +138,8 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
             boolean currentEmpty = isCurrentEmpty();
             if (isSlotEmpty(slotIndex) || currentEmpty) {
                 Slot slot = this.menu.getSlot(slotIndex);
-                slot.x = this.x - AgitatorScreen.this.leftPos + 2;
-                slot.y = this.y - AgitatorScreen.this.topPos - 39;
+                slot.x = getX() - AgitatorScreen.this.leftPos + 2;
+                slot.y = getY() - AgitatorScreen.this.topPos - 39;
 
                 if (currentEmpty) {
                     if (slot instanceof ToggleSlot toggleSlot) {
@@ -207,14 +207,14 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
+        public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
             defaultButtonNarrationText(pNarrationElementOutput);
         }
 
         private boolean firstRender = true;
 
         @Override
-        public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        public void renderWidget(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             if (!this.visible) return;
             if (this.active) {
                 if(firstRender) {
@@ -229,8 +229,8 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
                                 this.current = Pair.of(type, fluidWidget);
                                 fluidWidget.active = true;
                                 fluidWidget.setShouldDrawBorder(true);
-                                fluidWidget.x = this.x + 2;
-                                fluidWidget.y = this.y - 60;
+                                fluidWidget.setX(getX() + 2);
+                                fluidWidget.setY(getY() - 60);
                                 this.active = false;
                                 disableNonCurrent();
                             }
@@ -246,8 +246,8 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
                                     Industria.LOGGER.error("Slot is not a ToggleSlot or ToggleSlotItemHandler!");
                                 }
 
-                                slot.x = this.x - AgitatorScreen.this.leftPos + 2;
-                                slot.y = this.y - AgitatorScreen.this.topPos - 39;
+                                slot.x = getX() - AgitatorScreen.this.leftPos + 2;
+                                slot.y = getY() - AgitatorScreen.this.topPos - 39;
                                 this.active = false;
                                 disableNonCurrent();
                             }
@@ -265,8 +265,8 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
                                 if(this.current.getRight() instanceof FluidWidget fluidWidget) {
                                     fluidWidget.active = true;
                                     fluidWidget.setShouldDrawBorder(true);
-                                    fluidWidget.x = this.x + 2;
-                                    fluidWidget.y = this.y - 60;
+                                    fluidWidget.setX(getX() + 2);
+                                    fluidWidget.setY(getY() - 60);
                                 } else if(this.current.getRight() instanceof Integer slotIndex) {
                                     final Slot slot = this.menu.slots.get(slotIndex);
                                     if (slot instanceof ToggleSlot toggleSlot) {
@@ -277,8 +277,8 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
                                         Industria.LOGGER.error("Slot is not a ToggleSlot or ToggleSlotItemHandler!");
                                     }
 
-                                    slot.x = this.x - AgitatorScreen.this.leftPos + 2;
-                                    slot.y = this.y - AgitatorScreen.this.topPos - 39;
+                                    slot.x = getX() - AgitatorScreen.this.leftPos + 2;
+                                    slot.y = getY() - AgitatorScreen.this.topPos - 39;
                                 }
 
                                 disableNonCurrent();
@@ -311,16 +311,16 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
             }
 
             // Render button
-            this.isHovered = pMouseX >= this.x && pMouseY >= this.y && pMouseX < this.x + this.width && pMouseY < this.y + this.height;
+            this.isHovered = pMouseX >= getX() && pMouseY >= getY() && pMouseX < getX() + this.width && pMouseY < getY() + this.height;
 
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             RenderSystem.setShaderTexture(0, TEXTURE);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             int yChange = getYImage(this.isHovered) * this.height;
-            blit(pPoseStack, this.x, this.y, 194, yChange, this.width, this.height);
+            blit(pPoseStack, getX(), getY(), 194, yChange, this.width, this.height);
 
             if (this.isHovered) {
-                this.renderToolTip(pPoseStack, pMouseX, pMouseY);
+                renderTooltip(pPoseStack, pMouseX, pMouseY);
             }
 
             // Render current value
@@ -328,7 +328,7 @@ public class AgitatorScreen extends AbstractContainerScreen<AgitatorMenu> {
             if (value instanceof Integer slotIndex) {
                 Slot slot = this.menu.slots.get(slotIndex);
                 if (slot.isActive()) {
-                    blit(pPoseStack, this.x + 1, this.y - 40, 176, 0, 18, 18);
+                    blit(pPoseStack, getX() + 1, getY() - 40, 176, 0, 18, 18);
                 }
             }
         }

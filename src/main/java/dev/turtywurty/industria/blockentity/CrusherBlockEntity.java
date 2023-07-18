@@ -131,7 +131,7 @@ public class CrusherBlockEntity extends ModularBlockEntity {
                         this.currentRecipeEnergy = 0;
 
                         ItemStack output = this.currentRecipe.assemble(
-                                new RecipeWrapper(this.inventory.getNullableInventory(Direction.UP)));
+                                new RecipeWrapper(this.inventory.getNullableInventory(Direction.UP)), this.level.registryAccess());
                         if (this.inventory.getCapabilityInstance(Direction.DOWN).insertItem(0, output, true)
                                 .isEmpty()) {
                             this.inventory.getCapabilityInstance(Direction.DOWN).insertItem(0, output, false);

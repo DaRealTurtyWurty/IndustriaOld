@@ -12,7 +12,7 @@ public class MachineUpgradeItem extends Item {
     private final Supplier<MachineUpgrade> upgrade;
 
     public MachineUpgradeItem(Supplier<MachineUpgrade> upgrade) {
-        super(new Item.Properties().tab(Industria.TAB).stacksTo(8));
+        super(new Item.Properties().stacksTo(8));
         this.upgrade = upgrade;
     }
 

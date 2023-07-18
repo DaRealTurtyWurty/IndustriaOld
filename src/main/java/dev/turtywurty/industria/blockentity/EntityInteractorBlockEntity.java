@@ -8,11 +8,11 @@ import dev.turtywurty.industria.network.clientbound.CFakePlayerCreatedPacket;
 import dev.turtywurty.industria.network.serverbound.SBlockEntityLoadPacket;
 import dev.turtywurty.turtylib.common.blockentity.ModularBlockEntity;
 import dev.turtywurty.turtylib.common.blockentity.module.EnergyModule;
-import dev.turtywurty.turtylib.common.blockentity.module.InventoryModule;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -215,9 +215,10 @@ public class EntityInteractorBlockEntity extends ModularBlockEntity implements C
 
             var profile = new GameProfile(uuid, "");
             this.player = new FakePlayer((ServerLevel) this.level, profile) {
+                @SuppressWarnings("unchecked")
                 @Override
-                public Packet<?> getAddEntityPacket() {
-                    return PacketManager.CHANNEL.toVanillaPacket(
+                public Packet<ClientGamePacketListener> getAddEntityPacket() {
+                    return (Packet<ClientGamePacketListener>) PacketManager.CHANNEL.toVanillaPacket(
                             new CFakePlayerCreatedPacket(profile, EntityInteractorBlockEntity.this.worldPosition),
                             NetworkDirection.PLAY_TO_CLIENT);
                 }

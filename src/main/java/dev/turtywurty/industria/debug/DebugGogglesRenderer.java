@@ -1,7 +1,6 @@
 package dev.turtywurty.industria.debug;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.turtylib.client.util.GuiUtils;
 import net.minecraft.client.Camera;
@@ -47,7 +46,7 @@ public class DebugGogglesRenderer {
         // draw the text
         poseStack.translate(0, 0, -0.01F);
         font.drawInBatch(text, 0, 0, 0xCBCBCB, false, poseStack.last().pose(),
-                Minecraft.getInstance().renderBuffers().bufferSource(), false, 0xCC000000, 15728880);
+                Minecraft.getInstance().renderBuffers().bufferSource(), Font.DisplayMode.NORMAL, 0xCC000000, 15728880);
         poseStack.popPose();
     }
 }

@@ -5,6 +5,7 @@ import dev.turtywurty.industria.debug.DebugGogglesItem;
 import dev.turtywurty.industria.items.BasicResearchItem;
 import dev.turtywurty.industria.items.MachineUpgradeItem;
 import dev.turtywurty.industria.items.RopeItem;
+import dev.turtywurty.industria.tab.Tabs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -99,11 +100,13 @@ public class ItemInit {
             DebugGogglesItem::new);
 
     public static <T extends Item> RegistryObject<T> registerItem(String name, Supplier<T> item) {
-        return ITEMS.register(name, item);
+        RegistryObject<T> itemRegObj = ITEMS.register(name, item);
+        Tabs.addToTab(itemRegObj);
+        return itemRegObj;
     }
 
     private static RegistryObject<Item> registerItem(String name, Item.Properties properties) {
-        return registerItem(name, () -> new Item(properties.tab(Industria.TAB)));
+        return registerItem(name, () -> new Item(properties));
     }
 
     private static RegistryObject<Item> registerItem(String name) {
@@ -111,7 +114,7 @@ public class ItemInit {
     }
 
     private static Item.Properties properties() {
-        return new Item.Properties().tab(Industria.TAB);
+        return new Item.Properties();
     }
 
     public static RegistryObject<BlockItem> registerBlockItem(String name, RegistryObject<? extends Block> block) {

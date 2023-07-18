@@ -46,12 +46,12 @@ public class AutocompleteWidget<T> extends EditBox {
             T suggestion = this.suggestions.get(index);
             if (suggestion == null) continue;
 
-            GuiComponent.fill(pPoseStack, this.x, this.y + this.height + index * this.suggestionHeight,
-                    this.x + this.width, this.y + this.height + (index + 1) * this.suggestionHeight,
+            GuiComponent.fill(pPoseStack, getX(), getY() + this.height + index * this.suggestionHeight,
+                    getX() + this.width, getY() + this.height + (index + 1) * this.suggestionHeight,
                     this.suggestionBackgroundColor);
 
-            Minecraft.getInstance().font.draw(pPoseStack, this.suggestionRenderer.apply(suggestion), x + 2,
-                    y + 2 + index * this.suggestionHeight, this.suggestionTextColor);
+            Minecraft.getInstance().font.draw(pPoseStack, this.suggestionRenderer.apply(suggestion), getX() + 2,
+                    getY() + 2 + index * this.suggestionHeight, this.suggestionTextColor);
         }
     }
 

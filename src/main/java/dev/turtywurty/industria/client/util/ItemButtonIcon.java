@@ -28,7 +28,7 @@ public class ItemButtonIcon implements RenderableButtonIcon {
 
     @Override
     public void render(PoseStack poseStack, double mouseX, double mouseY, float partialTicks) {
-        this.item.ifLeft(stack -> Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, this.x, this.y))
+        this.item.ifLeft(stack -> Minecraft.getInstance().getItemRenderer().renderGuiItem(poseStack, stack, this.x, this.y))
                 .ifRight(ingredient -> {
                     ItemStack stack = ingredient.getItems()[this.frame++ % ingredient.getItems().length];
                     if (this.enchantGlint && !stack.isEmpty()) {
@@ -36,7 +36,7 @@ public class ItemButtonIcon implements RenderableButtonIcon {
                         stack.enchant(Enchantments.BINDING_CURSE, 1);
                     }
 
-                    Minecraft.getInstance().getItemRenderer().renderGuiItem(stack, this.x, this.y);
+                    Minecraft.getInstance().getItemRenderer().renderGuiItem(poseStack, stack, this.x, this.y);
                 });
     }
 
@@ -48,8 +48,8 @@ public class ItemButtonIcon implements RenderableButtonIcon {
 
         public Builder(@NotNull SimpleButton self) {
             this.self = self;
-            this.x = self.x;
-            this.y = self.y;
+            this.x = self.getX();
+            this.y = self.getY();
         }
 
         public Builder item(@NotNull ItemStack stack) {

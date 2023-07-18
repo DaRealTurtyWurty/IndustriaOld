@@ -2,10 +2,10 @@ package dev.turtywurty.industria.init.util;
 
 import com.mojang.blaze3d.shaders.FogShape;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.math.Vector3f;
 import dev.turtywurty.industria.init.BlockInit;
 import dev.turtywurty.industria.init.FluidInit;
 import dev.turtywurty.industria.init.ItemInit;
+import dev.turtywurty.industria.tab.Tabs;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -25,6 +25,7 @@ import net.minecraftforge.registries.RegistryObject;
 import org.apache.commons.lang3.function.TriFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -63,7 +64,7 @@ public class FluidRegistryContainer {
         this.block = BlockInit.BLOCKS.register(name, () -> new LiquidBlock(this.source, blockProperties));
         this.properties.block(this.block);
 
-        this.bucket = ItemInit.ITEMS.register(name + "_bucket", () -> new BucketItem(this.source, itemProperties));
+        this.bucket = ItemInit.registerItem(name + "_bucket", () -> new BucketItem(this.source, itemProperties));
         this.properties.bucket(this.bucket);
     }
 

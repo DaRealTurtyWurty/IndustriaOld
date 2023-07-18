@@ -18,7 +18,7 @@ public class RopeItem extends Item {
     private static final Component ROPE_POSITION_SET = Component.translatable("message.industria.rope_position_set");
 
     public RopeItem() {
-        super(new Item.Properties().tab(Industria.TAB));
+        super(new Item.Properties());
     }
 
     @Override

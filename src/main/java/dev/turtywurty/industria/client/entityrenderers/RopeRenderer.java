@@ -2,8 +2,6 @@ package dev.turtywurty.industria.client.entityrenderers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.entity.RopeEntity;
 import net.minecraft.client.model.LeashKnotModel;
@@ -19,6 +17,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -29,7 +29,7 @@ public class RopeRenderer extends EntityRenderer<RopeEntity> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(Industria.MODID, "textures/entity/rope.png");
     private static final int NUMBER_OF_SEGMENTS = 24;
 
-    private final LeashKnotModel model;
+    private final LeashKnotModel<RopeEntity> model;
 
     public RopeRenderer(EntityRendererProvider.Context pContext) {
         super(pContext);

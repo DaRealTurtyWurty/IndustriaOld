@@ -14,6 +14,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.grower.AbstractTreeGrower;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -71,8 +72,11 @@ public class WoodRegistrySet {
         this.name = builder.name;
         this.tree = builder.tree;
 
-        this.woodType = builder.woodType != null ? builder.woodType : WoodType.create(
-                Industria.MODID + ":" + this.name);
+        BlockSetType setType = new BlockSetType(this.name);
+        BlockSetType.register(setType);
+
+        this.woodType = builder.woodType != null ? builder.woodType : new WoodType(
+                Industria.MODID + ":" + this.name, setType);
         WoodType.register(this.woodType);
 
         this.log = builder.log != null ? builder.log : BlockInit.BLOCKS.register(this.name + "_log",
@@ -99,16 +103,16 @@ public class WoodRegistrySet {
         this.fence = builder.fence != null ? builder.fence : BlockInit.BLOCKS.register(this.name + "_fence",
                 () -> new FenceBlock(Block.Properties.copy(Blocks.OAK_FENCE)));
         this.fenceGate = builder.fenceGate != null ? builder.fenceGate : BlockInit.BLOCKS.register(
-                this.name + "_fence_gate", () -> new FenceGateBlock(Block.Properties.copy(Blocks.OAK_FENCE_GATE)));
+                this.name + "_fence_gate", () -> new FenceGateBlock(Block.Properties.copy(Blocks.OAK_FENCE_GATE), this.woodType));
         this.door = builder.door != null ? builder.door : BlockInit.BLOCKS.register(this.name + "_door",
-                () -> new DoorBlock(Block.Properties.copy(Blocks.OAK_DOOR)));
+                () -> new DoorBlock(Block.Properties.copy(Blocks.OAK_DOOR), setType));
         this.trapDoor = builder.trapDoor != null ? builder.trapDoor : BlockInit.BLOCKS.register(this.name + "_trapdoor",
-                () -> new TrapDoorBlock(Block.Properties.copy(Blocks.OAK_TRAPDOOR)));
+                () -> new TrapDoorBlock(Block.Properties.copy(Blocks.OAK_TRAPDOOR), setType));
         this.pressurePlate = builder.pressurePlate != null ? builder.pressurePlate : BlockInit.BLOCKS.register(
                 this.name + "_pressure_plate", () -> new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING,
-                        Block.Properties.copy(Blocks.OAK_PRESSURE_PLATE)));
+                        Block.Properties.copy(Blocks.OAK_PRESSURE_PLATE), setType));
         this.button = builder.button != null ? builder.button : BlockInit.BLOCKS.register(this.name + "_button",
-                () -> new WoodButtonBlock(Block.Properties.copy(Blocks.OAK_BUTTON)));
+                () -> new ButtonBlock(Block.Properties.copy(Blocks.OAK_BUTTON), setType, 30, true));
         this.sign = builder.sign != null ? builder.sign : BlockInit.BLOCKS.register(this.name + "_sign",
                 () -> new StandingSignBlock(Block.Properties.copy(Blocks.OAK_SIGN), this.woodType));
         this.wallSign = builder.wallSign != null ? builder.wallSign : BlockInit.BLOCKS.register(
@@ -146,13 +150,13 @@ public class WoodRegistrySet {
         this.buttonItem = builder.buttonItem != null ? builder.buttonItem : ItemInit.registerBlockItem(
                 this.name + "_button", this.button);
         this.signItem = builder.signItem != null ? builder.signItem : ItemInit.registerItem(this.name + "_sign",
-                () -> new SignItem(new Item.Properties().tab(Industria.TAB), this.sign.get(), this.wallSign.get()));
+                () -> new SignItem(new Item.Properties(), this.sign.get(), this.wallSign.get()));
         this.boatItem = builder.boatItem != null ? builder.boatItem : ItemInit.registerItem(this.name + "_boat",
                 () -> new WoodBoatItem(false, WoodBoat.Type.RUBBER,
-                        new Item.Properties().tab(Industria.TAB).stacksTo(1)));
+                        new Item.Properties().stacksTo(1)));
         this.chestBoatItem = builder.chestBoatItem != null ? builder.chestBoatItem : ItemInit.registerItem(
                 this.name + "_chest_boat", () -> new WoodBoatItem(true, WoodBoat.Type.RUBBER,
-                        new Item.Properties().tab(Industria.TAB).stacksTo(1)));
+                        new Item.Properties().stacksTo(1)));
     }
 
     public String getName() {

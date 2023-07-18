@@ -1,7 +1,6 @@
 package dev.turtywurty.industria.entity;
 
 import com.google.common.collect.Lists;
-import dev.turtywurty.industria.init.BlockInit;
 import dev.turtywurty.industria.init.EntityInit;
 import dev.turtywurty.industria.init.WoodSetInit;
 import dev.turtywurty.industria.init.util.WoodRegistrySet;
@@ -11,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ServerboundPaddleBoatPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -43,7 +43,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -309,8 +308,7 @@ public class WoodBoat extends Entity {
         if (!list.isEmpty()) {
             boolean flag = !this.level.isClientSide && !(this.getControllingPassenger() instanceof Player);
 
-            for (int j = 0; j < list.size(); ++j) {
-                Entity entity = list.get(j);
+            for (Entity entity : list) {
                 if (!entity.hasPassenger(this)) {
                     if (flag && this.getPassengers()
                             .size() < this.getMaxPassengers() && !entity.isPassenger() && entity.getBbWidth() < this.getBbWidth() && entity instanceof LivingEntity && !(entity instanceof WaterAnimal) && !(entity instanceof Player)) {
@@ -353,9 +351,7 @@ public class WoodBoat extends Entity {
                         this.setDeltaMovement(vec3.add(0.0D, -0.7D, 0.0D));
                         this.ejectPassengers();
                     } else {
-                        this.setDeltaMovement(vec3.x, this.hasPassenger((p_150274_) -> {
-                            return p_150274_ instanceof Player;
-                        }) ? 2.7D : 0.6D, vec3.z);
+                        this.setDeltaMovement(vec3.x, this.hasPassenger((p_150274_) -> p_150274_ instanceof Player) ? 2.7D : 0.6D, vec3.z);
                     }
                 }
 
@@ -366,17 +362,11 @@ public class WoodBoat extends Entity {
 
     @Nullable
     protected SoundEvent getPaddleSound() {
-        switch (this.getStatus()) {
-            case IN_WATER:
-            case UNDER_WATER:
-            case UNDER_FLOWING_WATER:
-                return SoundEvents.BOAT_PADDLE_WATER;
-            case ON_LAND:
-                return SoundEvents.BOAT_PADDLE_LAND;
-            case IN_AIR:
-            default:
-                return null;
-        }
+        return switch (this.getStatus()) {
+            case IN_WATER, UNDER_WATER, UNDER_FLOWING_WATER -> SoundEvents.BOAT_PADDLE_WATER;
+            case ON_LAND -> SoundEvents.BOAT_PADDLE_LAND;
+            default -> null;
+        };
     }
 
     private void tickLerp() {
@@ -673,7 +663,7 @@ public class WoodBoat extends Entity {
                 pLivingEntity.getBbWidth(), pLivingEntity.getYRot());
         double d0 = this.getX() + vec3.x;
         double d1 = this.getZ() + vec3.z;
-        BlockPos blockpos = new BlockPos(d0, this.getBoundingBox().maxY, d1);
+        BlockPos blockpos = new BlockPos((int) d0, (int) this.getBoundingBox().maxY, (int) d1);
         BlockPos blockpos1 = blockpos.below();
         if (!this.level.isWaterAt(blockpos1)) {
             List<Vec3> list = Lists.newArrayList();
@@ -740,7 +730,7 @@ public class WoodBoat extends Entity {
                         return;
                     }
 
-                    this.causeFallDamage(this.fallDistance, 1.0F, DamageSource.FALL);
+                    this.causeFallDamage(this.fallDistance, 1.0F, damageSources().fall());
                     if (!this.level.isClientSide && !this.isRemoved()) {
                         this.kill();
                         if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
@@ -829,8 +819,8 @@ public class WoodBoat extends Entity {
     }
 
     @Nullable
-    public Entity getControllingPassenger() {
-        return this.getFirstPassenger();
+    public LivingEntity getControllingPassenger() {
+        return this.getFirstPassenger() instanceof LivingEntity ? (LivingEntity) this.getFirstPassenger() : null;
     }
 
     public void setInput(boolean pInputLeft, boolean pInputRight, boolean pInputUp, boolean pInputDown) {
@@ -840,7 +830,7 @@ public class WoodBoat extends Entity {
         this.inputDown = pInputDown;
     }
 
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -863,7 +853,7 @@ public class WoodBoat extends Entity {
     }
 
     public enum Status {
-        IN_WATER, UNDER_WATER, UNDER_FLOWING_WATER, ON_LAND, IN_AIR;
+        IN_WATER, UNDER_WATER, UNDER_FLOWING_WATER, ON_LAND, IN_AIR
     }
 
     public enum Type {

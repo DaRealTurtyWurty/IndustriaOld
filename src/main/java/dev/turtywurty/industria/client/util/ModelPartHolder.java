@@ -1,20 +1,21 @@
 package dev.turtywurty.industria.client.util;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3d;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.ModelPart;
+import org.joml.Quaternionf;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 public class ModelPartHolder {
     private static final Vector3d ZERO_VECTOR = new Vector3d(0, 0, 0);
     private static final Vector3f ZERO_VECTOR_F = new Vector3f(0, 0, 0);
-    private static final Quaternion ZERO_QUATERNION = new Quaternion(0, 0, 0, 1);
+    private static final Quaternionf ZERO_QUATERNION = new Quaternionf(0, 0, 0, 1);
 
     private final ModelPart part;
     private final Vector3d position = ZERO_VECTOR;
     private final Vector3f scale = ZERO_VECTOR_F;
-    private final Quaternion rotation = ZERO_QUATERNION;
+    private final Quaternionf rotation = ZERO_QUATERNION;
 
     public ModelPartHolder(ModelPart part) {
         this.part = part;
@@ -32,14 +33,14 @@ public class ModelPartHolder {
         return this.scale;
     }
 
-    public Quaternion rotate(PoseStack poseStack, Vector3f axis, float angle, boolean radians) {
-        Quaternion rotation = radians ? axis.rotation(angle) : axis.rotationDegrees(angle);
+    public Quaternionf rotate(PoseStack poseStack, Axis axis, float angle, boolean radians) {
+        Quaternionf rotation = radians ? axis.rotation(angle) : axis.rotationDegrees(angle);
         poseStack.mulPose(rotation);
         this.rotation.mul(rotation);
         return this.rotation;
     }
 
-    public Quaternion rotate(PoseStack poseStack, Vector3f axis, float angle) {
+    public Quaternionf rotate(PoseStack poseStack, Axis axis, float angle) {
         return rotate(poseStack, axis, angle, false);
     }
 
@@ -50,16 +51,16 @@ public class ModelPartHolder {
 
         this.position.set(other.position);
         this.scale.set(other.scale.x(), other.scale.y(), other.scale.z());
-        this.rotation.set(other.rotation.i(), other.rotation.j(), other.rotation.k(), other.rotation.r());
+        this.rotation.set(other.rotation.x(), other.rotation.y(), other.rotation.z(), other.rotation.w());
 
         poseStack.translate(this.position.x, this.position.y, this.position.z);
         poseStack.scale(this.scale.x(), this.scale.y(), this.scale.z());
         poseStack.mulPose(this.rotation);
     }
 
-    private static Quaternion inverseQuaternion(Quaternion quaternion) {
-        Quaternion inverseRotation = quaternion.copy();
-        inverseRotation.conj();
+    private static Quaternionf inverseQuaternion(Quaternionf quaternion) {
+        Quaternionf inverseRotation = new Quaternionf(quaternion);
+        inverseRotation.conjugate();
         return inverseRotation;
     }
 

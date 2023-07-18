@@ -2,6 +2,7 @@ package dev.turtywurty.industria.recipes;
 
 import com.google.gson.JsonObject;
 import dev.turtywurty.industria.init.RecipeInit;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -11,7 +12,7 @@ import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemHandlerHelper;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class CrusherRecipe implements Recipe<Container> {
     public static final String ID = "crusher";
@@ -51,9 +52,9 @@ public class CrusherRecipe implements Recipe<Container> {
     }
 
     @Override
-    public ItemStack assemble(Container pContainer) {
+    public ItemStack assemble(Container pContainer, RegistryAccess pRegistryAccess) {
         pContainer.removeItem(0, 1);
-        return getResultItem();
+        return getResultItem(pRegistryAccess);
     }
 
     @Override
@@ -62,7 +63,7 @@ public class CrusherRecipe implements Recipe<Container> {
     }
 
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
         return this.output.copy();
     }
 
@@ -122,7 +123,7 @@ public class CrusherRecipe implements Recipe<Container> {
         }
 
         @Override
-        public @Nullable CrusherRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
+        public @NotNull CrusherRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
             ItemStack output = pBuffer.readItem();
             Ingredient input = Ingredient.fromNetwork(pBuffer);
             int processTime = pBuffer.readInt();
@@ -133,7 +134,7 @@ public class CrusherRecipe implements Recipe<Container> {
 
         @Override
         public void toNetwork(FriendlyByteBuf pBuffer, CrusherRecipe pRecipe) {
-            pBuffer.writeItem(pRecipe.getResultItem());
+            pBuffer.writeItem(pRecipe.output);
             pRecipe.getInput().toNetwork(pBuffer);
             pBuffer.writeInt(pRecipe.getProcessTime());
             pBuffer.writeInt(pRecipe.getEnergyCost());

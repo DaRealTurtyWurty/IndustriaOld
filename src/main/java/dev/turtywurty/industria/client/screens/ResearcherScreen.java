@@ -119,45 +119,34 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
         }
 
         @Override
-        public void updateNarration(NarrationElementOutput pNarrationElementOutput) {
-            defaultButtonNarrationText(pNarrationElementOutput);
-        }
-
-        @Override
         public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
             this.isHovered = isMouseOver(pMouseX, pMouseY);
 
-            renderButton(pPoseStack, pMouseX, pMouseY, pPartialTick);
+            renderWidget(pPoseStack, pMouseX, pMouseY, pPartialTick);
 
             var registryName = ResourceLocation.tryParse(data.getInputRegistryName());
             if (registryName == null) return;
 
             if (!(ForgeRegistries.ITEMS.getValue(registryName) instanceof ResearchAdvancer advancer)) return;
 
-            advancer.getResearchIcon().ifLeft(stackSupplier -> {
-                Minecraft.getInstance().getItemRenderer()
-                         .renderAndDecorateItem(stackSupplier.get(), this.x + 1, this.y + 1);
-            }).ifRight(texture -> {
+            advancer.getResearchIcon().ifLeft(stackSupplier -> Minecraft.getInstance().getItemRenderer()
+                     .renderAndDecorateItem(pPoseStack, stackSupplier.get(), getX() + 1, getY() + 1)).ifRight(texture -> {
                 RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
                 RenderSystem.setShaderTexture(0, texture);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                blit(pPoseStack, this.x + 1, this.y + 1, 0, 0, 16, 16);
+                blit(pPoseStack, getX() + 1, getY() + 1, 0, 0, 16, 16);
             });
 
             if (!hasResearched(this.data)) {
-                fill(pPoseStack, this.x, this.y, this.x + this.width, this.y + this.height, 0x80FF0000);
+                fill(pPoseStack, getX(), getY(), getX() + this.width, getY() + this.height, 0x80FF0000);
             }
         }
 
-        @Override
+        @Deprecated(since = "1.19.4")
         public void renderToolTip(PoseStack pPoseStack, int pMouseX, int pMouseY) {
             if (hasResearched(this.data)) {
                 renderTooltip(pPoseStack, Component.literal(this.data.getInputRegistryName()), pMouseX, pMouseY);
             }
-        }
-
-        public boolean isHovered() {
-            return this.isHovered;
         }
 
         private static boolean hasResearched(ResearchDataOld data) {
@@ -211,13 +200,13 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
             this.hoveredRenderTooltip = NOOP;
 
             for (ResearchOption researchOption : ResearcherScreen.this.researchOptions) {
-                researchOption.y += relativeY;
+                researchOption.setY(researchOption.getY() + relativeY);
                 researchOption.render(poseStack, mouseX, mouseY, 0);
                 if (researchOption.isHovered()) {
                     this.hoveredRenderTooltip = researchOption::renderToolTip;
                 }
 
-                researchOption.y -= relativeY;
+                researchOption.setY(researchOption.getY() - relativeY);
             }
         }
 
@@ -253,8 +242,8 @@ public class ResearcherScreen extends AbstractContainerScreen<ResearcherMenu> {
                 }
 
                 int y = (row * (widgetSize + widgetSpacing)) + widgetSpacing;
-                widget.x = x;
-                widget.y = y;
+                widget.setX(x);
+                widget.setY(y);
 
                 if (column > this.amountPerRow) this.amountPerRow = column;
             }

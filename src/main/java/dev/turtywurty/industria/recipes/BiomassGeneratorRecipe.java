@@ -2,6 +2,7 @@ package dev.turtywurty.industria.recipes;
 
 import com.google.gson.JsonObject;
 import dev.turtywurty.industria.init.RecipeInit;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -26,9 +27,9 @@ public record BiomassGeneratorRecipe(ResourceLocation id, Ingredient input, int 
     }
 
     @Override
-    public ItemStack assemble(Container pContainer) {
+    public ItemStack assemble(Container pContainer, RegistryAccess pRegistryAccess) {
         pContainer.removeItem(0, 1);
-        return getResultItem();
+        return getResultItem(pRegistryAccess);
     }
 
     @Override
@@ -37,7 +38,7 @@ public record BiomassGeneratorRecipe(ResourceLocation id, Ingredient input, int 
     }
 
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
         return ItemStack.EMPTY;
     }
 

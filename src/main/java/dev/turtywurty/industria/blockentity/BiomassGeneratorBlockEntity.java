@@ -146,7 +146,7 @@ public class BiomassGeneratorBlockEntity extends ModularBlockEntity {
 
             if (this.currentRecipe == null) return;
 
-            this.currentRecipe.assemble(new RecipeWrapper(this.inventory.getNullableInventory(Direction.UP)));
+            this.currentRecipe.assemble(new RecipeWrapper(this.inventory.getNullableInventory(Direction.UP)), this.level.registryAccess());
         }
 
         // Check if we are already generating energy

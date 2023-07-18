@@ -8,6 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -25,12 +26,12 @@ public class MenuInit {
             Industria.MODID);
 
     public static final RegistryObject<MenuType<CrusherMenu>> CRUSHER = MENUS.register("crusher",
-            () -> new MenuType<>(CrusherMenu::getClientMenu));
+            () -> new MenuType<>(CrusherMenu::getClientMenu, FeatureFlagSet.of()));
     public static final RegistryObject<MenuType<BiomassGeneratorMenu>> BIOMASS_GENERATOR = MENUS.register(
-            "biomass_generator", () -> new MenuType<>(BiomassGeneratorMenu::getClientMenu));
+            "biomass_generator", () -> new MenuType<>(BiomassGeneratorMenu::getClientMenu, FeatureFlagSet.of()));
 
     public static final RegistryObject<MenuType<ResearcherMenu>> RESEARCHER = MENUS.register("researcher",
-            () -> new MenuType<>(ResearcherMenu::getClientMenu));
+            () -> new MenuType<>(ResearcherMenu::getClientMenu, FeatureFlagSet.of()));
 
     public static final RegistryObject<MenuType<AgitatorMenu>> AGITATOR = MENUS.register("agitator",
             () -> createPositionedMenu(AgitatorMenu::getClientMenu));

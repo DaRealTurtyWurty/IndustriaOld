@@ -6,6 +6,6 @@ import net.minecraft.client.player.RemotePlayer;
 
 public class FakeClientPlayer extends RemotePlayer {
     public FakeClientPlayer(ClientLevel pClientLevel, GameProfile pGameProfile) {
-        super(pClientLevel, pGameProfile, null);
+        super(pClientLevel, pGameProfile);
     }
 }

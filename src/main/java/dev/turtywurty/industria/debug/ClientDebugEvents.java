@@ -5,6 +5,7 @@ import dev.turtywurty.industria.init.ItemInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.HitResult;
@@ -27,20 +28,18 @@ public class ClientDebugEvents {
             if (player.getItemBySlot(EquipmentSlot.HEAD).getItem() != ItemInit.DEBUG_GOGGLES.get()) return;
 
             // get the block that the player is looking at
-            HitResult hitResult = player.pick(player.getAttributeBaseValue(ForgeMod.REACH_DISTANCE.get()),
-                    event.getPartialTick(), false);
+            HitResult hitResult = player.pick(player.getAttributeBaseValue(ForgeMod.BLOCK_REACH.get()), event.getPartialTick(), false);
 
             if (hitResult.getType() != HitResult.Type.BLOCK) return;
 
-            var hitPos = new BlockPos(hitResult.getLocation());
+            var hitPos = new BlockPos(new Vec3i((int) hitResult.getLocation().x, (int) hitResult.getLocation().y, (int) hitResult.getLocation().z));
             BlockEntity blockEntity = player.level.getBlockEntity(hitPos);
             if (blockEntity == null) return;
 
             // check to see if the block entity has an energy storage
             blockEntity.getCapability(ForgeCapabilities.ENERGY).ifPresent(energyStorage -> {
                 // render a debug overlay
-                DebugGogglesRenderer.renderEnergyStorage(energyStorage, hitPos, event.getPoseStack(),
-                        event.getCamera());
+                DebugGogglesRenderer.renderEnergyStorage(energyStorage, hitPos, event.getPoseStack(), event.getCamera());
             });
         }
     }

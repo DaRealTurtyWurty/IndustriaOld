@@ -4,8 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import dev.turtywurty.industria.Industria;
 import dev.turtywurty.industria.client.model.WoodBoatModel;
 import dev.turtywurty.industria.entity.WoodBoat;
@@ -17,6 +16,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.Map;
 import java.util.stream.Stream;
@@ -44,7 +45,7 @@ public class WoodBoatRenderer extends EntityRenderer<WoodBoat> {
     public void render(WoodBoat pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight) {
         pMatrixStack.pushPose();
         pMatrixStack.translate(0.0D, 0.375D, 0.0D);
-        pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(180.0F - pEntityYaw));
+        pMatrixStack.mulPose(Axis.YP.rotationDegrees(180.0F - pEntityYaw));
         float hurt = (float) pEntity.getHurtTime() - pPartialTicks;
         float damage = pEntity.getDamage() - pPartialTicks;
         if (damage < 0.0F) {
@@ -53,20 +54,19 @@ public class WoodBoatRenderer extends EntityRenderer<WoodBoat> {
 
         if (hurt > 0.0F) {
             pMatrixStack.mulPose(
-                    Vector3f.XP.rotationDegrees(Mth.sin(hurt) * hurt * damage / 10.0F * (float) pEntity.getHurtDir()));
+                    Axis.XP.rotationDegrees(Mth.sin(hurt) * hurt * damage / 10.0F * (float) pEntity.getHurtDir()));
         }
 
         float bubbleAngle = pEntity.getBubbleAngle(pPartialTicks);
         if (!Mth.equal(bubbleAngle, 0.0F)) {
-            pMatrixStack.mulPose(
-                    new Quaternion(new Vector3f(1.0F, 0.0F, 1.0F), pEntity.getBubbleAngle(pPartialTicks), true));
+            pMatrixStack.mulPose((new Quaternionf()).setAngleAxis(pEntity.getBubbleAngle(pPartialTicks) * ((float)Math.PI / 180F), 1.0F, 0.0F, 1.0F));
         }
 
         Pair<ResourceLocation, WoodBoatModel> pair = getModelWithLocation(pEntity);
         ResourceLocation texture = pair.getFirst();
         WoodBoatModel model = pair.getSecond();
         pMatrixStack.scale(-1.0F, -1.0F, 1.0F);
-        pMatrixStack.mulPose(Vector3f.YP.rotationDegrees(90.0F));
+        pMatrixStack.mulPose(Axis.YP.rotationDegrees(90.0F));
         model.setupAnim(pEntity, pPartialTicks, 0.0F, -0.1F, 0.0F, 0.0F);
         VertexConsumer vertexConsumer = pBuffer.getBuffer(model.renderType(texture));
         model.renderToBuffer(pMatrixStack, vertexConsumer, pPackedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F,

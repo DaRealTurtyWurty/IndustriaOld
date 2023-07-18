@@ -21,6 +21,6 @@ public class ResearchDataInit {
 
     public static final RegistryObject<ResearchData> TEST_0 = RESEARCH_DATA.register("test_0", () -> new ResearchData(
             new ResearchData.Builder().title("Test 0").description("This is a test").input(() -> Items.IRON_INGOT)
-                    .requiredEnergy(100).result(() -> Items.APPLE.getDefaultInstance())
-                    .icon(() -> Items.APPLE.getDefaultInstance()).rarity(Rarity.COMMON)));
+                    .requiredEnergy(100).result(Items.APPLE::getDefaultInstance)
+                    .icon(Items.APPLE::getDefaultInstance).rarity(Rarity.COMMON)));
 }

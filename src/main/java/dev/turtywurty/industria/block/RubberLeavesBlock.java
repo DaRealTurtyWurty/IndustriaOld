@@ -34,8 +34,8 @@ public class RubberLeavesBlock extends Block implements SimpleWaterloggedBlock, 
 
     public RubberLeavesBlock() {
         super(BlockBehaviour.Properties.copy(Blocks.OAK_LEAVES));
-        registerDefaultState(this.stateDefinition.any().setValue(DISTANCE, Integer.valueOf(13))
-                .setValue(PERSISTENT, Boolean.valueOf(false)).setValue(WATERLOGGED, Boolean.valueOf(false)));
+        registerDefaultState(this.stateDefinition.any().setValue(DISTANCE, 13)
+                .setValue(PERSISTENT, Boolean.FALSE).setValue(WATERLOGGED, Boolean.FALSE));
     }
 
     @Override
@@ -115,7 +115,7 @@ public class RubberLeavesBlock extends Block implements SimpleWaterloggedBlock, 
             }
         }
 
-        return pState.setValue(DISTANCE, Integer.valueOf(i));
+        return pState.setValue(DISTANCE, i);
     }
 
     private static int getDistanceAt(BlockState pNeighbor) {
@@ -135,7 +135,7 @@ public class RubberLeavesBlock extends Block implements SimpleWaterloggedBlock, 
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
         FluidState fluidstate = pContext.getLevel().getFluidState(pContext.getClickedPos());
         BlockState blockstate = this.defaultBlockState().setValue(PERSISTENT, Boolean.TRUE)
-                .setValue(WATERLOGGED, Boolean.valueOf(fluidstate.getType() == Fluids.WATER));
+                .setValue(WATERLOGGED, fluidstate.getType() == Fluids.WATER);
         return updateDistance(blockstate, pContext.getLevel(), pContext.getClickedPos());
     }
 }

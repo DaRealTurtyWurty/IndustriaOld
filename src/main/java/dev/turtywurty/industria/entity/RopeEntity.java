@@ -6,12 +6,14 @@ import dev.turtywurty.industria.init.EntityInit;
 import dev.turtywurty.industria.init.ItemInit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -83,7 +85,7 @@ public class RopeEntity extends HangingEntity {
     }
 
     @Override
-    public Packet<?> getAddEntityPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -193,7 +195,7 @@ public class RopeEntity extends HangingEntity {
 
     public static @Nullable RopeEntity handleClientSpawn(PlayMessages.SpawnEntity pSpawnEntity, Level pLevel) {
         return new RopeEntity(pLevel,
-                new BlockPos(pSpawnEntity.getPosX(), pSpawnEntity.getPosY(), pSpawnEntity.getPosZ()));
+                new BlockPos((int) pSpawnEntity.getPosX(), (int) pSpawnEntity.getPosY(), (int) pSpawnEntity.getPosZ()));
     }
 
     public static Optional<RopeEntity> getRopeEntity(Level level, BlockPos pos) {
@@ -287,11 +289,13 @@ public class RopeEntity extends HangingEntity {
             float length = (float) (endVec.x - startX);
             float height = (float) (endVec.y - startY);
             float depth = (float) (endVec.z - startZ);
-            float thickness = Mth.fastInvSqrt(length * length + depth * depth) * THICKNESS / 2F;
+            float thickness = Mth.invSqrt(length * length + depth * depth) * THICKNESS / 2F;
             float normX = depth * thickness;
             float normY = length * thickness;
-            var startPos = new BlockPos(start.getEyePosition(partialTicks));
-            var endPos = new BlockPos(end.getEyePosition(partialTicks));
+            Vec3 startEyePos = start.getEyePosition(partialTicks);
+            Vec3 endEyePos = end.getEyePosition(partialTicks);
+            var startPos = new BlockPos(new Vec3i((int) startEyePos.x(), (int) startEyePos.y(), (int) startEyePos.z()));
+            var endPos = new BlockPos(new Vec3i((int) endEyePos.x(), (int) endEyePos.y(), (int) endEyePos.z()));
             int startBrightness = start.level.getBrightness(LightLayer.SKY, startPos);
             int endBrightness = start.level.getBrightness(LightLayer.SKY, endPos);
             int segmentCount = (int) Math.floor(startPos.distSqr(endPos));

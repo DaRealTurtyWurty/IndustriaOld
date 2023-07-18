@@ -49,8 +49,8 @@ public class FluidButtonIcon implements RenderableButtonIcon {
 
         public Builder(SimpleButton self) {
             this.self = self;
-            this.x = self.x;
-            this.y = self.y;
+            this.x = self.getX();
+            this.y = self.getY();
             this.width = self.getWidth();
             this.height = self.getHeight();
         }
