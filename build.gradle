@@ -77,9 +77,9 @@ dependencies {
 
     implementation fg.deobf('dev.turtywurty:TurtyLib:1.0')
 
-    compileOnly(fg.deobf("mezz.jei:jei-1.19.2-common-api:11.4.0.286"))
-    compileOnly(fg.deobf("mezz.jei:jei-1.19.2-forge-api:11.4.0.286"))
-    runtimeOnly(fg.deobf("mezz.jei:jei-1.19.2-forge:11.4.0.286"))
+    compileOnly(fg.deobf("mezz.jei:jei-1.19.4-common-api:13.1.0.15"))
+    compileOnly(fg.deobf("mezz.jei:jei-1.19.4-forge-api:13.1.0.15"))
+    runtimeOnly(fg.deobf("mezz.jei:jei-1.19.4-forge:13.1.0.15"))
 }
 
 jar {
